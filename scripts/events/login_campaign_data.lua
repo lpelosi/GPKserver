@@ -54,9 +54,9 @@ local prizes =
             -- 10113, -- Cipher: Lion
             xi.item.CIPHER_OF_NAJAS_ALTER_EGO, -- Cipher: Naja
             xi.item.CIPHER_OF_LEHKOS_ALTER_EGO, -- Cipher: Lehko
-            -- 10124, -- Cipher: Luzaf
-            -- 10125, -- Cipher: Najelith
-            -- 10129, -- Cipher: Domina
+            xi.item.CIPHER_OF_LUZAFS_ALTER_EGO,-- 10124, -- Cipher: Luzaf
+            xi.item.CIPHER_OF_NAJELITHS_ALTER_EGO,-- 10125, -- Cipher: Najelith
+            xi.item.CIPHER_OF_DOMINAS_ALTER_EGO,-- 10129, -- Cipher: Domina
             -- 10134, -- Cipher: S. Sibyl
             -- 10142, -- Cipher: Karaha
             -- 10149, -- Cipher: Areuhat
@@ -68,17 +68,17 @@ local prizes =
         ['price'] = 100,
         ['items'] =
         {
-            -- 10136, -- Cipher: Uka
-            -- 10141, -- Cipher: Kuyin
-            -- 10144, -- Cipher: Abenzio
-            -- 10145, -- Cipher: Rughadjeen
+            xi.item.CIPHER_OF_UKAS_ALTER_EGO,-- 10136, -- Cipher: Uka
+            xi.item.CIPHER_OF_KUYINS_ALTER_EGO,-- 10141, -- Cipher: Kuyin
+            xi.item.CIPHER_OF_ABENZIOS_ALTER_EGO,-- 10144, -- Cipher: Abenzio
+            xi.item.CIPHER_OF_RUGHADJEENS_ALTER_EGO,-- 10145, -- Cipher: Rughadjeen
             -- 10150, -- Cipher: Lhe
             -- 10151, -- Cipher: Mayakov
             -- 10155, -- Cipher: Brygid
             -- 10156, -- Cipher: Mildaurion
             -- 10161, -- Cipher: Rongelouts
             -- 10166, -- Cipher: Robel-Akbel
-            -- 10178, -- Cipher: Ullegore
+            xi.item.CIPHER_OF_ULLEGORES_ALTER_EGO,-- 10178, -- Cipher: Ullegore
             -- 10179, -- Cipher: Teodor
             -- 10183, -- Cipher: Darrcuiln
             xi.item.EXCALIPOOR, -- Excalipoor
