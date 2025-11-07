@@ -7721,6 +7721,7 @@ INSERT INTO `item_mods` VALUES (11544,5,10);  -- MP: 10
 INSERT INTO `item_mods` VALUES (11544,170,1); -- FASTCAST: 1
 
 -- Fourth Division Mantle
+INSERT INTO `item_mods` VALUES (11545,1,4);  -- DEF: 4
 INSERT INTO `item_mods` VALUES (11545,73,2); -- STORETP: 2
 
 -- Aesir Mantle
@@ -8133,7 +8134,7 @@ INSERT INTO `item_mods` VALUES (11635,25,-3); -- ACC: -3
 INSERT INTO `item_mods` VALUES (11635,68,6);  -- EVA: 6
 
 -- Royal Knight Sigil Ring
-INSERT INTO `item_mods` VALUES (11636,1,30); -- DEF: 30
+INSERT INTO `item_mods` VALUES (11636,2,30); -- HP: 30
 
 -- Meridian Ring
 INSERT INTO `item_mods` VALUES (11637,2,90);   -- HP: 90
@@ -25158,6 +25159,7 @@ INSERT INTO `item_mods` VALUES (15010,289,2); -- SUBTLE_BLOW: 2
 INSERT INTO `item_mods` VALUES (15011,1,13);  -- DEF: 13
 INSERT INTO `item_mods` VALUES (15011,25,4);  -- ACC: 4
 INSERT INTO `item_mods` VALUES (15011,27,-3); -- ENMITY: -3
+INSERT INTO `item_mods` VALUES (15011,73,3);  -- STORETP: 3
 
 -- Cobra Unit Gloves
 INSERT INTO `item_mods` VALUES (15012,1,12);  -- DEF: 12
@@ -30755,6 +30757,7 @@ INSERT INTO `item_mods` VALUES (16147,289,4); -- SUBTLE_BLOW: 4
 INSERT INTO `item_mods` VALUES (16148,1,22);  -- DEF: 22
 INSERT INTO `item_mods` VALUES (16148,25,4);  -- ACC: 4
 INSERT INTO `item_mods` VALUES (16148,27,-4); -- ENMITY: -4
+INSERT INTO `item_mods` VALUES (16148,73,2);  -- STORETP: 2
 
 -- Cobra Unit Cloche
 INSERT INTO `item_mods` VALUES (16149,1,12);  -- DEF: 12
@@ -37010,7 +37013,6 @@ INSERT INTO `item_mods` VALUES (18257,228,2); -- AQUAN_KILLER: 2
 
 -- Caestus
 INSERT INTO `item_mods` VALUES (18263,256,1);  -- AFTERMATH: 1
-INSERT INTO `item_mods` VALUES (18263,356,10); -- ADDS_WEAPONSKILL_DYN: 10
 
 -- Spharai
 INSERT INTO `item_mods` VALUES (18264,23,20);   -- ATT: 20
@@ -37030,7 +37032,6 @@ INSERT INTO `item_mods` VALUES (18265,507,300); -- OCC_DO_EXTRA_DMG: 300
 
 -- Batardeau
 INSERT INTO `item_mods` VALUES (18269,256,2);  -- AFTERMATH: 2
-INSERT INTO `item_mods` VALUES (18269,356,26); -- ADDS_WEAPONSKILL_DYN: 26
 
 -- Mandau
 INSERT INTO `item_mods` VALUES (18270,23,20);   -- ATT: 20
@@ -37055,7 +37056,6 @@ INSERT INTO `item_mods` VALUES (18271,507,300); -- OCC_DO_EXTRA_DMG: 300
 
 -- Caliburn
 INSERT INTO `item_mods` VALUES (18275,256,3);  -- AFTERMATH: 3
-INSERT INTO `item_mods` VALUES (18275,356,43); -- ADDS_WEAPONSKILL_DYN: 43
 
 -- Excalibur
 INSERT INTO `item_mods` VALUES (18276,23,20);   -- ATT: 20
@@ -37079,7 +37079,6 @@ INSERT INTO `item_mods` VALUES (18277,950,7);   -- ITEM_ADDEFFECT_ELEMENT: ELEME
 
 -- Valhalla
 INSERT INTO `item_mods` VALUES (18281,256,4);  -- AFTERMATH: 4
-INSERT INTO `item_mods` VALUES (18281,356,57); -- ADDS_WEAPONSKILL_DYN: 57
 
 -- Ragnarok
 INSERT INTO `item_mods` VALUES (18282,25,20);   -- ACC: 20
@@ -37099,7 +37098,6 @@ INSERT INTO `item_mods` VALUES (18283,507,250); -- OCC_DO_EXTRA_DMG: 250
 
 -- Ogre Killer
 INSERT INTO `item_mods` VALUES (18287,256,5);  -- AFTERMATH: 5
-INSERT INTO `item_mods` VALUES (18287,356,73); -- ADDS_WEAPONSKILL_DYN: 73
 
 -- Guttler
 INSERT INTO `item_mods` VALUES (18288,23,20);   -- ATT: 20
@@ -37124,7 +37122,6 @@ INSERT INTO `item_mods` VALUES (18289,507,250); -- OCC_DO_EXTRA_DMG: 250
 
 -- Abaddon Killer
 INSERT INTO `item_mods` VALUES (18293,256,6);  -- AFTERMATH: 6
-INSERT INTO `item_mods` VALUES (18293,356,89); -- ADDS_WEAPONSKILL_DYN: 89
 
 -- Bravura
 INSERT INTO `item_mods` VALUES (18294,25,20);   -- ACC: 20
@@ -37149,7 +37146,6 @@ INSERT INTO `item_mods` VALUES (18295,507,200); -- OCC_DO_EXTRA_DMG: 200
 
 -- Gae Assail
 INSERT INTO `item_mods` VALUES (18299,256,8);   -- AFTERMATH: 8
-INSERT INTO `item_mods` VALUES (18299,356,121); -- ADDS_WEAPONSKILL_DYN: 121
 
 -- Gungnir
 INSERT INTO `item_mods` VALUES (18300,25,20);   -- ACC: 20
@@ -37174,7 +37170,6 @@ INSERT INTO `item_mods` VALUES (18301,507,200); -- OCC_DO_EXTRA_DMG: 200
 
 -- Bec De Faucon
 INSERT INTO `item_mods` VALUES (18305,256,7);   -- AFTERMATH: 7
-INSERT INTO `item_mods` VALUES (18305,356,105); -- ADDS_WEAPONSKILL_DYN: 105
 
 -- Apocalypse
 INSERT INTO `item_mods` VALUES (18306,25,20);   -- ACC: 20
@@ -37199,7 +37194,6 @@ INSERT INTO `item_mods` VALUES (18307,507,200); -- OCC_DO_EXTRA_DMG: 200
 
 -- Yoshimitsu
 INSERT INTO `item_mods` VALUES (18311,256,9);   -- AFTERMATH: 9
-INSERT INTO `item_mods` VALUES (18311,356,137); -- ADDS_WEAPONSKILL_DYN: 137
 
 -- Kikoku
 INSERT INTO `item_mods` VALUES (18312,23,20);   -- ATT: 20
@@ -37224,7 +37218,6 @@ INSERT INTO `item_mods` VALUES (18313,507,300); -- OCC_DO_EXTRA_DMG: 300
 
 -- Totsukanotsurugi
 INSERT INTO `item_mods` VALUES (18317,256,10);  -- AFTERMATH: 10
-INSERT INTO `item_mods` VALUES (18317,356,153); -- ADDS_WEAPONSKILL_DYN: 153
 
 -- Amanomurakumo
 INSERT INTO `item_mods` VALUES (18318,25,20);   -- ACC: 20
@@ -37249,7 +37242,6 @@ INSERT INTO `item_mods` VALUES (18319,507,250); -- OCC_DO_EXTRA_DMG: 250
 
 -- Gullintani
 INSERT INTO `item_mods` VALUES (18323,256,12);  -- AFTERMATH: 12
-INSERT INTO `item_mods` VALUES (18323,356,170); -- ADDS_WEAPONSKILL_DYN: 170
 
 -- Mjollnir
 INSERT INTO `item_mods` VALUES (18324,23,20);   -- ATT: 20
@@ -37272,7 +37264,6 @@ INSERT INTO `item_mods` VALUES (18325,507,300); -- OCC_DO_EXTRA_DMG: 300
 
 -- Thyrus
 INSERT INTO `item_mods` VALUES (18329,256,12);  -- AFTERMATH: 12
-INSERT INTO `item_mods` VALUES (18329,356,185); -- ADDS_WEAPONSKILL_DYN: 185
 
 -- Claustrum
 INSERT INTO `item_mods` VALUES (18330,25,20);   -- ACC: 20
@@ -37294,7 +37285,6 @@ INSERT INTO `item_mods` VALUES (18331,507,250); -- OCC_DO_EXTRA_DMG: 250
 
 -- Ferdinand
 INSERT INTO `item_mods` VALUES (18335,256,14);  -- AFTERMATH: 14
-INSERT INTO `item_mods` VALUES (18335,356,216); -- ADDS_WEAPONSKILL_DYN: 216
 
 -- Annihilator
 INSERT INTO `item_mods` VALUES (18336,24,10);   -- RATT: 10
@@ -37325,7 +37315,6 @@ INSERT INTO `item_mods` VALUES (18343,444,3); -- FINALE_EFFECT: 3
 
 -- Futatokoroto
 INSERT INTO `item_mods` VALUES (18347,256,13);  -- AFTERMATH: 13
-INSERT INTO `item_mods` VALUES (18347,356,200); -- ADDS_WEAPONSKILL_DYN: 200
 
 -- Yoichinoyumi
 INSERT INTO `item_mods` VALUES (18348,24,10);   -- RATT: 10
@@ -44249,7 +44238,6 @@ INSERT INTO `item_mods` VALUES (21266,26,20);   -- RACC: 20
 INSERT INTO `item_mods` VALUES (21266,256,43);  -- AFTERMATH: 43
 INSERT INTO `item_mods` VALUES (21266,311,217); -- MAGIC_DAMAGE: 217
 INSERT INTO `item_mods` VALUES (21266,355,217); -- ADDS_WEAPONSKILL: 217
-INSERT INTO `item_mods` VALUES (21266,356,10);  -- ADDS_WEAPONSKILL_DYN: 10
 INSERT INTO `item_mods` VALUES (21266,420,70);  -- BARRAGE_ACC: 70
 INSERT INTO `item_mods` VALUES (21266,787,30);  -- WSD+% (Trueflight): 30
 
@@ -46119,6 +46107,10 @@ INSERT INTO `item_mods` VALUES (21975,25,40);   -- ACC: 40
 INSERT INTO `item_mods` VALUES (21975,30,40);   -- MACC: 40
 INSERT INTO `item_mods` VALUES (21975,355,152); -- ADDS_WEAPONSKILL: 152
 INSERT INTO `item_mods` VALUES (21975,722,25);  -- WSD+% (Tachi Kasha): 25
+
+-- Erudite's Staff +1
+INSERT INTO `item_mods` VALUES (21994,170,5);   -- FASTCAST: 5
+INSERT INTO `item_mods` VALUES (21994,374,5);   -- CURE_POTENCY: 5
 
 -- Arasy Rod
 INSERT INTO `item_mods` VALUES (22015,12,6);    -- INT: 6
@@ -58241,6 +58233,78 @@ INSERT INTO `item_mods` VALUES (23808,1,1); -- DEF: 1
 -- Esthete's Hose
 INSERT INTO `item_mods` VALUES (23809,1,1); -- DEF: 1
 
+-- Arrogance Crown
+INSERT INTO `item_mods` VALUES (23837,1,1); -- DEF: 1
+
+-- Arrogance Platemail
+INSERT INTO `item_mods` VALUES (23838,1,1); -- DEF: 1
+
+-- Arrogance Gauntlets
+INSERT INTO `item_mods` VALUES (23839,1,1); -- DEF: 1
+
+-- Arrogance Brais
+INSERT INTO `item_mods` VALUES (23840,1,1); -- DEF: 1
+
+-- Arrogance Sabatons
+INSERT INTO `item_mods` VALUES (23841,1,1); -- DEF: 1
+
+-- Rage Platemail
+INSERT INTO `item_mods` VALUES (23842,1,1); -- DEF: 1
+
+-- Rage Gauntlets
+INSERT INTO `item_mods` VALUES (23843,1,1); -- DEF: 1
+
+-- Rage Brais
+INSERT INTO `item_mods` VALUES (23844,1,1); -- DEF: 1
+
+-- Rage Sabatons
+INSERT INTO `item_mods` VALUES (23845,1,1); -- DEF: 1
+
+-- Cowardice Petasos
+INSERT INTO `item_mods` VALUES (23846,1,1); -- DEF: 1
+
+-- Cowardice Coat
+INSERT INTO `item_mods` VALUES (23847,1,1); -- DEF: 1
+
+-- Cowardice Gloves
+INSERT INTO `item_mods` VALUES (23848,1,1); -- DEF: 1
+
+-- Cowardice Tonban
+INSERT INTO `item_mods` VALUES (23849,1,1); -- DEF: 1
+
+-- Cowardice Sabots
+INSERT INTO `item_mods` VALUES (23850,1,1); -- DEF: 1
+
+-- Envy Crown
+INSERT INTO `item_mods` VALUES (23851,1,1); -- DEF: 1
+
+-- Envy Cyclas
+INSERT INTO `item_mods` VALUES (23852,1,1); -- DEF: 1
+
+-- Envy Gauntlets
+INSERT INTO `item_mods` VALUES (23853,1,1); -- DEF: 1
+
+-- Envy Flanchard
+INSERT INTO `item_mods` VALUES (23854,1,1); -- DEF: 1
+
+-- Envy Sollerets
+INSERT INTO `item_mods` VALUES (23855,1,1); -- DEF: 1
+
+-- Apathy Mask
+INSERT INTO `item_mods` VALUES (23856,1,1); -- DEF: 1
+
+-- Apathy Platemail
+INSERT INTO `item_mods` VALUES (23857,1,1); -- DEF: 1
+
+-- Apathy Gauntlets
+INSERT INTO `item_mods` VALUES (23858,1,1); -- DEF: 1
+
+-- Apathy Brais
+INSERT INTO `item_mods` VALUES (23859,1,1); -- DEF: 1
+
+-- Apathy Sabatons
+INSERT INTO `item_mods` VALUES (23860,1,1); -- DEF: 1
+
 -- Republic Platinum Medal
 INSERT INTO `item_mods` VALUES (25415,8,10);  -- STR: 10
 INSERT INTO `item_mods` VALUES (25415,23,30); -- ATT: 30
@@ -59730,6 +59794,9 @@ INSERT INTO `item_mods` VALUES (25668,384,300); -- HASTE_GEAR: 300
 -- Crab Cap +1
 INSERT INTO `item_mods` VALUES (25669,1,2); -- DEF: 2
 
+-- Ilm Tiara
+INSERT INTO `item_mods` VALUES (25674,1,1); -- DEF: 1
+
 -- White Rarab Cap
 INSERT INTO `item_mods` VALUES (25675,1,1); -- DEF: 1
 
@@ -60740,6 +60807,9 @@ INSERT INTO `item_mods` VALUES (25813,68,19);   -- EVA: 19
 INSERT INTO `item_mods` VALUES (25813,165,7);   -- CRITHITRATE: 7
 INSERT INTO `item_mods` VALUES (25813,384,500); -- HASTE_GEAR: 500
 
+-- Ilm Manopolas
+INSERT INTO `item_mods` VALUES (25814,1,1); -- DEF: 1
+
 -- Delegates Cuffs
 INSERT INTO `item_mods` VALUES (25817,1,1); -- DEF: 1
 
@@ -60935,6 +61005,9 @@ INSERT INTO `item_mods` VALUES (25853,168,15);  -- SPELLINTERRUPT: 15
 INSERT INTO `item_mods` VALUES (25853,302,2);   -- TRIPLE_ATTACK: 2
 INSERT INTO `item_mods` VALUES (25853,384,500); -- HASTE_GEAR: 500
 INSERT INTO `item_mods` VALUES (25853,455,10);  -- SONG_SPELLCASTING_TIME: 10
+
+-- Ilm Lappas
+INSERT INTO `item_mods` VALUES (25857,1,1); -- DEF: 1
 
 -- Meghanada Chausses
 INSERT INTO `item_mods` VALUES (25860,1,105);    -- DEF: 105
@@ -61496,6 +61569,9 @@ INSERT INTO `item_mods` VALUES (25938,30,36);   -- MACC: 36
 INSERT INTO `item_mods` VALUES (25938,31,69);   -- MEVA: 69
 INSERT INTO `item_mods` VALUES (25938,68,60);   -- EVA: 60
 INSERT INTO `item_mods` VALUES (25938,384,400); -- HASTE_GEAR: 400
+
+-- Ilm Hauranches
+INSERT INTO `item_mods` VALUES (25939,1,1); -- DEF: 1
 
 -- Flamma Gambieras
 INSERT INTO `item_mods` VALUES (25940,1,83);    -- DEF: 83
@@ -62380,11 +62456,23 @@ INSERT INTO `item_mods` VALUES (26490,1,1); -- DEF: 1
 -- Ageist
 INSERT INTO `item_mods` VALUES (26496,1,1); -- DEF: 1
 
+-- Poroggo Fleece
+INSERT INTO `item_mods` VALUES (26514,1,1); -- DEF: 1
+
+-- Poroggo Fleece +1
+INSERT INTO `item_mods` VALUES (26515,1,2);   -- DEF: 2
+INSERT INTO `item_mods` VALUES (26515,20,30); -- WATER_MEVA: 30
+INSERT INTO `item_mods` VALUES (26515,37,30); -- WATER_MAB: 30
+INSERT INTO `item_mods` VALUES (26515,45,30); -- WATER_MACC: 30
+
 -- Shadow Lord Shirt
 INSERT INTO `item_mods` VALUES (26517,1,1); -- DEF: 1
 
 -- Akitu Shirt
 INSERT INTO `item_mods` VALUES (26520,1,1); -- DEF: 1
+
+-- Ilm Weskit
+INSERT INTO `item_mods` VALUES (26521,1,1); -- DEF: 1
 
 -- Gil Nabber Shirt
 INSERT INTO `item_mods` VALUES (26524,1,1); -- DEF: 1
