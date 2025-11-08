@@ -29,15 +29,26 @@ local ITEMS =
     3707,  -- murrey grisaille
 }
 
+print('[new_char_grant] loaded')
+
 local function grant(player)
     if player:getCharVar(FLAG) == 1 then return end
+
+    local granted = 0
     for _, id in ipairs(ITEMS) do
-        player:addItem(id, 1)
+        if player:addItem(id, 1) then
+            granted = granted + 1
+        end
     end
+
     player:setCharVar(FLAG, 1)
-    player:printToPlayer("As a surprise bonus please enjoy these items for your first login. =)", xi.msg.channel.SYSTEM_2)
+    player:PrintToPlayer('Server bonus: items added to your Inventory.')
+    print(string.format('[new_char_grant] %s granted %d items', player:getName(), granted))
 end
 
-xi.player.onGameIn:new("new_char_grant", function(player)
-    pcall(grant, player)
+xi.player.onGameIn:register(function(player)
+    local ok, err = pcall(grant, player)
+    if not ok then
+        print('[new_char_grant] error: ' .. tostring(err))
+    end
 end)
