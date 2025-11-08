@@ -9,37 +9,45 @@ require('scripts/quests/full_speed_ahead')
 
 local startingRaceInfo =
 {
-    [xi.race.HUME_M] = {
+    [xi.race.HUME_M] =
+    {
         gear = { body = xi.item.HUME_TUNIC, hand = xi.item.HUME_M_GLOVES, leg = xi.item.HUME_SLACKS, feet = xi.item.HUME_M_BOOTS },
-        homeNation = xi.nation.BASTOK
+        homeNation = xi.nation.BASTOK,
     },
-    [xi.race.HUME_F] = {
+    [xi.race.HUME_F] =
+    {
         gear = { body = xi.item.HUME_VEST, hand = xi.item.HUME_F_GLOVES, leg = xi.item.HUME_PANTS, feet = xi.item.HUME_F_BOOTS },
-        homeNation = xi.nation.BASTOK
+        homeNation = xi.nation.BASTOK,
     },
-    [xi.race.ELVAAN_M] = {
+    [xi.race.ELVAAN_M] =
+    {
         gear = { body = xi.item.ELVAAN_JERKIN, hand = xi.item.ELVAAN_GLOVES, leg = xi.item.ELVAAN_M_CHAUSSES, feet = xi.item.ELVAAN_M_LEDELSENS },
-        homeNation = xi.nation.SANDORIA
+        homeNation = xi.nation.SANDORIA,
     },
-    [xi.race.ELVAAN_F] = {
+    [xi.race.ELVAAN_F] =
+    {
         gear = { body = xi.item.ELVAAN_BODICE, hand = xi.item.ELVAAN_GAUNTLETS, leg = xi.item.ELVAAN_F_CHAUSSES, feet = xi.item.ELVAAN_F_LEDELSENS },
-        homeNation = xi.nation.SANDORIA
+        homeNation = xi.nation.SANDORIA,
     },
-    [xi.race.TARU_M] = {
+    [xi.race.TARU_M] =
+    {
         gear = { body = xi.item.TARUTARU_KAFTAN, hand = xi.item.TARUTARU_MITTS, leg = xi.item.TARUTARU_BRACCAE, feet = xi.item.TARUTARU_CLOMPS },
-        homeNation = xi.nation.WINDURST
+        homeNation = xi.nation.WINDURST,
     },
-    [xi.race.TARU_F] = {
+    [xi.race.TARU_F] =
+    {
         gear = { body = xi.item.TARUTARU_KAFTAN, hand = xi.item.TARUTARU_MITTS, leg = xi.item.TARUTARU_BRACCAE, feet = xi.item.TARUTARU_CLOMPS },
-        homeNation = xi.nation.WINDURST
+        homeNation = xi.nation.WINDURST,
     },
-    [xi.race.MITHRA] = {
+    [xi.race.MITHRA] =
+    {
         gear = { body = xi.item.MITHRAN_SEPARATES, hand = xi.item.MITHRAN_GAUNTLETS, leg = xi.item.MITHRAN_LOINCLOTH, feet = xi.item.MITHRAN_GAITERS },
-        homeNation = xi.nation.WINDURST
+        homeNation = xi.nation.WINDURST,
     },
-    [xi.race.GALKA] = {
+    [xi.race.GALKA] =
+    {
         gear = { body = xi.item.GALKAN_SURCOAT, hand = xi.item.GALKAN_BRACERS, leg = xi.item.GALKAN_BRAGUETTE, feet = xi.item.GALKAN_SANDALS },
-        homeNation = xi.nation.BASTOK
+        homeNation = xi.nation.BASTOK,
     },
 }
 
@@ -62,24 +70,24 @@ local startingJobGear =
 
 local STARTER_ITEMS =
 {
-    10293, -- chocobo_shirt
-    11811, -- destrier_beret
-    15198, -- sprout_beret
-    22299, -- perfect_lucky_egg
-    26192, -- adoulin_ring_+1
-    26193, -- woltaris_ring_+1
-    26194, -- weatherspoon_ring_+1
-    26195, -- janniston_ring_+1
-    26196, -- renaye_ring_+1
-    26197, -- gorney_ring_+1
-    26198, -- haverton_ring_+1
-    26200, -- vocane_ring_+1
-    26201, -- thurandaut_ring_+1
-    26202, -- shneddick_ring_+1
-    26203, -- orvail_ring_+1
-    27326, -- track_pants_+1
-    27556, -- echad_ring
-    27557, -- trizek_ring
+    xi.item.TRIZEK_RING,
+    xi.item.CHOCOBO_SHIRT,
+    xi.item.DESTRIER_BERET,
+    xi.item.SPROUT_BERET,
+    xi.item.PERFECT_LUCKY_EGG,
+    xi.item.ADOULIN_RING_P1,
+    xi.item.WOLTARIS_RING_P1,
+    xi.item.WEATHERSPOON_RING_P1,
+    xi.item.JANNISTON_RING_P1,
+    xi.item.RENAYE_RING_P1,
+    xi.item.GOURNEY_RING_P1,
+    xi.item.HAVERTON_RING_P1,
+    xi.item.VOCANE_RING_P1,
+    xi.item.THURANDAUT_RING_P1,
+    xi.item.SHNEDDICK_RING_P1,
+    xi.item.ORVAIL_RING_P1,
+    xi.item.TRACK_PANTS_P1,
+    xi.item.ECHAD_RING
 }
 
 -----------------------------------
