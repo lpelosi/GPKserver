@@ -47,6 +47,7 @@ xi.player.charCreate = function(player)
     local raceInfo   = startingRaceInfo[race]
     local nation     = player:getNation()
     local nationInfo = startingNationInfo[nation]
+    require('scripts/globals/new_char_grant')
 
     -- add race-specific starting gear
     for _, v in pairs(raceInfo.gear) do
