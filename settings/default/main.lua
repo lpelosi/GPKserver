@@ -15,8 +15,7 @@ xi.settings.main =
     SERVER_NAME = 'GPK',
 
     SERVER_MESSAGE =
-        'Please visit https://github.com/LandSandBoat/server for the latest information on the project.\n' ..
-        'Thank you, and we hope you enjoy sailing the sands!',
+        'Please visit https://github.com/lpelosi/GPKserver for the latest information on the project.\n',
 
     -- Setting to lock content more accurately to the expansions defined below.
     -- This generally results in a more accurate presentation of your selected expansions,

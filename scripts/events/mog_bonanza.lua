@@ -22,17 +22,17 @@ local localSettings =
     BONANZA_ID = 0x5C,
 
     -- ALL TIMES JST
-    BUYING_PERIOD_START     = { year = 2023, month = 5, day = 17, hour = 1 },
-    BUYING_PERIOD_END       = { year = 2023, month = 6, day = 15, hour = 8 },
-    COLLECTION_PERIOD_START = { year = 2023, month = 7, day = 11, hour = 1 },
-    COLLECTION_PERIOD_END   = { year = 2023, month = 7, day = 31, hour = 8 },
+    BUYING_PERIOD_START     = { year = 2025, month = 11, day = 1, hour = 1 },
+    BUYING_PERIOD_END       = { year = 2025, month = 11, day = 15, hour = 8 },
+    COLLECTION_PERIOD_START = { year = 2025, month = 11, day = 16, hour = 1 },
+    COLLECTION_PERIOD_END   = { year = 2026, month = 2, day = 21, hour = 8 },
 
     COLLECTION_SERVER_MESSAGE =
         'Announcing the winning numbers for the 21st Vana\'versary Nomad Mog Bonanza!\n' ..
         '\n' ..
-        'Rank 3 prize: \'7\' (last digit)-- 13,298 winners.\n' ..
-        'Rank 2 prize: \'71\' (last two digits)-- 1,299 winners.\n' ..
-        'Rank 1 prize: \'800\' (all three digits)-- 62 winners.\n' ..
+        'Rank 3 prize: \'1\' (last digit)-- 13,298 winners.\n' ..
+        'Rank 2 prize: \'69\' (last two digits)-- 1,299 winners.\n' ..
+        'Rank 1 prize: \'420\' (all three digits)-- 62 winners.\n' ..
         '*The number of winners for each prize is a combined total from all worlds.\n' ..
         '\n' ..
         'Collection period: On July 11, 2023 at 1:00 (PDT) / 8:00 (GMT) to July 31, at 7:59 (PDT) / 14:59 (GMT)\n' ..
@@ -42,9 +42,9 @@ local localSettings =
     -- Winning Numbers are three independent values for each rank prize:
     WINNING_NUMBERS =
     {
-        [1] = 800,
-        [2] = 71,
-        [3] = 7,
+        [1] = 420,
+        [2] = 69,
+        [3] = 1,
     },
 }
 
@@ -89,7 +89,7 @@ local rewardList =
     -- Rank 1 Prizes
     [1] =
     {
-        gilReward = 0,
+        gilReward = 5000000,
 
         rewardItems =
         {
@@ -125,7 +125,7 @@ local rewardList =
     -- Rank 2 Prizes
     [2] =
     {
-        gilReward = 0,
+        gilReward = 1000000,
 
         rewardItems =
         {
@@ -155,7 +155,7 @@ local rewardList =
     -- Rank 3 Prizes
     [3] =
     {
-        gilReward = 0,
+        gilReward = 500000,
 
         rewardItems =
         {
