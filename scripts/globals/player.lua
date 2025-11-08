@@ -80,7 +80,7 @@ local STARTER_ITEMS =
     xi.item.WEATHERSPOON_RING_P1,
     xi.item.JANNISTON_RING_P1,
     xi.item.RENAYE_RING_P1,
-    xi.item.GOURNEY_RING_P1,
+    xi.item.GORNEY_RING_P1,
     xi.item.HAVERTON_RING_P1,
     xi.item.VOCANE_RING_P1,
     xi.item.THURANDAUT_RING_P1,
@@ -199,12 +199,12 @@ xi.player.charCreate = function(player)
 
     -- add server starter items for all jobs
     for _, id in ipairs(STARTER_ITEMS) do
+        print("attempting to add item ", id)
         if not player:hasItem(id) then
+            print("item added: ", id)
             player:addItem(id, 1)
         end
     end
-
-    player:printToPlayer('Server bonus: starter items added to your inventory.')
 
     player:addTitle(xi.title.NEW_ADVENTURER)
     player:setCharVar('HQuest[moghouseExpo]notSeen', 1) -- needs Moghouse intro

@@ -22,10 +22,10 @@ local localSettings =
     BONANZA_ID = 0x5C,
 
     -- ALL TIMES JST
-    BUYING_PERIOD_START     = { year = 2025, month = 11, day = 1, hour = 1 },
-    BUYING_PERIOD_END       = { year = 2025, month = 11, day = 15, hour = 8 },
-    COLLECTION_PERIOD_START = { year = 2025, month = 11, day = 16, hour = 1 },
-    COLLECTION_PERIOD_END   = { year = 2026, month = 2, day = 21, hour = 8 },
+    BUYING_PERIOD_START     = { year = 2023, month = 11, day = 1, hour = 1 },
+    BUYING_PERIOD_END       = { year = 2023, month = 11, day = 15, hour = 8 },
+    COLLECTION_PERIOD_START = { year = 2023, month = 11, day = 16, hour = 1 },
+    COLLECTION_PERIOD_END   = { year = 2023, month = 2, day = 21, hour = 8 },
 
     COLLECTION_SERVER_MESSAGE =
         'Announcing the winning numbers for the 21st Vana\'versary Nomad Mog Bonanza!\n' ..
