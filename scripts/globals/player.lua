@@ -87,7 +87,12 @@ local STARTER_ITEMS =
     xi.item.SHNEDDICK_RING_P1,
     xi.item.ORVAIL_RING_P1,
     xi.item.TRACK_PANTS_P1,
-    xi.item.ECHAD_RING
+    xi.item.ECHAD_RING,
+    xi.item.GOLD_MOOGLE_BELT,
+    xi.item.VANACLOCK,
+    xi.item.MURREY_GRISAILLE,
+    xi.item.MINIATURE_AIRSHIP,
+    xi.item.GUIDE_BERET
 }
 
 -----------------------------------
