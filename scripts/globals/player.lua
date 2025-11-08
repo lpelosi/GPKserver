@@ -83,6 +83,7 @@ local STARTER_ITEMS =
     xi.item.GORNEY_RING_P1,
     xi.item.HAVERTON_RING_P1,
     xi.item.VOCANE_RING_P1,
+    xi.item.KARIEYH_RING_P1,
     xi.item.THURANDAUT_RING_P1,
     xi.item.SHNEDDICK_RING_P1,
     xi.item.ORVAIL_RING_P1,
@@ -199,9 +200,7 @@ xi.player.charCreate = function(player)
 
     -- add server starter items for all jobs
     for _, id in ipairs(STARTER_ITEMS) do
-        print("attempting to add item ", id)
         if not player:hasItem(id) then
-            print("item added: ", id)
             player:addItem(id, 1)
         end
     end
