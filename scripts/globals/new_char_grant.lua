@@ -1,56 +1,43 @@
 -- scripts/globals/new_char_grant.lua
 -- Run on login and give a starter kit once per character.
+local STARTER_FLAG = 'NEWCHAR_BONUS_GIVEN'
 
-local SATCHEL_LOC = xi.inv.MOGSATCHEL
-
-local STARTER_FLAG = "NEWCHAR_BONUS_GIVEN"
-
-local ITEMS = {
-    xi.item.DESTRIER_BERET,
-    xi.item.CHOCOBO_SHIRT,
-    xi.item.TRACK_PANTS_P1,
-    xi.item.ECHAD_RING,
-    xi.item.SPROUT_BERET,
-    xi.item.PERFECT_LUCKY_EGG,
-    xi.item.TRIZEK_RING,
-    xi.item.ADOULIN_RING_P1,
-    xi.item.GORNEY_RING_P1,
-    xi.item.HAVERTON_RING_P1,
-    xi.item.JANNISTON_RING_P1,
-    xi.item.KARIEYEH_RING_P1,
-    xi.item.ORVAIL_RING_P1,
-    xi.item.RENAYE_RING_P1,
-    xi.item.SHNEDDICK_RING_P1,
-    xi.item.THURANDAUT_RING_P1,
-    xi.item.VOCANE_RING_P1,
-    xi.item.WEATHERSPOON_RING_P1,
-    xi.item.WOLTARIS_RING_P1,
+local ITEMS =
+{
+    10293, -- chocobo_shirt
+    11811, -- destrier_beret
+    15198, -- sprout_beret
+    22299, -- perfect_lucky_egg
+    26192, -- adoulin_ring_+1
+    26193, -- woltaris_ring_+1
+    26194, -- weatherspoon_ring_+1
+    26195, -- janniston_ring_+1
+    26196, -- renaye_ring_+1
+    26197, -- gorney_ring_+1
+    26198, -- haverton_ring_+1
+    26200, -- vocane_ring_+1
+    26201, -- thurandaut_ring_+1
+    26202, -- shneddick_ring_+1
+    26203, -- orvail_ring_+1
+    27326, -- track_pants_+1
+    27556, -- echad_ring
+    27557, -- trizek_ring
+    15199, -- guide_beret
+    154,   -- miniature airship
+    13216, -- gold mog belt
+    3706,  -- vanaclock
+    3707,  -- murrey grisaille
 }
 
--- Hook point: called by the server when a player finishes zoning in.
--- If your branch uses a different hook name/file, register this function there.
-xi.player.onGameIn:new('new_char_grant', function(player)
-    if player:getCharVar(STARTER_FLAG) == 1 then
-        return
+local function grant(player)
+    if player:getCharVar(FLAG) == 1 then return end
+    for _, id in ipairs(ITEMS) do
+        player:addItem(id, 1)
     end
+    player:setCharVar(FLAG, 1)
+    player:printToPlayer("As a surprise bonus please enjoy these items for your first login. =)", xi.msg.channel.SYSTEM_2)
+end
 
-    -- Try to put everything into Mog Satchel
-    local granted = 0
-    for _, itemId in ipairs(ITEMS) do
-        -- quantity = 1; add to satchel; ignore augments
-        local ok = player:addItem(itemId, 1, nil, nil, nil, nil, nil, nil, nil, nil, nil, { location = SATCHEL_LOC })
-        if ok then
-            granted = granted + 1
-        end
-    end
-
-    if granted > 0 then
-        player:setCharVar(STARTER_FLAG, 1)
-        player:printToPlayer('Welcome to GPK! Please check your Mog Satchel for a surprise welcome kit.', xi.msg.channel.SYSTEM_2)
-    end
-
-    if granted == 0 then
-        player:printToPlayer("Items didn't get added big dog. =(")
-    end
-
+xi.player.onGameIn:new("new_char_grant", function(player)
+    pcall(grant, player)
 end)
