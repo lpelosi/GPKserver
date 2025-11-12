@@ -42821,7 +42821,7 @@ INSERT INTO `mob_spawn_points` VALUES (17268804,0,'Goblin_Shaman','Goblin Shaman
 INSERT INTO `mob_spawn_points` VALUES (17268805,0,'Sabertooth_Tiger','Sabertooth Tiger',30,600.326,-0.677,-314.895,9);
 INSERT INTO `mob_spawn_points` VALUES (17268806,0,'Sabertooth_Tiger','Sabertooth Tiger',30,605.422,-1.016,-315.751,127);
 INSERT INTO `mob_spawn_points` VALUES (17268807,0,'Sabertooth_Tiger','Sabertooth Tiger',30,599.802,-0.675,-314.299,11);
-INSERT INTO `mob_spawn_points` VALUES (17268808,0,'Old_Sabertooth','Old Sabertooth',31,676.000,-10.000,-366.000,86);
+INSERT INTO `mob_spawn_points` VALUES (17268808,0,'Old_Sabertooth','Old Sabertooth',31,661.354,-009.812,-332.498,162);
 INSERT INTO `mob_spawn_points` VALUES (17268809,0,'Sauromugue_Skink','Sauromugue Skink',32,415.662,24.789,41.282,11);
 INSERT INTO `mob_spawn_points` VALUES (17268810,0,'Sauromugue_Skink','Sauromugue Skink',32,354.703,23.893,-45.118,127);
 INSERT INTO `mob_spawn_points` VALUES (17268811,0,'Sauromugue_Skink','Sauromugue Skink',32,382.669,25.316,-34.913,109);
@@ -70205,7 +70205,7 @@ INSERT INTO `mob_spawn_points` VALUES (17621203,0,'Son_of_Anansi','Son of Anansi
 INSERT INTO `mob_spawn_points` VALUES (17621204,0,'Son_of_Anansi','Son of Anansi',45,-400.001,-202.125,400.001,192);
 INSERT INTO `mob_spawn_points` VALUES (17621205,0,'Son_of_Anansi','Son of Anansi',45,-400.001,-202.125,400.001,192);
 INSERT INTO `mob_spawn_points` VALUES (17621206,0,'Son_of_Anansi','Son of Anansi',45,-400.001,-202.125,400.001,192);
-INSERT INTO `mob_spawn_points` VALUES (17621207,0,'Anansi','Anansi',44,1.073,-1.000,-0.901,190);
+INSERT INTO `mob_spawn_points` VALUES (17621207,0,'Anansi','Anansi',44,1.06,-1.625,-0.9,192);
 INSERT INTO `mob_spawn_points` VALUES (17621209,0,'Son_of_Anansi','Son of Anansi',45,1.073,-1.000,-0.901,190);
 INSERT INTO `mob_spawn_points` VALUES (17621210,0,'Son_of_Anansi','Son of Anansi',45,1.073,-1.000,-0.901,190);
 INSERT INTO `mob_spawn_points` VALUES (17621211,0,'Son_of_Anansi','Son of Anansi',45,1.073,-1.000,-0.901,190);
@@ -70214,7 +70214,7 @@ INSERT INTO `mob_spawn_points` VALUES (17621213,0,'Son_of_Anansi','Son of Anansi
 INSERT INTO `mob_spawn_points` VALUES (17621214,0,'Son_of_Anansi','Son of Anansi',45,1.073,-1.000,-0.901,190);
 INSERT INTO `mob_spawn_points` VALUES (17621215,0,'Son_of_Anansi','Son of Anansi',45,1.073,-1.000,-0.901,190);
 INSERT INTO `mob_spawn_points` VALUES (17621216,0,'Son_of_Anansi','Son of Anansi',45,1.073,-1.000,-0.901,190);
-INSERT INTO `mob_spawn_points` VALUES (17621217,0,'Anansi','Anansi',44,401.028,199.000,-400.677,190);
+INSERT INTO `mob_spawn_points` VALUES (17621217,0,'Anansi','Anansi',44,400,199.000,-400.677,192);
 INSERT INTO `mob_spawn_points` VALUES (17621219,0,'Son_of_Anansi','Son of Anansi',45,401.028,199.000,-400.677,190);
 INSERT INTO `mob_spawn_points` VALUES (17621220,0,'Son_of_Anansi','Son of Anansi',45,401.028,199.000,-400.677,190);
 INSERT INTO `mob_spawn_points` VALUES (17621221,0,'Son_of_Anansi','Son of Anansi',45,401.028,199.000,-400.677,190);
