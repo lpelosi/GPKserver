@@ -12,10 +12,10 @@ xi.settings = xi.settings or {}
 xi.settings.main =
 {
     -- Server name (not longer than 15 characters)
-    SERVER_NAME = 'GPK',
+    SERVER_NAME = 'GPK - crowler',
 
     SERVER_MESSAGE =
-        'Please visit https://github.com/lpelosi/GPKserver for the latest information on the project.\n',
+        'Check the receipts, is this thing on? =]\n\n',
 
     -- Setting to lock content more accurately to the expansions defined below.
     -- This generally results in a more accurate presentation of your selected expansions,
@@ -48,7 +48,7 @@ xi.settings.main =
     ENABLE_DAILY_TALLY = 1,  -- Allows acquisition of daily points for gobbie mystery box.
     DAILY_TALLY_AMOUNT = 100,
     DAILY_TALLY_LIMIT  = 50000,
-    GOBBIE_BOX_MIN_AGE = 1, -- Minimum character age in days before a character can sign up for Gobbie Mystery Box
+    GOBBIE_BOX_MIN_AGE = 0, -- Minimum character age in days before a character can sign up for Gobbie Mystery Box
 
     -- A.M.A.N.
     ASSIST_CHANNEL_ENABLED            = true, -- Enable Assist Channel
@@ -113,29 +113,29 @@ xi.settings.main =
     MAX_LEVEL                      = 99, -- Level max of the server, lowers the attainable cap by disabling Limit Break quests.
     NORMAL_MOB_MAX_LEVEL_RANGE_MIN = 0,  -- Lower Bound of Max Level Range for Normal Mobs (0 = Uncapped)
     NORMAL_MOB_MAX_LEVEL_RANGE_MAX = 0,  -- Upper Bound of Max Level Range for Normal Mobs (0 = Uncapped)
-    START_GIL                      = 10, -- Amount of gil given to newly created characters.
+    START_GIL                      = 100, -- Amount of gil given to newly created characters.
     START_INVENTORY                = 50, -- Starting inventory and satchel size.  Ignores values < 30.  Do not set above 80!
-    NEW_CHARACTER_CUTSCENE         = 1,  -- Set to 1 to enable opening cutscenes, 0 to disable.
+    NEW_CHARACTER_CUTSCENE         = 0,  -- Set to 1 to enable opening cutscenes, 0 to disable.
     SUBJOB_QUEST_LEVEL             = 18, -- Minimum level to accept either subjob quest.  Set to 0 to start the game with subjobs unlocked.
     ADVANCED_JOB_LEVEL             = 30, -- Minimum level to accept advanced job quests.  Set to 0 to start the game with advanced jobs.
     ALL_MAPS                       = 1,  -- Set to 1 to give starting characters all the maps.
     UNLOCK_OUTPOST_WARPS           = 1,  -- Set to 1 to give starting characters all outpost warps.  2 to add Tu'Lia and Tavnazia.
 
     SHOP_PRICE      = 1.000, -- Multiplies prices in NPC shops.
-    GIL_RATE        = 5.000, -- Multiplies gil earned from quests.  Won't always display in game.
-    BAYLD_RATE      = 5.000, -- Multiples bayld earned from quests.
+    GIL_RATE        = 1.000, -- Multiplies gil earned from quests.  Won't always display in game.
+    BAYLD_RATE      = 1.000, -- Multiples bayld earned from quests.
     -- Note: EXP rates are also influenced by conf setting
-    EXP_RATE        = 2.000, -- Multiplies exp from script (except FoV/GoV).
-    CAPACITY_RATE   = 2.000, -- Multiplies capacy points gained.
+    EXP_RATE        = 10.000, -- Multiplies exp from script (except FoV/GoV).
+    CAPACITY_RATE   = 10.000, -- Multiplies capacy points gained.
     BOOK_EXP_RATE   = 2.000, -- Multiplies exp from FoV/GoV book pages.
     TABS_RATE       = 2.000, -- Multiplies tabs earned from fov.
     ROE_EXP_RATE    = 2.000, -- Multiplies exp earned from records of eminence.
     SPARKS_RATE     = 2.000, -- Multiplies sparks earned from records of eminence.
-    CURE_POWER      = 1.000, -- Multiplies amount healed from Healing Magic, including the relevant Blue Magic.
-    ELEMENTAL_POWER = 1.000, -- Multiplies damage dealt by Elemental and non-drain Dark Magic.
+    CURE_POWER      = 5.000, -- Multiplies amount healed from Healing Magic, including the relevant Blue Magic.
+    ELEMENTAL_POWER = 5.000, -- Multiplies damage dealt by Elemental and non-drain Dark Magic.
     DIVINE_POWER    = 1.000, -- Multiplies damage dealt by Divine Magic.
     NINJUTSU_POWER  = 1.000, -- Multiplies damage dealt by Ninjutsu Magic.
-    BLUE_POWER      = 1.000, -- Multiplies damage dealt by Blue Magic.
+    BLUE_POWER      = 10.000, -- Multiplies damage dealt by Blue Magic.
     DARK_POWER      = 1.000, -- Multiplies amount drained by Dark Magic.
     ITEM_POWER      = 1.000, -- Multiplies the effect of items such as Potions and Ethers.
     WEAPON_SKILL_POWER  = 1.000, -- Multiplies damage dealt by Weapon Skills.
@@ -180,8 +180,8 @@ xi.settings.main =
 
     -- SE implemented coffer/chest illusion time in order to prevent coffer farming. No-one in the same area can open a chest or coffer for loot (gil, gems & items)
     -- till a random time between MIN_ILLSION_TIME and MAX_ILLUSION_TIME. During this time players can loot keyitem and item related to quests (AF, maps... etc.)
-    COFFER_MAX_ILLUSION_TIME = 0,  -- 1 hour 3600
-    COFFER_MIN_ILLUSION_TIME = 0,  -- 30 minutes 1800
+    COFFER_MAX_ILLUSION_TIME = 0,  -- 1 hour
+    COFFER_MIN_ILLUSION_TIME = 0,  -- 30 minutes
     CHEST_MAX_ILLUSION_TIME  = 0,  -- 1 hour 3600
     CHEST_MIN_ILLUSION_TIME  = 0,  -- 30 minutes 1800
 
@@ -202,17 +202,17 @@ xi.settings.main =
     -- DYNAMIS SETTINGS
     BETWEEN_2DYNA_WAIT_TIME     = 0,       -- Hours before player can re-enter Dynamis. Default is 1 Earthday (24 hours).
     DYNA_MIDNIGHT_RESET         = false,     -- If true, makes the wait time count by number of server midnights instead of full 24 hour intervals
-    DYNA_LEVEL_MIN              = 65,       -- Level min for entering in Dynamis
-    TIMELESS_HOURGLASS_COST     = 1,   -- Refund for the timeless hourglass for Dynamis.
-    PRISMATIC_HOURGLASS_COST    = 1,    -- Cost of the prismatic hourglass for Dynamis.
-    CURRENCY_EXCHANGE_RATE      = 10,      -- X Tier 1 ancient currency -> 1 Tier 2, and so on. Certain values may conflict with shop items. Not designed to exceed 198.
-    ENABLE_EXCHANGE_100S_TO_1S  = true,    -- true/false. Allow exchange of 100s to 1s, like you can with 10Ks to 100s.
+    DYNA_LEVEL_MIN              = 10,       -- Level min for entering in Dynamis
+    TIMELESS_HOURGLASS_COST     = 100,   -- Refund for the timeless hourglass for Dynamis.
+    PRISMATIC_HOURGLASS_COST    = 10,    -- Cost of the prismatic hourglass for Dynamis.
+    CURRENCY_EXCHANGE_RATE      = 100,      -- X Tier 1 ancient currency -> 1 Tier 2, and so on. Certain values may conflict with shop items. Not designed to exceed 198.
+    ENABLE_EXCHANGE_100S_TO_1S  = false,    -- true/false. Allow exchange of 100s to 1s, like you can with 10Ks to 100s.
     RELIC_2ND_UPGRADE_WAIT_TIME = 0,     -- Wait time for 2nd relic upgrade (stage 2 -> stage 3) in seconds. 7200s = 2 hours.
     RELIC_3RD_UPGRADE_WAIT_TIME = 0,     -- Wait time for 3rd relic upgrade (stage 3 -> stage 4) in seconds. 3600s = 1 hour.
-    FREE_COP_DYNAMIS            = 0,        -- Authorize player to entering inside COP Dynamis without completing COP mission (1 = enable 0 = disable)
+    FREE_COP_DYNAMIS            = 1,        -- Authorize player to entering inside COP Dynamis without completing COP mission (1 = enable 0 = disable)
 
     -- LIMBUS SETTINGS
-    COSMO_CLEANSE_BASE_COST     = 1,    -- Base gil cost for a Cosmo Cleanse from Sagheera
+    COSMO_CLEANSE_BASE_COST     = 10,    -- Base gil cost for a Cosmo Cleanse from Sagheera
 
     -- QUEST/MISSION SPECIFIC SETTINGS
     AF1_QUEST_LEVEL = 40,    -- Minimum level to start AF1 quest
@@ -224,8 +224,8 @@ xi.settings.main =
     ASSAULT_MINIMUM = 1,     -- Minimum amount of people needed to start an assault mission. TOAU era is 3, Default is 1.
 
     -- SPELL SPECIFIC SETTINGS
-    STONESKIN_CAP                   = 500,   -- Soft cap for hp absorbed by stoneskin
-    BLINK_SHADOWS                   = 3,     -- Number of shadows supplied by Blink spell
+    STONESKIN_CAP                   = 350,   -- Soft cap for hp absorbed by stoneskin
+    BLINK_SHADOWS                   = 2,     -- Number of shadows supplied by Blink spell
     SPIKE_EFFECT_DURATION           = 180,   -- the duration of RDM, BLM spikes effects (not Reprisal)
     ELEMENTAL_DEBUFF_DURATION       = 120,   -- base duration of elemental debuffs
     AQUAVEIL_COUNTER                = 1,     -- Base amount of hits Aquaveil absorbs to prevent spell interrupts. Retail is 1.
@@ -239,8 +239,8 @@ xi.settings.main =
     HALLOWEEN_YEAR_ROUND            = 1,  -- Set to 1 to have Harvest Festival initialize outside of normal times.
     EGG_HUNT                        =
     {
-        START                       = { DAY = 6,  MONTH = 4 },
-        FINISH                      = { DAY = 17, MONTH = 4 },
+        START                       = { DAY = 1,  MONTH = 1 },
+        FINISH                      = { DAY = 31, MONTH = 12 },
 
         -- Default era is 2005
         ERA_2006 = false, -- Orphic Egg
@@ -263,7 +263,8 @@ xi.settings.main =
         -- Where 12345 is the itemID for the reward
         BONUS_WORDS =
         {
-            -- WORD = 12345,
+            WORD = GPK25
+		-- WORD = 12345,
         },
     },
 
@@ -308,7 +309,7 @@ xi.settings.main =
     DIG_GRANT_BURROW             = 0,     -- Set to 1 to grant burrow ability
     DIG_GRANT_BORE               = 0,     -- Set to 1 to grant bore ability
     ENM_COOLDOWN                 = 0,   -- Number of hours before a player can obtain same KI for ENMs (default: 5 days)
-    FORCE_SPAWN_QM_RESET_TIME    = 5,   -- Number of seconds the ??? remains hidden for after the despawning of the mob it force spawns.
+    FORCE_SPAWN_QM_RESET_TIME    = 2,   -- Number of seconds the ??? remains hidden for after the despawning of the mob it force spawns.
     EQUIP_FROM_OTHER_CONTAINERS  = true, -- true/false. Allows equipping items from Mog Satchel, Sack, and Case. Only possible with the use of client addons.
     REGIME_REWARD_THRESHOLD      = 50,    -- If the player is more than N levels below the minimum suggested range, do not award experience.
 
