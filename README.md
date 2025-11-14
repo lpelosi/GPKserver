@@ -36,3 +36,31 @@ LandSandBoat is licensed under [GNU GPL v3](https://github.com/LandSandBoat/serv
 Thanks to all contributors past and present, we wouldn't be here without you!
 
 Thanks to GitHub for hosting us, and for all the CI minutes we use!
+
+## TODO:
+- adding af/relic/empy +3
+
+  | job | artifact | relic | empyrean | accessory |
+  |-----|----------|-------|----------|-----------|
+  | war |     ✔     |    ✔   |     ✔       | ✔         
+  | mnk |     ✔     |   ✔    |          |
+  | whm |          |       |          |
+  | blm |          |       |          |
+  | rdm |          |       |          | 
+  | thf |          |       |          | 
+  | pld |          |       |          |
+  | drk |          |       |          |
+  | bst |          |       |          |
+  | brd |          |       |          |
+  | rng |          |       |          |
+  | smn |          |       |          |
+  | sam |          |       |          |
+  | nin |          |       |          |
+  | drg |          |       |          |
+  | blu |          |       |          |
+  | cor |          |       |          |
+  | pup |          |       |          |
+  | dnc |          |       |          |
+  | sch |          |       |          |
+  | geo |          |       |          |
+  | run |          |       |          |
