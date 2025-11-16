@@ -892,6 +892,8 @@ enum class Mod
     RERAISE_II  = 457, // Reraise II.
     RERAISE_III = 458, // Reraise III.
 
+    ERASE_ADDITIONAL_EFFECTS = 1172, // value = number of additional debuffs to erase
+
     ABSORB_DMG_TO_MP = 516, // Unlike PLD gear mod, works on all damage types (Ethereal Earring)
 
     ITEM_ADDEFFECT_LVADJUST = 278, // level correction factor to use, if any

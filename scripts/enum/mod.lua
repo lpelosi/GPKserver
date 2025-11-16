@@ -637,6 +637,7 @@ xi.mod =
     CURE_POTENCY_II                 = 260, -- % cure potency II | bonus from gear is capped at 30
     CURE_POTENCY_RCVD               = 375,
     CURE_POTENCY_BONUS              = 1051, -- TODO: Increases amount healed by Cure spells (fixed amount)
+    ERASE_ADDITIONAL_EFFECTS        = 1172, -- value will equal number of additional debuffs to erase (scripts/actions/spells/white/erase.lua)
     DELAYP                          = 380,
     RANGED_DELAYP                   = 381,
     EXP_BONUS                       = 382,
