@@ -43,7 +43,7 @@ Thanks to GitHub for hosting us, and for all the CI minutes we use!
   | job | artifact | relic | empyrean | accessory |
   |-----|----------|-------|----------|-----------|
   | war |     ✔     |    ✔   |     ✔       | ✔         
-  | mnk |     ✔     |   ✔    |          |
+  | mnk |     ✔     |   ✔    |      ✔     |✔ 
   | whm |          |       |          |
   | blm |          |       |          |
   | rdm |          |       |          | 
