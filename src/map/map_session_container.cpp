@@ -26,12 +26,18 @@
 #include "status_effect_container.h"
 
 #include "common/database.h"
+#include "common/scheduler.h"
 #include "common/xi.h"
 
-#include "entities/charentity.h"
+#include "entities/char_entity.h"
 
 #include "utils/charutils.h"
 #include "utils/petutils.h"
+
+MapSessionContainer::MapSessionContainer(Scheduler& scheduler)
+: scheduler_(scheduler)
+{
+}
 
 auto MapSessionContainer::createSession(IPP ipp) -> MapSession*
 {
@@ -55,6 +61,7 @@ auto MapSessionContainer::createSession(IPP ipp) -> MapSession*
 
     auto map_session_data = std::make_unique<MapSession>();
 
+    map_session_data->scheduler   = &scheduler_;
     map_session_data->last_update = timer::now();
     map_session_data->client_ipp  = ipp;
 
@@ -78,6 +85,7 @@ auto MapSessionContainer::createPendingSession(uint32 charId) -> MapSession*
 
     auto map_session_data = std::make_unique<MapSession>();
 
+    map_session_data->scheduler   = &scheduler_;
     map_session_data->last_update = timer::now(); // This may need adjustment if sessions feel like they take too long to free
     map_session_data->charID      = charId;
 
@@ -240,7 +248,7 @@ void MapSessionContainer::cleanupSessions(IPP mapIPP)
 
                 if (PChar != nullptr)
                 {
-                    ShowDebug(fmt::format("Clearing map server session for player: '{}' in zone: '{}' (On other map server = {})", PChar->name, PChar->loc.zone ? PChar->loc.zone->getName() : "None", otherMap ? "Yes" : "No"));
+                    ShowDebugFmt("Clearing map server session for player: '{}' in zone: '{}' (On other map server = {})", PChar->name, PChar->loc.zone ? PChar->loc.zone->getName() : "None", otherMap ? "Yes" : "No");
 
                     // Player session is attached to this map process and has stopped responding.
                     if (!otherMap)
@@ -299,25 +307,25 @@ void MapSessionContainer::cleanupSessions(IPP mapIPP)
         ++it;
     }
 
-    // clang-format off
-    xi::eraseIf(pending_sessions_, [&](auto &pair)
-    {
-        auto& map_session_data = pair.second;
-
-        auto now = timer::now();
-
-        if (now > map_session_data->last_update + std::chrono::seconds(timeoutSetting))
+    std::erase_if(
+        pending_sessions_,
+        [&](auto& pair)
         {
-            ShowDebug(fmt::format("Clearing map server pending session for pending char ID: '{}'", map_session_data->charID));
+            auto& map_session_data = pair.second;
 
-            db::preparedStmt("DELETE FROM accounts_sessions WHERE charid = ?", map_session_data->charID);
+            auto now = timer::now();
 
-            return true; // Erase
-        }
+            if (now > map_session_data->last_update + std::chrono::seconds(timeoutSetting))
+            {
+                ShowDebugFmt("Clearing map server pending session for pending char ID: '{}'", map_session_data->charID);
 
-        return false; // Keep
-    });
-    // clang-format on
+                db::preparedStmt("DELETE FROM accounts_sessions WHERE charid = ?", map_session_data->charID);
+
+                return true; // Erase
+            }
+
+            return false; // Keep
+        });
 }
 
 void MapSessionContainer::destroySession(IPP ipp)

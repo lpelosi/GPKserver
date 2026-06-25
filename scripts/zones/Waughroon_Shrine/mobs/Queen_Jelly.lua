@@ -14,13 +14,26 @@ entity.onMobInitialize = function(mob)
     mob:setMobMod(xi.mobMod.MAGIC_COOL, 20)
     mob:addImmunity(xi.immunity.LIGHT_SLEEP)
     mob:addImmunity(xi.immunity.DARK_SLEEP)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MULTIPLIER, 150)
 end
 
 entity.onMobSpawn = function(mob)
     mob:setBaseSpeed(60)
+    local battlefield = mob:getBattlefield()
+
+    if not battlefield then
+        return
+    end
+
+    local players = battlefield:getPlayers()
+    for _, player in pairs(players) do
+        if player:isAlive() then
+            mob:updateClaim(player)
+        end
+    end
 end
 
-entity.onMobMagicPrepare = function(mob, target, spellId)
+entity.onMobSpellChoose = function(mob, target, spellId)
     local spellList =
     {
         xi.magic.spell.FIRE,
@@ -41,10 +54,8 @@ entity.onMobMagicPrepare = function(mob, target, spellId)
         xi.magic.spell.DRAIN,
         xi.magic.spell.BINDGA,
     }
-    return spellList[math.random(1, #spellList)]
-end
 
-entity.onMobDeath = function(mob, player, optParams)
+    return spellList[math.random(1, #spellList)]
 end
 
 return entity

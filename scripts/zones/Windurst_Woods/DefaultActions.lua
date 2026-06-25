@@ -13,7 +13,6 @@ return {
     ['Cha_Lebagta']        = { event = 78 },
     ['Chihpi_Kapirapehro'] = { event = 429 },
     ['Cocchi_Ryojhbon']    = { event = 418 },
-    ['Dahjal']             = { event = 48 },
     ['Dazi_Nosuk']         = { event = 428 },
     ['Dhiz_Tomehrih']      = { event = 261 },
     ['Edmondo']            = { event = 435 },
@@ -26,7 +25,6 @@ return {
     ['Hayah_Dahbalesahma'] = { event = 263 },
     ['Hlif']               = { event = 434 },
     ['Hohl_Nhaesin']       = { event = 342 },
-    ['Istvan']             = { event = 692 },
     ['Iya_Rihyo']          = { event = 419 },
     ['Kapeh_Myohrye']      = { event = 340 }, -- There is at current an unknown mission/quest/status that alters their dialog. Windurst citizens get something different than other nations.
     ['Khomi_Tibariah']     = { event = 262 },
@@ -40,11 +38,9 @@ return {
     ['Meh_Kotomaihro']     = { event = 258 },
     ['Miiri-Wohri']        = { event = 111 },
     ['Mocchi_Katsartbih']  = { event = 264 },
-    ['Mokop-Sankop']       = { event = 50 },
     ['Mourices']           = { event = 441 },
     ['Muhk_Johldy']        = { event = 339 }, -- There is at current an unknown mission/quest/status that alters their dialog. Windurst citizens get something different than other nations.
     ['Mul_Betreh']         = { event = 431 },
-    ['Nalta']              = { event = 54 },
     ['Nanaa_Mihgo']        = { event = 76 },
     ['Nine_of_Spades']     = { event = 266 },
     ['Orahi-Karapahi']     = { event = 413 },
@@ -68,6 +64,6 @@ return {
     ['Three_of_Spades']    = { event = 270 },
     ['Two_of_Spades']      = { event = 271 },
     ['Uuroro']             = { event = 272 },
-    ['Verun']              = { event = 432 },
+    ['Varun']              = { event = 432 },
     ['Zahsa_Syalmhaia']    = { event = 797 },
 }

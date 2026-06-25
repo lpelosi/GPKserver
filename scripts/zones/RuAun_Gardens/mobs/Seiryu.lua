@@ -18,7 +18,7 @@ entity.onMobInitialize = function(mob)
     mob:setMobMod(xi.mobMod.GIL_MIN, 18000)
     mob:setMobMod(xi.mobMod.GIL_MAX, 18000)
     mob:setMobMod(xi.mobMod.CANNOT_GUARD, 1)
-    mob:setMobMod(xi.mobMod.WEAPON_BONUS, 34)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MODIFIER, 34)
     mob:setMobMod(xi.mobMod.MAGIC_COOL, 35)
 end
 
@@ -52,15 +52,24 @@ entity.onMobFight = function(mob, target)
     end
 end
 
-entity.onMobWeaponSkill = function(target, mob, skill)
-    if skill:getID() == xi.jsa.HUNDRED_FISTS then
+entity.onMobWeaponSkill = function(mob, target, skill, action)
+    if skill:getID() == xi.mobSkill.HUNDRED_FISTS_1 then
         mob:setMagicCastingEnabled(false)
         mob:setMobAbilityEnabled(false)
     end
 end
 
 entity.onAdditionalEffect = function(mob, target, damage)
-    return xi.mob.onAddEffect(mob, target, damage, xi.mob.ae.ENAERO)
+    local pTable =
+    {
+        chance         = 100,
+        attackType     = xi.attackType.MAGICAL,
+        magicalElement = xi.element.WIND,
+        basePower      = math.floor(damage / 2),
+        actorStat      = xi.mod.INT,
+    }
+
+    return xi.combat.action.executeAddEffectDamage(mob, target, pTable)
 end
 
 entity.onMobDeath = function(mob, player, optParams)

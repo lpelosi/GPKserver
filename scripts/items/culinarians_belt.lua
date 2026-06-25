@@ -8,7 +8,7 @@
 ---@type TItem
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     if target:hasStatusEffect(xi.effect.COOKING_IMAGERY) then
         return xi.msg.basic.ITEM_UNABLE_TO_USE
     end
@@ -16,8 +16,8 @@ itemObject.onItemCheck = function(target, item, param, caster)
     return 0
 end
 
-itemObject.onItemUse = function(target)
-    target:addStatusEffect(xi.effect.COOKING_IMAGERY, 3, 0, 480)
+itemObject.onItemUse = function(target, user)
+    target:addStatusEffect(xi.effect.COOKING_IMAGERY, { power = 3, duration = 480, origin = user })
 end
 
 return itemObject

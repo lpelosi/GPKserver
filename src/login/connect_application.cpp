@@ -48,30 +48,63 @@ ConnectApplication::~ConnectApplication() = default;
 auto ConnectApplication::createEngine() -> std::unique_ptr<Engine>
 {
     certificateHelpers::generateSelfSignedCert();
-    return std::make_unique<ConnectEngine>(ioContext());
+    return std::make_unique<ConnectEngine>(scheduler_, zmqService_);
 }
 
 void ConnectApplication::registerCommands(ConsoleService& console)
 {
-    // clang-format off
-    console.registerCommand("stats", "Print server runtime statistics",
-    [](std::vector<std::string>& inputs)
-    {
-        const size_t uniqueIPs = loginHelpers::getAuthenticatedSessions().size();
-        size_t uniqueAccounts  = 0;
-
-        for (auto& ipAddrMap: loginHelpers::getAuthenticatedSessions())
+    console.registerCommand(
+        "stats",
+        "Print server runtime statistics",
+        [](std::vector<std::string>& inputs)
         {
-            uniqueAccounts += loginHelpers::getAuthenticatedSessions()[ipAddrMap.first].size();
-        }
+            const size_t uniqueIPs      = loginHelpers::getAuthenticatedSessions().size();
+            size_t       uniqueAccounts = 0;
 
-        ShowInfo("Serving %u IP addresses with %u accounts", uniqueIPs, uniqueAccounts);
-    });
-    // clang-format on
-}
+            for (auto& ipAddrMap : loginHelpers::getAuthenticatedSessions())
+            {
+                uniqueAccounts += loginHelpers::getAuthenticatedSessions()[ipAddrMap.first].size();
+            }
 
-void ConnectApplication::requestExit()
-{
-    Application::requestExit();
-    io_context_.stop();
+            ShowInfo("Serving %u IP addresses with %u accounts", uniqueIPs, uniqueAccounts);
+        });
+
+    console.registerCommand(
+        "clear",
+        "Run periodic session cleanup routine",
+        [](std::vector<std::string>& inputs)
+        {
+            auto& sessions       = loginHelpers::getAuthenticatedSessions();
+            auto  ipAddrIterator = sessions.begin();
+            while (ipAddrIterator != sessions.end())
+            {
+                auto sessionIterator = ipAddrIterator->second.begin();
+                while (sessionIterator != ipAddrIterator->second.end())
+                {
+                    session_t& session = sessionIterator->second;
+
+                    // If it's been 15 minutes, erase it from the session list
+                    if (!session.data_session &&
+                        !session.view_session &&
+                        timer::now() > session.authorizedTime)
+                    {
+                        sessionIterator = ipAddrIterator->second.erase(sessionIterator);
+                    }
+                    else
+                    {
+                        ++sessionIterator;
+                    }
+                }
+
+                // If this map entry is empty, clean it up
+                if (ipAddrIterator->second.size() == 0)
+                {
+                    ipAddrIterator = sessions.erase(ipAddrIterator);
+                }
+                else
+                {
+                    ++ipAddrIterator;
+                }
+            }
+        });
 }

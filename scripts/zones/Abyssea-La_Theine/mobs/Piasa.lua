@@ -10,10 +10,16 @@ entity.onMobInitialize = function(mob)
 end
 
 entity.onAdditionalEffect = function(mob, target, damage)
-    return xi.mob.onAddEffect(mob, target, damage, xi.mob.ae.ENAERO)
-end
+    local pTable =
+    {
+        chance         = 100,
+        attackType     = xi.attackType.MAGICAL,
+        magicalElement = xi.element.WIND,
+        basePower      = math.floor(damage / 2),
+        actorStat      = xi.mod.INT,
+    }
 
-entity.onMobDeath = function(mob, player, optParams)
+    return xi.combat.action.executeAddEffectDamage(mob, target, pTable)
 end
 
 return entity

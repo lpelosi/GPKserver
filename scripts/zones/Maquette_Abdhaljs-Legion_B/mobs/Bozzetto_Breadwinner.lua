@@ -39,7 +39,7 @@ entity.onMobInitialize = function(mob)
     -- The Slow effect is strong enough to overwite Haste II.
     mob:addListener('TAKE_DAMAGE', 'BREADWINNDER_TAKE_DAMAGE', function(mobArg, amount, attacker, attackType, damageType)
         if mobArg:hasStatusEffect(xi.effect.HUNDRED_FISTS) then
-            attacker:addStatusEffect(xi.effect.SLOW, 30 * 100, 0, 60)
+            attacker:addStatusEffect(xi.effect.SLOW, { power = 30 * 100, duration = 60, origin = mob })
         end
     end)
 end
@@ -48,7 +48,7 @@ entity.onMobSpawn = function(mob)
     xi.mix.jobSpecial.config(mob, {
         specials =
         {
-            { id = xi.jsa.HUNDRED_FISTS, hpp = 50, duration = 45 },
+            { id = xi.mobSkill.HUNDRED_FISTS_1, hpp = 50, duration = 45 },
         },
     })
 end
@@ -58,15 +58,6 @@ entity.onMobEngage = function(mob, target)
     mob:timer(30000, function(mobArg)
         doWarble(mobArg)
     end)
-end
-
-entity.onMobFight = function(mob, target)
-end
-
-entity.onMobWeaponSkill = function(target, mob, skill)
-end
-
-entity.onMobDeath = function(mob, player, optParams)
 end
 
 return entity

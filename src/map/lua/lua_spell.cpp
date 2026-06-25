@@ -22,8 +22,9 @@
 #include "common/logging.h"
 
 #include "lua_spell.h"
+
+#include "blue_spell.h"
 #include "spell.h"
-#include "utils/battleutils.h"
 
 /************************************************************************
  *                                                                        *
@@ -46,14 +47,19 @@ CLuaSpell::CLuaSpell(CSpell* PSpell)
  *                                                                       *
  ************************************************************************/
 
-void CLuaSpell::setMsg(uint16 messageID)
+void CLuaSpell::setMsg(MsgBasic messageID)
 {
     m_PLuaSpell->setMessage(messageID);
 }
 
-void CLuaSpell::setModifier(uint8 modifier)
+void CLuaSpell::setModifier(const ActionModifier modifier) const
 {
-    m_PLuaSpell->setModifier(static_cast<MODIFIER>(modifier));
+    m_PLuaSpell->setModifier(modifier);
+}
+
+void CLuaSpell::setCritical(const bool isCritical) const
+{
+    m_PLuaSpell->setCritical(isCritical);
 }
 
 void CLuaSpell::setAoE(uint8 aoe)
@@ -96,6 +102,21 @@ uint32 CLuaSpell::getPrimaryTargetID()
     return m_PLuaSpell->getPrimaryTargetID();
 }
 
+auto CLuaSpell::getKnockback() const -> Knockback
+{
+    if (auto* PBlueSpell = dynamic_cast<CBlueSpell*>(m_PLuaSpell))
+    {
+        return PBlueSpell->getKnockback();
+    }
+
+    return Knockback::None;
+}
+
+auto CLuaSpell::isCritical() const -> bool
+{
+    return m_PLuaSpell->isCritical();
+}
+
 bool CLuaSpell::canTargetEnemy()
 {
     return m_PLuaSpell->canTargetEnemy();
@@ -106,7 +127,7 @@ uint16 CLuaSpell::getTotalTargets()
     return m_PLuaSpell->getTotalTargets();
 }
 
-uint16 CLuaSpell::getMagicBurstMessage()
+auto CLuaSpell::getMagicBurstMessage() const -> MsgBasic
 {
     return m_PLuaSpell->getMagicBurstMessage();
 }
@@ -119,6 +140,11 @@ uint16 CLuaSpell::getElement()
 uint8 CLuaSpell::isAoE()
 {
     return m_PLuaSpell->getAOE();
+}
+
+float CLuaSpell::getRadius()
+{
+    return m_PLuaSpell->getRadius();
 }
 
 bool CLuaSpell::tookEffect()
@@ -156,6 +182,11 @@ uint8 CLuaSpell::getFlag()
     return m_PLuaSpell->getFlag();
 }
 
+uint8 CLuaSpell::getLevel(JOBTYPE jobId)
+{
+    return m_PLuaSpell->getJob(jobId);
+}
+
 //======================================================//
 
 void CLuaSpell::Register()
@@ -163,6 +194,7 @@ void CLuaSpell::Register()
     SOL_USERTYPE("CSpell", CLuaSpell);
     SOL_REGISTER("setMsg", CLuaSpell::setMsg);
     SOL_REGISTER("setModifier", CLuaSpell::setModifier);
+    SOL_REGISTER("setCritical", CLuaSpell::setCritical);
     SOL_REGISTER("setAoE", CLuaSpell::setAoE);
     SOL_REGISTER("setFlag", CLuaSpell::setFlag);
     SOL_REGISTER("setRadius", CLuaSpell::setRadius);
@@ -170,6 +202,7 @@ void CLuaSpell::Register()
     SOL_REGISTER("setCastTime", CLuaSpell::setCastTime);
     SOL_REGISTER("setMPCost", CLuaSpell::setMPCost);
     SOL_REGISTER("isAoE", CLuaSpell::isAoE);
+    SOL_REGISTER("getRadius", CLuaSpell::getRadius);
     SOL_REGISTER("tookEffect", CLuaSpell::tookEffect);
     SOL_REGISTER("getMagicBurstMessage", CLuaSpell::getMagicBurstMessage);
     SOL_REGISTER("getElement", CLuaSpell::getElement);
@@ -180,8 +213,11 @@ void CLuaSpell::Register()
     SOL_REGISTER("getSpellGroup", CLuaSpell::getSpellGroup);
     SOL_REGISTER("getSpellFamily", CLuaSpell::getSpellFamily);
     SOL_REGISTER("getFlag", CLuaSpell::getFlag);
+    SOL_REGISTER("getLevel", CLuaSpell::getLevel);
     SOL_REGISTER("getCastTime", CLuaSpell::getCastTime);
     SOL_REGISTER("getPrimaryTargetID", CLuaSpell::getPrimaryTargetID);
+    SOL_REGISTER("getKnockback", CLuaSpell::getKnockback);
+    SOL_REGISTER("isCritical", CLuaSpell::isCritical);
 }
 
 std::ostream& operator<<(std::ostream& os, const CLuaSpell& spell)

@@ -57,11 +57,14 @@ local astralFlowPets = function()
             -- There is confirmation of aerial collision
             -- Picking annoying abilities for now...
             pet:timer(1500, function(petArg)
-                if petArg:getFamily() == 269 then -- xzomit
+                if
+                    petArg:getSpecies() == xi.mobSpecies.XZOMIT or -- xzomit
+                    petArg:getSpecies() == xi.mobSpecies.XZOMIT_CHILD    -- xzomit child
+                then
                     petArg:useMobAbility(xi.mobskill.MANTLE_PIERCE)
-                elseif petArg:getFamily() == 144 then -- hpemde
+                elseif petArg:getSpecies() == xi.mobSpecies.HPEMDE then -- hpemde
                     petArg:useMobAbility(xi.mobskill.SINUATE_RUSH)
-                elseif petArg:getFamily() == 194 then -- shark
+                elseif petArg:getSpecies() == xi.mobSpecies.PHUABO then -- Phuabo
                     petArg:useMobAbility(xi.mobskill.AERIAL_COLLISION)
                 end
             end)
@@ -135,6 +138,19 @@ local spawnSharks = function(mob)
     end
 end
 
+local cleanupPets = function(mob)
+    if mob then
+        mob:clearTimerQueue()
+    end
+
+    for i = ID.mob.JAILER_OF_LOVE + 1, ID.mob.JAILER_OF_LOVE + 27 do
+        local pet = GetMobByID(i)
+        if pet and pet:isSpawned() then
+            DespawnMob(i)
+        end
+    end
+end
+
 entity.onMobInitialize = function(mob)
     mob:setMobMod(xi.mobMod.IDLE_DESPAWN, 180)
 end
@@ -146,6 +162,8 @@ local function getAbsorbMod(element)
 end
 
 entity.onMobSpawn = function(mob)
+    mob:setAnimationSub(0)
+
     mob:setBehavior(xi.behavior.STANDBACK)
     mob:setMobMod(xi.mobMod.STANDBACK_RANGE, 13) -- Guessed, seems approximate based on era videos
     mob:setMobMod(xi.mobMod.MAGIC_COOL, 20)      -- Seems to be 20~22 depending if a TP move is in the way
@@ -180,7 +198,7 @@ entity.onMobSpawn = function(mob)
     xi.mix.jobSpecial.config(mob, {
         specials =
         {
-            { id = xi.jsa.ASTRAL_FLOW, hpp = math.random(45, 55) },
+            { id = xi.mobSkill.ASTRAL_FLOW_1, hpp = math.random(45, 55) },
         },
     })
 end
@@ -195,14 +213,12 @@ entity.onMobEngage = function(mob, target)
 end
 
 entity.onMobFight = function(mob, target)
-    -- mob:setAnimationSub(2) -- TODO: this was from ASB. necessary?
-
     local distance = mob:checkDistance(target)
     local drawInTable =
     {
         conditions =
         {
-            distance >= mob:getMeleeRange() and distance >= 20,
+            distance >= mob:getMeleeRange(target) and distance >= 20,
         },
         position = mob:getPos(), -- Guessed
     }
@@ -294,24 +310,17 @@ entity.onMobFight = function(mob, target)
     end
 end
 
-entity.onMobWeaponSkill = function(target, mob, skill)
+entity.onMobWeaponSkill = function(mob, target, skill, action)
     local skillId = skill:getID()
 
-    if skillId == 734 then
+    if skillId == xi.mobSkill.ASTRAL_FLOW_1 then
         astralFlowPets()
     end
 end
 
 entity.onMobDeath = function(mob, player, optParams)
-    for i = ID.mob.JAILER_OF_LOVE + 1, ID.mob.JAILER_OF_LOVE + 27 do
-        local pet = GetMobByID(i)
-        if pet and pet:isSpawned() then
-            DespawnMob(i)
-        end
-    end
-end
+    cleanupPets(mob)
 
-entity.onMobDespawn = function(mob)
     if math.random(1, 100) <= 25 then -- 25% chance to spawn Absolute Virtue
         local highestEnmityTarget = nil
         local highestEnmity = -1
@@ -336,11 +345,28 @@ entity.onMobDespawn = function(mob)
             end
         end
 
-        SpawnMob(ID.mob.ABSOLUTE_VIRTUE)
-        if highestEnmityTarget then
-            GetMobByID(ID.mob.ABSOLUTE_VIRTUE):updateEnmity(highestEnmityTarget)
+        local av = GetMobByID(ID.mob.ABSOLUTE_VIRTUE)
+
+        if av then
+            local pos = mob:getPos()
+
+            av:setSpawn(pos.x, pos.y, pos.z, pos.rot)
+
+            mob:timer(10000, function(mobArg)
+                SpawnMob(ID.mob.ABSOLUTE_VIRTUE)
+
+                if highestEnmityTarget then
+                    av:updateEnmity(highestEnmityTarget)
+                    av:updateClaim(highestEnmityTarget)
+                end
+            end)
         end
     end
+end
+
+entity.onMobDespawn = function(mob)
+    -- In case JoL despawns on its own, despawn the mobs. note: mob:isAlive returns false here
+    cleanupPets(mob)
 end
 
 return entity

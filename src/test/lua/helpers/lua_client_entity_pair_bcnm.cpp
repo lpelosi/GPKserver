@@ -27,7 +27,8 @@
 #include "lua/lua_client_entity_pair.h"
 #include "lua/lua_simulation.h"
 #include "map/battlefield.h"
-#include "map/entities/mobentity.h"
+#include "map/entities/mob_entity.h"
+#include "map/map_engine.h"
 #include "test_char.h"
 #include "test_common.h"
 
@@ -59,7 +60,7 @@ void CLuaClientEntityPairBCNM::killMobs(const sol::optional<sol::table>& params)
         {
             if (mobEntity && mobEntity->isAlive())
             {
-                CLuaTestEntity mobWrapper(mobEntity);
+                CLuaTestEntity mobWrapper(parent_->engine()->scheduler(), mobEntity);
 
                 const sol::object mobObj = sol::make_object(lua.lua_state(), &mobWrapper);
                 parent_->claimAndKillMob(mobObj, params);
@@ -169,7 +170,7 @@ void CLuaClientEntityPairBCNM::enter(const sol::object& npcQuery, const uint16 b
         std::ignore = parent_->entities().gotoAndTrigger(npcQuery, expectedEvent);
     }
 
-    if (!parent_->hasStatusEffect(EFFECT_BATTLEFIELD, sol::lua_nil))
+    if (!parent_->hasStatusEffect(xi::StatusEffect::Battlefield, sol::lua_nil))
     {
         TestError("Battlefield effect not found.");
         return;

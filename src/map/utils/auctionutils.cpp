@@ -27,7 +27,7 @@
 #include "common/timer.h"
 #include "common/tracy.h"
 
-#include "entities/charentity.h"
+#include "entities/char_entity.h"
 
 #include "packets/c2s/0x04e_auc.h"
 #include "packets/s2c/0x01d_item_same.h"
@@ -70,7 +70,7 @@ void auctionutils::SellingItems(CCharEntity* PChar, GP_AUC_PARAM_ASKCOMMIT param
         return;
     }
 
-    if (PItem->getID() == param.ItemNo && !PItem->isSubType(ITEM_LOCKED) && !(PItem->getFlag() & ITEM_FLAG_NOAUCTION))
+    if (PItem->getID() == param.ItemNo && !PItem->isSubType(ITEM_LOCKED) && !PItem->hasFlag(ItemFlag::NoAuction))
     {
         if (isPartiallyUsed(PItem))
         {
@@ -143,7 +143,7 @@ void auctionutils::ProofOfPurchase(CCharEntity* PChar, GP_AUC_PARAM_LOT param)
 
     CItem* PItem = PChar->getStorage(LOC_INVENTORY)->GetItem(param.ItemWorkIndex);
 
-    if (PItem && !(PItem->isSubType(ITEM_LOCKED)) && PItem->getReserve() == 0 && !(PItem->getFlag() & ITEM_FLAG_NOAUCTION) && PItem->getQuantity() >= param.ItemStacks)
+    if (PItem && !(PItem->isSubType(ITEM_LOCKED)) && PItem->getReserve() == 0 && !PItem->hasFlag(ItemFlag::NoAuction) && PItem->getQuantity() >= param.ItemStacks)
     {
         if (isPartiallyUsed(PItem))
         {
@@ -233,11 +233,11 @@ auto auctionutils::PurchasingItems(CCharEntity* PChar, GP_AUC_PARAM_BID param) -
     }
     else
     {
-        const CItem* PItem = itemutils::GetItemPointer(param.ItemNo);
+        const CItem* PItem = xi::items::lookup(param.ItemNo);
 
         if (PItem != nullptr)
         {
-            if (PItem->getFlag() & ITEM_FLAG_RARE)
+            if (PItem->hasFlag(ItemFlag::Rare))
             {
                 for (uint8 LocID = 0; LocID < CONTAINER_ID::MAX_CONTAINER_ID; ++LocID)
                 {
@@ -267,7 +267,7 @@ auto auctionutils::PurchasingItems(CCharEntity* PChar, GP_AUC_PARAM_BID param) -
                         charutils::UpdateItem(PChar, LOC_INVENTORY, 0, -static_cast<int32>(param.BidPrice));
 
                         PChar->pushPacket<GP_SERV_COMMAND_AUC>(GP_CLI_COMMAND_AUC_COMMAND::Bid, 0x01, param.ItemNo, param.BidPrice, param.ItemStacks, PItem->getStackSize());
-                        PChar->pushPacket<GP_SERV_COMMAND_ITEM_SAME>();
+                        PChar->pushPacket<GP_SERV_COMMAND_ITEM_SAME>(PChar);
 
                         return true;
                     }
@@ -300,32 +300,34 @@ void auctionutils::CancelSale(CCharEntity* PChar, int8_t AucWorkIndex)
     {
         AuctionHistory_t canceledItem = PChar->m_ah_history[AucWorkIndex];
 
-        // clang-format off
-        const auto success = db::transaction([&]()
-        {
-            const auto rset = db::preparedStmt("DELETE FROM auction_house WHERE seller = ? AND itemid = ? AND stack = ? AND price = ? AND sale = 0 LIMIT 1",
-                                                                               PChar->id, canceledItem.itemid, canceledItem.stack, canceledItem.price);
-            if (rset && rset->rowsAffected())
+        const auto success = db::transaction(
+            [&]()
             {
-                if (const CItem* PDelItem = itemutils::GetItemPointer(canceledItem.itemid))
+                const auto rset = db::preparedStmt("DELETE FROM auction_house WHERE seller = ? AND itemid = ? AND stack = ? AND price = ? AND sale = 0 LIMIT 1",
+                                                   PChar->id,
+                                                   canceledItem.itemid,
+                                                   canceledItem.stack,
+                                                   canceledItem.price);
+                if (rset && rset->rowsAffected())
                 {
-                    if (charutils::AddItem(PChar, LOC_INVENTORY, canceledItem.itemid, (canceledItem.stack != 0 ? PDelItem->getStackSize() : 1), true) != ERROR_SLOTID)
+                    if (const CItem* PDelItem = xi::items::lookup(canceledItem.itemid))
                     {
-                        return;
+                        if (charutils::AddItem(PChar, LOC_INVENTORY, canceledItem.itemid, (canceledItem.stack != 0 ? PDelItem->getStackSize() : 1), true) != ERROR_SLOTID)
+                        {
+                            return;
+                        }
                     }
                 }
-            }
 
-            // If we got here, something went wrong.
-            throw std::runtime_error(fmt::format("AH: Failed to return item id {} stack {} to char {} ({})", canceledItem.itemid, canceledItem.stack, PChar->getName(), PChar->id));
-        });
+                // If we got here, something went wrong.
+                throw std::runtime_error(fmt::format("AH: Failed to return item id {} stack {} to char {} ({})", canceledItem.itemid, canceledItem.stack, PChar->getName(), PChar->id));
+            });
         if (success)
         {
             PChar->pushPacket<GP_SERV_COMMAND_AUC>(GP_CLI_COMMAND_AUC_COMMAND::LotCancel, 0, PChar, static_cast<uint8_t>(AucWorkIndex), false);
-            PChar->pushPacket<GP_SERV_COMMAND_ITEM_SAME>();
+            PChar->pushPacket<GP_SERV_COMMAND_ITEM_SAME>(PChar);
             return;
         }
-        // clang-format on
     }
 
     // Let client know something went wrong

@@ -24,7 +24,7 @@ entity.onMobSpawn = function(mob)
     xi.mix.jobSpecial.config(mob, {
         specials =
         {
-            { id = xi.jsa.INVINCIBLE, cooldown = 180, hpp = 50 }, -- "Has access to Invincible, which it may use several times."
+            { id = xi.mobSkill.INVINCIBLE_1, cooldown = 180, hpp = 50 }, -- "Has access to Invincible, which it may use several times."
         },
     })
 
@@ -33,7 +33,7 @@ entity.onMobSpawn = function(mob)
     mob:setModelId(1169)
     mob:setMod(xi.mod.UDMGPHYS, -9500)
     mob:setMod(xi.mod.UDMGRANGE, -9500)
-    mob:setMobMod(xi.mobMod.WEAPON_BONUS, 73)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MODIFIER, 73)
 end
 
 entity.onMobFight = function(mob, target)

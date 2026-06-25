@@ -21,7 +21,6 @@
 
 #include "trustutils.h"
 
-#include "common/timer.h"
 #include "common/utils.h"
 
 #include <algorithm>
@@ -34,19 +33,15 @@
 #include "zoneutils.h"
 
 #include "grades.h"
-#include "mob_modifier.h"
 #include "mob_spell_list.h"
 
 #include "ai/ai_container.h"
 #include "ai/controllers/trust_controller.h"
 #include "ai/helpers/gambits_container.h"
-#include "entities/mobentity.h"
-#include "entities/trustentity.h"
+#include "entities/mob_entity.h"
+#include "entities/trust_entity.h"
 #include "items/item_weapon.h"
 #include "mobskill.h"
-#include "packets/char_sync.h"
-#include "packets/entity_update.h"
-#include "packets/s2c/0x009_message.h"
 #include "status_effect_container.h"
 #include "weapon_skill.h"
 #include "zone_instance.h"
@@ -59,18 +54,31 @@ void BuildTrustData(uint32 TrustID);
 auto LoadTrust(CCharEntity* PMaster, uint32 TrustID) -> CTrustEntity*;
 void LoadTrustStatsAndSkills(CTrustEntity* PTrust);
 
+// List of trusts that are essentially walking GEO bubbles that should not be targetable
+static std::unordered_set<SpellID> passiveTrustIDs = {
+    SpellID::Sakura,
+    SpellID::Moogle,
+    SpellID::Star_Sibyl,
+    SpellID::Kuyin_Hathdenna,
+    SpellID::Brygid,
+    SpellID::Kupofried,
+    SpellID::Cornelia,
+};
+
 struct TrustData
 {
-    uint32      trustID{};
-    uint32      pool{};
-    look_t      look;        // appearance data
-    std::string name;        // script name string
-    std::string packet_name; // packet name string
-    ECOSYSTEM   EcoSystem{}; // ecosystem
+    uint32        trustID{};
+    bool          isPassiveTrust{};
+    uint32        pool{};
+    look_t        look;        // appearance data
+    std::string   name;        // script name string
+    std::string   packet_name; // packet name string
+    xi::Ecosystem EcoSystem{}; // ecosystem
 
     uint8  name_prefix{};
-    uint8  radius{}; // Model Radius - affects melee range etc.
-    uint16 m_Family{};
+    uint8  modelSize{ 0 };
+    float  modelHitboxSize{ 0.0f };
+    uint16 m_Species{};
 
     uint8 mJob{};
     uint8 sJob{};
@@ -198,7 +206,7 @@ void BuildTrustData(uint32 TrustID)
                                        "mob_pools.name, "
                                        "mob_pools.packet_name, "
                                        "mob_pools.modelid, "
-                                       "mob_pools.familyid, "
+                                       "mob_pools.speciesid, "
                                        "mob_pools.mJob, "
                                        "mob_pools.sJob, "
                                        "mob_pools.spellList, "
@@ -207,23 +215,24 @@ void BuildTrustData(uint32 TrustID)
                                        "mob_pools.cmbDmgMult, "
                                        "mob_pools.name_prefix, "
                                        "mob_pools.skill_list_id, "
+                                       "mob_pools.modelSize, "
+                                       "mob_pools.modelHitboxSize, "
                                        "spell_list.spellid, "
-                                       "mob_family_system.mobradius, "
-                                       "mob_family_system.ecosystemID, "
-                                       "(mob_family_system.HP / 100) AS HP, "
-                                       "(mob_family_system.MP / 100) AS MP, "
-                                       "mob_family_system.speed, "
-                                       "mob_family_system.STR, "
-                                       "mob_family_system.DEX, "
-                                       "mob_family_system.VIT, "
-                                       "mob_family_system.AGI, "
-                                       "mob_family_system.INT, "
-                                       "mob_family_system.MND, "
-                                       "mob_family_system.CHR, "
-                                       "mob_family_system.DEF, "
-                                       "mob_family_system.ATT, "
-                                       "mob_family_system.ACC, "
-                                       "mob_family_system.EVA, "
+                                       "mob_species_system.ecosystemID, "
+                                       "(mob_species_system.HP / 100) AS HP, "
+                                       "(mob_species_system.MP / 100) AS MP, "
+                                       "mob_species_system.speed, "
+                                       "mob_species_system.STR, "
+                                       "mob_species_system.DEX, "
+                                       "mob_species_system.VIT, "
+                                       "mob_species_system.AGI, "
+                                       "mob_species_system.INT, "
+                                       "mob_species_system.MND, "
+                                       "mob_species_system.CHR, "
+                                       "mob_species_system.DEF, "
+                                       "mob_species_system.ATT, "
+                                       "mob_species_system.ACC, "
+                                       "mob_species_system.EVA, "
                                        "mob_resistances.slash_sdt, mob_resistances.pierce_sdt, "
                                        "mob_resistances.h2h_sdt, mob_resistances.impact_sdt, "
                                        "mob_resistances.magical_sdt, "
@@ -239,11 +248,11 @@ void BuildTrustData(uint32 TrustID)
                                        "mob_resistances.silence_res_rank, mob_resistances.slow_res_rank, "
                                        "mob_resistances.poison_res_rank, mob_resistances.light_sleep_res_rank, "
                                        "mob_resistances.dark_sleep_res_rank, mob_resistances.blind_res_rank "
-                                       "FROM spell_list, mob_pools, mob_family_system, mob_resistances "
+                                       "FROM spell_list, mob_pools, mob_species_system, mob_resistances "
                                        "WHERE spell_list.spellid = ? "
                                        "AND (spell_list.spellid + 5000) = mob_pools.poolid "
                                        "AND mob_pools.resist_id = mob_resistances.resist_id "
-                                       "AND mob_pools.familyid = mob_family_system.familyID "
+                                       "AND mob_pools.speciesid = mob_species_system.speciesID "
                                        "ORDER BY spell_list.spellid",
                                        TrustID);
 
@@ -255,13 +264,18 @@ void BuildTrustData(uint32 TrustID)
 
             data->trustID = TrustID;
 
+            if (passiveTrustIDs.contains(static_cast<SpellID>(data->trustID)))
+            {
+                data->isPassiveTrust = true;
+            }
+
             data->pool        = rset->get<uint32>("poolid");
             data->name        = rset->get<std::string>("name");
             data->packet_name = rset->get<std::string>("packet_name");
 
             db::extractFromBlob(rset, "modelid", data->look);
 
-            data->m_Family  = rset->get<uint16>("familyid");
+            data->m_Species = rset->get<uint16>("speciesid");
             data->mJob      = rset->get<uint8>("mJob");
             data->sJob      = rset->get<uint8>("sJob");
             data->spellList = rset->get<uint16>("spellList");
@@ -273,10 +287,11 @@ void BuildTrustData(uint32 TrustID)
             data->name_prefix    = rset->get<uint8>("name_prefix");
             data->m_MobSkillList = rset->get<uint16>("skill_list_id");
 
-            data->radius    = rset->get<uint8>("mobradius");
-            data->EcoSystem = rset->get<ECOSYSTEM>("ecosystemID");
-            data->HPscale   = rset->get<float>("HP");
-            data->MPscale   = rset->get<float>("MP");
+            data->modelSize       = rset->getOrDefault<uint8>("modelSize", 0);
+            data->modelHitboxSize = std::max<float>(0.0f, rset->getOrDefault<float>("modelHitboxSize", 0) / 10.f);
+            data->EcoSystem       = rset->get<xi::Ecosystem>("ecosystemID");
+            data->HPscale         = rset->get<float>("HP");
+            data->MPscale         = rset->get<float>("MP");
 
             data->baseSpeed      = 62;
             data->animationSpeed = 50;
@@ -344,7 +359,7 @@ auto LoadTrust(CCharEntity* PMaster, uint32 TrustID) -> CTrustEntity*
 
     auto* trustData = itr->second.get();
 
-    auto* PTrust = new CTrustEntity(PMaster);
+    auto* PTrust = new CTrustEntity(PMaster, trustData->trustID, IsPassiveTrust{ trustData->isPassiveTrust });
 
     PTrust->loc              = PMaster->loc;
     PTrust->m_OwnerID.id     = PMaster->id;
@@ -358,17 +373,19 @@ auto LoadTrust(CCharEntity* PMaster, uint32 TrustID) -> CTrustEntity*
     PTrust->m_Pool         = trustData->pool;
     PTrust->packetName     = trustData->packet_name;
     PTrust->m_name_prefix  = trustData->name_prefix;
-    PTrust->m_Family       = trustData->m_Family;
+    PTrust->m_Species      = trustData->m_Species;
     PTrust->m_MobSkillList = trustData->m_MobSkillList;
     PTrust->HPscale        = trustData->HPscale;
     PTrust->MPscale        = trustData->MPscale;
     PTrust->baseSpeed      = trustData->baseSpeed;
     PTrust->animationSpeed = trustData->animationSpeed;
+
     PTrust->UpdateSpeed();
-    PTrust->m_TrustID     = trustData->trustID;
-    PTrust->status        = STATUS_TYPE::NORMAL;
-    PTrust->m_ModelRadius = trustData->radius;
-    PTrust->m_EcoSystem   = trustData->EcoSystem;
+
+    PTrust->status          = STATUS_TYPE::NORMAL;
+    PTrust->modelSize       = trustData->modelSize;
+    PTrust->modelHitboxSize = trustData->modelHitboxSize;
+    PTrust->m_EcoSystem     = trustData->EcoSystem;
 
     PTrust->SetMJob(trustData->mJob);
     PTrust->SetSJob(trustData->sJob);
@@ -380,7 +397,8 @@ auto LoadTrust(CCharEntity* PMaster, uint32 TrustID) -> CTrustEntity*
     LoadTrustStatsAndSkills(PTrust);
 
     // Use Mob formulas to work out base "weapon" damage, but scale down to reasonable values.
-    const float  mobStyleDamage   = static_cast<float>(mobutils::GetWeaponDamage(PTrust, SLOT_MAIN));
+    // TODO: Verify trust base damage.
+    const float  mobStyleDamage   = static_cast<float>(mobutils::GetBaseWeaponDamage(PTrust, SLOT_MAIN));
     const float  baseDamage       = mobStyleDamage * 0.5f;
     const float  damageMultiplier = static_cast<float>(trustData->cmbDmgMult) / 100.0f;
     const float  adjustedDamage   = baseDamage * damageMultiplier;
@@ -394,29 +412,55 @@ auto LoadTrust(CCharEntity* PMaster, uint32 TrustID) -> CTrustEntity*
         mainWeapon->setSkillType(trustData->cmbSkill);
 
         mainWeapon->setDamage(finalDamage);
-        mainWeapon->setDelay((trustData->cmbDelay * 1000) / 60);
-        mainWeapon->setBaseDelay((trustData->cmbDelay * 1000) / 60);
+        mainWeapon->setDelay(trustData->cmbDelay);
+        mainWeapon->setBaseDelay(trustData->cmbDelay);
+
+        // Compute DPS so rune/enchantment calculations that rely on getDPS() return meaningful values for trusts.
+        // Use damage per second: damage / (delay_seconds). Delay is stored in ms.
+        if (mainWeapon->getDelay() > 0)
+        {
+            double dps = static_cast<double>(mainWeapon->getDamage()) / (static_cast<double>(mainWeapon->getDelay()) / 1000.0);
+            mainWeapon->setDPS(dps);
+        }
     }
 
     if (auto* subWeapon = dynamic_cast<CItemWeapon*>(PTrust->m_Weapons[SLOT_SUB]))
     {
         subWeapon->setDamage(finalDamage);
-        subWeapon->setDelay((trustData->cmbDelay * 1000) / 60);
-        subWeapon->setBaseDelay((trustData->cmbDelay * 1000) / 60);
+        subWeapon->setDelay(trustData->cmbDelay);
+        subWeapon->setBaseDelay(trustData->cmbDelay);
+
+        if (subWeapon->getDelay() > 0)
+        {
+            double dps = static_cast<double>(subWeapon->getDamage()) / (static_cast<double>(subWeapon->getDelay()) / 1000.0);
+            subWeapon->setDPS(dps);
+        }
     }
 
     if (auto* rangedWeapon = dynamic_cast<CItemWeapon*>(PTrust->m_Weapons[SLOT_RANGED]))
     {
         rangedWeapon->setDamage(finalDamage);
-        rangedWeapon->setDelay((trustData->cmbDelay * 1000) / 60);
-        rangedWeapon->setBaseDelay((trustData->cmbDelay * 1000) / 60);
+        rangedWeapon->setDelay(trustData->cmbDelay);
+        rangedWeapon->setBaseDelay(trustData->cmbDelay);
+
+        if (rangedWeapon->getDelay() > 0)
+        {
+            double dps = static_cast<double>(rangedWeapon->getDamage()) / (static_cast<double>(rangedWeapon->getDelay()) / 1000.0);
+            rangedWeapon->setDPS(dps);
+        }
     }
 
     if (auto* ammoWeapon = dynamic_cast<CItemWeapon*>(PTrust->m_Weapons[SLOT_AMMO]))
     {
         ammoWeapon->setDamage(finalDamage);
-        ammoWeapon->setDelay((trustData->cmbDelay * 1000) / 60);
-        ammoWeapon->setBaseDelay((trustData->cmbDelay * 1000) / 60);
+        ammoWeapon->setDelay(trustData->cmbDelay);
+        ammoWeapon->setBaseDelay(trustData->cmbDelay);
+
+        if (ammoWeapon->getDelay() > 0)
+        {
+            double dps = static_cast<double>(ammoWeapon->getDamage()) / (static_cast<double>(ammoWeapon->getDelay()) / 1000.0);
+            ammoWeapon->setDPS(dps);
+        }
     }
 
     // NOTE: Trusts don't really have weapons, and they don't really have combat skills. They only have
@@ -474,7 +518,7 @@ void LoadTrustStatsAndSkills(CTrustEntity* PTrust)
 
     // HP/MP ========================
     // This is the same system as used in charutils.cpp, but modified
-    // to use parts from mob_family_system instead of hardcoded player
+    // to use parts from mob_species_system instead of hardcoded player
     // race tables.
 
     // http://ffxi-stat-calc.sourceforge.net/cgi-bin/ffxistats.cgi?mode=document
@@ -529,7 +573,9 @@ void LoadTrustStatsAndSkills(CTrustEntity* PTrust)
                    (grade::GetHPScale(grade, scaleOver30Column) * subLevelOver30) + subLevelOver30 + subLevelOver10;
     }
 
-    PTrust->health.maxhp = (int16)(settings::get<float>("map.ALTER_EGO_HP_MULTIPLIER") * (raceStat + jobStat + bonusStat + sJobStat));
+    auto hpMultiplierTrust = settings::get<float>("map.ALTER_EGO_HP_MULTIPLIER");
+    hpMultiplierTrust      = (hpMultiplierTrust >= 0.1f && hpMultiplierTrust <= 2.0f) ? hpMultiplierTrust : 1.0f;
+    PTrust->health.maxhp   = (int16)((raceStat + jobStat + bonusStat + sJobStat) * hpMultiplierTrust);
 
     // MP
     raceStat = 0;
@@ -565,7 +611,9 @@ void LoadTrustStatsAndSkills(CTrustEntity* PTrust)
         sJobStat = grade::GetMPScale(grade, 0) + grade::GetMPScale(grade, scaleTo60Column);
     }
 
-    PTrust->health.maxmp = (int16)(settings::get<float>("map.ALTER_EGO_MP_MULTIPLIER") * (raceStat + jobStat + sJobStat));
+    auto mpMultiplierTrust = settings::get<float>("map.ALTER_EGO_MP_MULTIPLIER");
+    mpMultiplierTrust      = (mpMultiplierTrust >= 0.1f && mpMultiplierTrust <= 2.0f) ? mpMultiplierTrust : 1.0f;
+    PTrust->health.maxmp   = (int16)((raceStat + jobStat + sJobStat) * mpMultiplierTrust);
 
     PTrust->health.tp = 0;
     PTrust->UpdateHealth();
@@ -619,6 +667,7 @@ void LoadTrustStatsAndSkills(CTrustEntity* PTrust)
     }
 
     auto statMultiplier = settings::get<float>("map.ALTER_EGO_STAT_MULTIPLIER");
+    statMultiplier      = (statMultiplier >= 0.1f && statMultiplier <= 2.0f) ? statMultiplier : 1.0f;
     PTrust->stats.STR   = static_cast<uint16>((fSTR + mSTR + sSTR) * statMultiplier);
     PTrust->stats.DEX   = static_cast<uint16>((fDEX + mDEX + sDEX) * statMultiplier);
     PTrust->stats.VIT   = static_cast<uint16>((fVIT + mVIT + sVIT) * statMultiplier);

@@ -9,7 +9,7 @@ xi.magic = xi.magic or {}
 xi.magic.spellFlag =
 {
     NONE           = 0x00,
-    HIT_ALL        = 0x01, -- Hit all targets in range regardless of party
+    -- 0x01 is available
     WIPE_SHADOWS   = 0x02, -- Wipe shadows even if single target and miss/resist (example: "Maiden's Virelai")
     IGNORE_SHADOWS = 0x04, -- Ignore shadows and hit player anyways (example: Mobs "Death" spell)
     NO_START_MSG   = 0x08, -- Doesn't emit "<caster> starts casting <spell>"
@@ -1199,6 +1199,8 @@ xi.magic.spell =
     YGNAS                 =  998,
     MONBERAUX             =  999,
 
+    CORNELIA              = 1002,
+    MATSUI_P              = 1003,
     EXCENMILLE_S          = 1004,
     AYAME_UC              = 1005,
     MAAT_UC               = 1006,

@@ -20,7 +20,6 @@ local content = BattlefieldQuest:new({
     quest            = xi.quest.id.otherAreas.UNINVITED_GUESTS,
     requiredVar      = 'Quest[4][81]Prog',
     requiredValue    = 1,
-    experimental     = true,
 })
 
 content.groups =
@@ -32,6 +31,8 @@ content.groups =
             { monarchLinnID.mob.MAMMET_800 + 10 },
             { monarchLinnID.mob.MAMMET_800 + 20 },
         },
+
+        superlinkGroup = 1,
     },
 
     {
@@ -71,6 +72,7 @@ content.groups =
             },
         },
 
+        superlinkGroup = 1,
         spawned = false,
     },
 }

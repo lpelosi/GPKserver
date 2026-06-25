@@ -1,4 +1,4 @@
-﻿/*
+/*
 ===========================================================================
 
   Copyright (c) 2022 LandSandBoat Dev Teams
@@ -23,8 +23,12 @@
 
 #include "arguments.h"
 #include "common/engine.h"
-#include <asio.hpp>
+#include "common/scheduler.h"
+#include "common/zmq/zmq_service.h"
 
+#include <asio.hpp> // for signal_set
+
+#include <chrono>
 #include <memory>
 #include <string>
 
@@ -62,6 +66,7 @@ public:
 
     void trySetConsoleTitle();
     void registerSignalHandlers();
+    void handleSignal(const std::error_code& error, int signal);
     void usercheck() const;
     void tryIncreaseRLimits();
     void tryDisableQuickEditMode() const;
@@ -81,24 +86,31 @@ public:
     // Runtime
     //
 
-    auto         isRunning() const -> bool;
-    virtual void requestExit();
-
     // Is expected to block until requestExit() is called and/or isRunning() returns false
     virtual void run();
 
+    void requestExit();
+    auto closeRequested() const -> bool;
+
+    auto isRunning() const -> bool;
     auto isRunningInCI() const -> bool;
 
     //
     // Member accessors
     //
 
-    auto ioContext() -> asio::io_context&;
+    auto scheduler() -> Scheduler&;
+    auto zmqService() -> ZMQService&;
     auto args() const -> Arguments&;
     auto console() const -> ConsoleService&;
 
 protected:
-    asio::io_context io_context_;
+    std::chrono::steady_clock::time_point startTime_{ std::chrono::steady_clock::now() };
+
+    Scheduler scheduler_;
+
+    ZMQService zmqService_;
+
     asio::signal_set signals_;
 
     std::string serverName_;

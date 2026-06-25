@@ -33,7 +33,7 @@ entity.onMobInitialize = function(mob)
             otherPrudence and
             otherPrudence:isAlive() and
             otherPrudence:checkDistance(mob) <= 50 and
-            skillid ~= xi.jsa.PERFECT_DODGE -- Perfect Dodge is manually controlled
+            skillid ~= xi.mobSkill.PERFECT_DODGE_1 -- Perfect Dodge is manually controlled
         then
             otherPrudence:setLocalVar('mirrored_ws', 1)
             otherPrudence:useMobAbility(skillid)
@@ -46,7 +46,7 @@ entity.onMobSpawn = function(mob)
     mob:setMod(xi.mod.TRIPLE_ATTACK, 20)
     mob:addMod(xi.mod.DEFP, 33)
     mob:addMod(xi.mod.MOVE_SPEED_STACKABLE, 20)
-    mob:addMobMod(xi.mobMod.WEAPON_BONUS, 72) -- 180 total weapon damage
+    mob:addMobMod(xi.mobMod.BASE_DAMAGE_MODIFIER, 72) -- 180 total weapon damage
 end
 
 local teleportToTarget = function(mob, target, currentTargetId)
@@ -86,7 +86,7 @@ entity.onMobFight = function(mob, target)
         (not hasUsedPerfectDodge and mob:getHPP() <= 95) or
         (hasUsedPerfectDodge and currentTime >= cooldownTime)
     then
-        mob:useMobAbility(xi.jsa.PERFECT_DODGE)
+        mob:useMobAbility(xi.mobSkill.PERFECT_DODGE_1)
         mob:setLocalVar('perfectDodgeCooldown', currentTime + 120)
 
         -- First time only: trigger both Prudences together
@@ -94,7 +94,7 @@ entity.onMobFight = function(mob, target)
             mob:setLocalVar('perfectDodgeUsed', 1)
 
             if otherPrudence and otherPrudence:isAlive() then
-                otherPrudence:useMobAbility(xi.jsa.PERFECT_DODGE)
+                otherPrudence:useMobAbility(xi.mobSkill.PERFECT_DODGE_1)
                 otherPrudence:setLocalVar('perfectDodgeUsed', 1)
                 otherPrudence:setLocalVar('perfectDodgeCooldown', currentTime + 120)
             end
@@ -109,7 +109,7 @@ entity.onMobFight = function(mob, target)
 
         if targetSwitched then
             if
-                mob:checkDistance(target) > mob:getMeleeRange()
+                mob:checkDistance(target) > mob:getMeleeRange(target)
             then
                 teleportToTarget(mob, target, currentTargetId)
             end

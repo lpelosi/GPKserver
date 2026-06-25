@@ -21,12 +21,14 @@ entity.onMobInitialize = function(mob)
 end
 
 entity.onMobSpawn = function(mob)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MULTIPLIER, 150)
+
     xi.mix.jobSpecial.config(mob, {
         between = 30,
         specials =
         {
-            { id = xi.jsa.MIGHTY_STRIKES },
-            { id = xi.jsa.MIJIN_GAKURE },
+            { id = xi.mobSkill.MIGHTY_STRIKES_1 },
+            { id = xi.mobSkill.MIJIN_GAKURE_1   },
         },
     })
 end
@@ -36,7 +38,7 @@ entity.onMobEngage = function(mob, target)
 
     for member = mobid, mobid + 7 do
         local m = GetMobByID(member)
-        if m and m:getCurrentAction() == xi.action.ROAMING then
+        if m and m:getCurrentAction() == xi.action.category.ROAMING then
             m:updateEnmity(target)
         end
     end

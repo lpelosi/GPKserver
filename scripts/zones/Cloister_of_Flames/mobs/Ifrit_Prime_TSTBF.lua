@@ -41,18 +41,21 @@ entity.onMobSpawn = function(mob)
 end
 
 entity.onAdditionalEffect = function(mob, target, damage)
-    return xi.mob.onAddEffect(mob, target, damage, xi.mob.ae.ENFIRE, { chance = 100, power = math.random(15, 25) })
+    local pTable =
+    {
+        chance         = 100,
+        attackType     = xi.attackType.MAGICAL,
+        magicalElement = xi.element.FIRE,
+        basePower      = math.floor(damage / 2),
+        actorStat      = xi.mod.INT,
+    }
+
+    return xi.combat.action.executeAddEffectDamage(mob, target, pTable)
 end
 
 entity.onMobEngage = function(mob, target)
     -- always uses a tp move when first engaged
     mob:setTP(3000)
-end
-
-entity.onMobFight = function(mob, target)
-end
-
-entity.onMobDeath = function(mob, player, optParams)
 end
 
 return entity

@@ -9,9 +9,11 @@ local entity = {}
 
 entity.phList =
 {
-    [ID.mob.UNUT - 13] = ID.mob.UNUT, -- 127.32 7.768 93.138
-    [ID.mob.UNUT - 9]  = ID.mob.UNUT, -- 97.774 7.837 67.815
-    [ID.mob.UNUT - 2]  = ID.mob.UNUT, -- 60.408 8.711 82.500
+    [ID.mob.UNUT - 2]  = ID.mob.UNUT,  -- Confirmed on retail
+    [ID.mob.UNUT + 14] = ID.mob.UNUT,  -- Confirmed on retail
+    [ID.mob.UNUT + 24]  = ID.mob.UNUT, -- Confirmed on retail
+    [ID.mob.UNUT + 31]  = ID.mob.UNUT, -- Confirmed on retail
+
 }
 
 entity.spawnPoints =
@@ -25,12 +27,23 @@ entity.spawnPoints =
     { x =  91.597, y = 8.326, z = 85.349 },
 }
 
+entity.onMobInitialize = function(mob)
+    xi.mob.updateNMSpawnPoint(mob)
+    mob:setMobMod(xi.mobMod.GIL_MIN, 3600)
+    mob:setMobMod(xi.mobMod.GIL_MAX, 3600)
+end
+
 entity.onMobSpawn = function(mob)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MULTIPLIER, 150)
     mob:addImmunity(xi.immunity.DARK_SLEEP)
 end
 
 entity.onMobDeath = function(mob, player, optParams)
     xi.hunts.checkHunt(mob, player, 359)
+end
+
+entity.onMobDespawn = function(mob)
+    xi.mob.updateNMSpawnPoint(mob)
 end
 
 return entity

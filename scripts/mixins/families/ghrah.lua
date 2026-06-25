@@ -163,7 +163,7 @@ local function switchMobForm(mob, form, aggressive)
     local originalEva = mob:getLocalVar('originalEVA')
 
     -- Reset to base stats first
-    mob:setMobMod(xi.mobMod.WEAPON_BONUS, 0)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MODIFIER, 0)
     mob:setMod(xi.mod.ATT, originalAtt)
     mob:setMod(xi.mod.DEF, originalDef)
     mob:setMod(xi.mod.EVA, originalEva)
@@ -177,7 +177,7 @@ local function switchMobForm(mob, form, aggressive)
     elseif form == 2 then
         -- Spider form
         -- ATT and DEF traits equivalent to 75 WAR
-        mob:setMobMod(xi.mobMod.WEAPON_BONUS, mob:getMainLvl() + 2)
+        mob:setMobMod(xi.mobMod.BASE_DAMAGE_MODIFIER, mob:getMainLvl() + 2)
         mob:setMod(xi.mod.ATT, originalAtt + 11)
         mob:setMod(xi.mod.DEF, originalDef + 11)
     elseif form == 3 then
@@ -222,7 +222,6 @@ g_mixins.families.ghrah = function(ghrahMob)
         mob:addMod(xi.mod.MATT, 20) -- Ghrah have innate +20 MATT on top of BLM bonuses
         mob:addMod(xi.mod.DMGMAGIC, -1250)
         mob:addMod(xi.mod.MDEF, 20)
-        mob:setMobMod(xi.mobMod.NO_SPELL_COST, 1)
         initializeOriginalMods(mob)
 
         local config = skinConfig[skin]

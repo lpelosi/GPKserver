@@ -38,6 +38,8 @@ set(PACKET_S2C_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/0x026_item_subcontainer.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x027_talknumwork2.h
     ${CMAKE_CURRENT_SOURCE_DIR}/0x027_talknumwork2.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/0x028_battle2.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/0x028_battle2.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x029_battle_message.h
     ${CMAKE_CURRENT_SOURCE_DIR}/0x029_battle_message.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x02a_talknumwork.h
@@ -87,8 +89,13 @@ set(PACKET_S2C_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/0x044_extended_job_pup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/0x044_extended_job_pup.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x047_translate.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/0x048_link_concierge.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/0x047_translate.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/0x048_link_concierge_header.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/0x048_link_concierge_header.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/0x048_link_concierge_record.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/0x048_link_concierge_record.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x049_itemsearch.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/0x049_itemsearch.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x04b_pbx_result.h
     ${CMAKE_CURRENT_SOURCE_DIR}/0x04b_pbx_result.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x04c_auc.h
@@ -171,7 +178,9 @@ set(PACKET_S2C_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/0x077_entity_vis.h
     ${CMAKE_CURRENT_SOURCE_DIR}/0x077_entity_vis.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x078_switch_start.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/0x078_switch_start.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x079_switch_proc.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/0x079_switch_proc.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x082_guild_buy.h
     ${CMAKE_CURRENT_SOURCE_DIR}/0x082_guild_buy.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x083_guild_buylist.h
@@ -186,6 +195,8 @@ set(PACKET_S2C_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/0x08c_merit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x08d_job_points.h
     ${CMAKE_CURRENT_SOURCE_DIR}/0x08d_job_points.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/0x08e_alter_ego_points.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/0x08e_alter_ego_points.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x096_myroom_enter.h
     ${CMAKE_CURRENT_SOURCE_DIR}/0x097_myroom_exit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/0x0a0_map_group.h
@@ -196,12 +207,15 @@ set(PACKET_S2C_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/0x0ac_command_data.h
     ${CMAKE_CURRENT_SOURCE_DIR}/0x0ac_command_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x0ad_dungeon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/0x0ad_dungeon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x0ae_mount_data.h
     ${CMAKE_CURRENT_SOURCE_DIR}/0x0ae_mount_data.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x0b4_config.h
     ${CMAKE_CURRENT_SOURCE_DIR}/0x0b4_config.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x0b5_faq_gmparam.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/0x0b5_faq_gmparam.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x0b6_set_gmmsg.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/0x0b6_set_gmmsg.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/0x0b7_gmscitem.h
     ${CMAKE_CURRENT_SOURCE_DIR}/0x0bf_registration.h
     ${CMAKE_CURRENT_SOURCE_DIR}/0x0bf_registration.cpp

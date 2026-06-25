@@ -32,14 +32,16 @@ for file in "${targets[@]}"; do
         # passByConstRef here, so we can silence this warning.
         # https://quick-bench.com/q/13EX97WSfj9-rY_98opaAwgDOQc
 
-        cppcheck_output=$(cppcheck -v -j 4 --force --quiet --inconclusive --std=c++17 \
+        cppcheck_output=$(cppcheck -v -j 4 --force --quiet --inconclusive --std=c++23 \
         --suppress=passedByValue:src/map/packet_system.cpp \
+        --suppress=templateRecursion:src/map/packet_system.cpp \
         --suppress=unmatchedSuppression \
         --suppress=missingIncludeSystem \
         --suppress=missingInclude \
         --suppress=checkersReport \
         --enable=information,performance,portability,missingInclude --inline-suppr \
         --inconclusive \
+        --check-level=exhaustive \
         -DSA_INTERRUPT -DZMQ_DEPRECATED -DZMQ_EVENT_MONITOR_STOPPED -DTRACY_ENABLE \
         "$file" 2>&1 || true)
 
@@ -80,11 +82,6 @@ if [[ -n "$git_diff_output" ]]; then
     echo '```diff'
     echo "$git_diff_output"
     echo '```'
-    echo
-fi
-
-if ! $any_issues; then
-    echo "## :heavy_check_mark: C++ Checks Passed"
     echo
 fi
 

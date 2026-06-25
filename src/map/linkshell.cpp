@@ -203,21 +203,22 @@ void CLinkshell::ChangeMemberRank(const std::string& MemberName, const uint8 req
 
                 if (PItemLinkshell != nullptr && PItemLinkshell->isType(ITEM_LINKSHELL) && PItemLinkshell->GetLSID() == m_id)
                 {
-                    CItemLinkshell* newShellItem = (CItemLinkshell*)itemutils::GetItem(newId);
-                    if (newShellItem == nullptr)
+                    auto PNewItem = xi::items::spawn(newId);
+                    if (PNewItem == nullptr)
                     {
                         return;
                     }
+                    auto* newShellItem = static_cast<CItemLinkshell*>(PNewItem.get());
                     newShellItem->setQuantity(1);
                     std::memcpy(newShellItem->m_extra, PItemLinkshell->m_extra, 24);
                     newShellItem->SetLSType(newId == ITEMID::PEARLSACK ? LSTYPE_PEARLSACK : LSTYPE_LINKPEARL);
                     newShellItem->setSubType(ITEM_LOCKED);
                     uint8 LocationID = PItemLinkshell->getLocationID();
                     uint8 SlotID     = PItemLinkshell->getSlotID();
-                    destroy(PItemLinkshell);
+                    PMember->getStorage(LocationID)->RemoveItem(SlotID);
 
                     PItemLinkshell = newShellItem;
-                    PMember->getStorage(LocationID)->InsertItem(PItemLinkshell, SlotID);
+                    PMember->getStorage(LocationID)->InsertItem(std::move(PNewItem), SlotID);
                     db::preparedStmt("UPDATE char_inventory SET itemid = ?, extra = ? WHERE charid = ? AND location = ? AND slot = ? LIMIT 1",
                                      PItemLinkshell->getID(),
                                      PItemLinkshell->m_extra,
@@ -247,7 +248,7 @@ void CLinkshell::ChangeMemberRank(const std::string& MemberName, const uint8 req
                 charutils::SaveCharStats(PMember);
                 charutils::SaveCharEquip(PMember);
 
-                PMember->pushPacket<GP_SERV_COMMAND_ITEM_SAME>();
+                PMember->pushPacket<GP_SERV_COMMAND_ITEM_SAME>(PMember);
                 PMember->pushPacket<CCharStatusPacket>(PMember);
                 return;
             }
@@ -282,8 +283,7 @@ void CLinkshell::RemoveMemberByName(const std::string& MemberName, uint8 request
                 linkshell::DelOnlineMember(PMember, PItemLinkshell);
 
                 PItemLinkshell->setSubType(ITEM_UNLOCKED);
-
-                PMember->equip[slot] = 0;
+                PMember->clearEquip(slot);
                 if (slot == SLOT_LINK1)
                 {
                     PMember->updatemask |= UPDATE_HP;
@@ -323,7 +323,7 @@ void CLinkshell::RemoveMemberByName(const std::string& MemberName, uint8 request
             charutils::SaveCharStats(PMember);
             charutils::SaveCharEquip(PMember);
 
-            PMember->pushPacket<GP_SERV_COMMAND_ITEM_SAME>();
+            PMember->pushPacket<GP_SERV_COMMAND_ITEM_SAME>(PMember);
             PMember->pushPacket<CCharStatusPacket>(PMember);
             if (breakLinkshell)
             {
@@ -506,7 +506,10 @@ uint32 RegisterNewLinkshell(const std::string& name, uint16 color)
             if (rset && rset->rowsCount() && rset->next())
             {
                 const auto id = rset->get<uint32>("linkshellid");
-                return LoadLinkshell(id)->getID();
+                if (auto* PLinkshell = LoadLinkshell(id))
+                {
+                    return PLinkshell->getID();
+                }
             }
         }
     }

@@ -25,7 +25,7 @@ entity.onMobInitialize = function(mob)
 end
 
 entity.onMobSpawn = function(mob)
-    mob:setMobMod(xi.mobMod.WEAPON_BONUS, 78) -- 175 total weapon damage
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MODIFIER, 78) -- 175 total weapon damage
     mob:addMod(xi.mod.EVA, 30)
     mob:addMod(xi.mod.DEFP, 50)
     mob:addMod(xi.mod.ATTP, 50)
@@ -36,7 +36,7 @@ entity.onMobSpawn = function(mob)
     xi.mix.jobSpecial.config(mob, {
         specials =
         {
-            { id = xi.jsa.MIGHTY_STRIKES, cooldown = 90, hpp = math.random(85, 95) }, -- 'May use Mighty Strikes multiple times.'
+            { id = xi.mobSkill.MIGHTY_STRIKES_1, cooldown = 90, hpp = math.random(85, 95) }, -- 'May use Mighty Strikes multiple times.'
         },
     })
 
@@ -77,7 +77,7 @@ entity.onMobFight = function(mob, target)
     end
 end
 
-entity.onMobWeaponSkill = function(target, mob, skill)
+entity.onMobWeaponSkill = function(mob, target, skill, action)
     local skillId = skill:getID()
     if skillId == xi.mobSkill.PLASMA_CHARGE then -- Set spell list for Burst2/Thundaga3 upon using Plasma Charge. Allow for 60 seconds.
         mob:setSpellList(140)
@@ -100,10 +100,15 @@ entity.onMobWeaponSkill = function(target, mob, skill)
 end
 
 entity.onAdditionalEffect = function(mob, target, damage)
-    return xi.mob.onAddEffect(mob, target, damage, xi.mob.ae.STUN, { chance = 65, duration = math.random(4, 8) })
-end
+    local pTable =
+    {
+        chance   = 65,
+        effectId = xi.effect.STUN,
+        element  = xi.element.THUNDER,
+        duration = math.random(4, 8),
+    }
 
-entity.onMobDeath = function(mob, player, optParams)
+    return xi.combat.action.executeAddEffectEnfeeblement(mob, target, pTable)
 end
 
 return entity

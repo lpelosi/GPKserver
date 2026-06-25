@@ -55,18 +55,21 @@ public:
     CBasicPacket()
     {
         TracyZoneScoped;
+
         std::fill(buffer_.data(), buffer_.data() + PACKET_SIZE, 0);
     }
 
     explicit CBasicPacket(const CBasicPacket& other)
     {
         TracyZoneScoped;
+
         std::memcpy(buffer_.data(), other.buffer_.data(), PACKET_SIZE);
     }
 
     explicit CBasicPacket(const std::unique_ptr<CBasicPacket>& other)
     {
         TracyZoneScoped;
+
         std::memcpy(buffer_.data(), other->buffer_.data(), PACKET_SIZE);
     }
 
@@ -83,9 +86,9 @@ public:
     CBasicPacket& operator=(const CBasicPacket& other)     = delete;
     CBasicPacket& operator=(CBasicPacket&& other) noexcept = delete;
 
-    auto copy() -> std::unique_ptr<std::remove_pointer_t<decltype(this)>>
+    virtual auto copy() const -> std::unique_ptr<CBasicPacket>
     {
-        return std::make_unique<std::remove_pointer_t<decltype(this)>>(*this);
+        return std::make_unique<CBasicPacket>(*this);
     }
 
     auto getType() -> uint16

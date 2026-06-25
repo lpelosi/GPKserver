@@ -41,8 +41,10 @@ inline void generateSelfSignedCert()
             {
                 ShowInfo(fmt::format("Found existing login.key"));
             }
+
+            EVP_PKEY_free(pkey);
+            fclose(fileHandle);
         }
-        fclose(fileHandle);
     }
 
     if (std::filesystem::exists("login.cert"))
@@ -69,6 +71,7 @@ inline void generateSelfSignedCert()
                 }
             }
 
+            X509_free(cert);
             fclose(fileHandle);
         }
     }
@@ -141,6 +144,7 @@ inline void generateSelfSignedCert()
             fclose(fileHandle);
         }
         EVP_PKEY_free(pkey);
+        X509_free(x509);
     }
 }
 

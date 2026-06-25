@@ -23,6 +23,7 @@
 #define _LUASPELL_H
 
 #include "common/cbasetypes.h"
+#include "enums/action/knockback.h"
 #include "luautils.h"
 
 class CSpell;
@@ -40,8 +41,9 @@ public:
 
     friend std::ostream& operator<<(std::ostream& out, const CLuaSpell& spell);
 
-    void   setMsg(uint16 messageID);
-    void   setModifier(uint8 modifier);
+    void   setMsg(MsgBasic messageID);
+    void   setModifier(ActionModifier modifier) const;
+    void   setCritical(bool isCritical) const;
     void   setAoE(uint8 aoe);
     void   setFlag(uint8 flags);
     void   setRadius(float radius);
@@ -50,9 +52,10 @@ public:
     void   setMPCost(uint16 mpcost);
     bool   canTargetEnemy();
     uint8  isAoE();
+    float  getRadius();
     bool   tookEffect();
     uint16 getTotalTargets();
-    uint16 getMagicBurstMessage();
+    auto   getMagicBurstMessage() const -> MsgBasic;
     uint16 getElement();
     uint16 getID();
     uint16 getMPCost();
@@ -60,8 +63,11 @@ public:
     uint8  getSpellGroup();
     uint8  getSpellFamily();
     uint8  getFlag();
+    uint8  getLevel(JOBTYPE jobId);
     uint32 getCastTime();
     uint32 getPrimaryTargetID();
+    auto   getKnockback() const -> Knockback;
+    auto   isCritical() const -> bool;
 
     bool operator==(const CLuaSpell& other) const
     {

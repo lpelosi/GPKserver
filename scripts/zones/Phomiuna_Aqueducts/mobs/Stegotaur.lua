@@ -15,7 +15,7 @@ entity.onMobSpawn = function(mob)
     mob:setLocalVar('fomorHateAdj', 1)
 end
 
-entity.onMobWeaponSkillPrepare = function(mob, target)
+entity.onMobMobskillChoose = function(mob, target, skillId)
     local tpMoves =
     {
         xi.mobSkill.TRICLIP_1,
@@ -30,9 +30,6 @@ entity.onMobWeaponSkillPrepare = function(mob, target)
     end
 
     return tpMoves[math.random(1, #tpMoves)]
-end
-
-entity.onMobDeath = function(mob, player, optParams)
 end
 
 return entity

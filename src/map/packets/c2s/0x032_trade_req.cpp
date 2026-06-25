@@ -21,7 +21,7 @@
 
 #include "0x032_trade_req.h"
 
-#include "entities/charentity.h"
+#include "entities/char_entity.h"
 #include "enums/msg_std.h"
 #include "packets/s2c/0x021_item_trade_req.h"
 #include "packets/s2c/0x022_item_trade_res.h"
@@ -33,15 +33,15 @@
 
 auto GP_CLI_COMMAND_TRADE_REQ::validate(MapSession* PSession, const CCharEntity* PChar) const -> PacketValidationResult
 {
-    return PacketValidator()
-        .mustNotEqual(PChar->id, UniqueNo, "Character trading with itself")
-        .isNotMonstrosity(PChar);
+    return PacketValidator(PChar)
+        .blockedBy({ BlockedState::InEvent, BlockedState::Monstrosity })
+        .mustNotEqual(PChar->id, this->UniqueNo, "Character trading with itself");
 }
 
 void GP_CLI_COMMAND_TRADE_REQ::process(MapSession* PSession, CCharEntity* PChar) const
 {
-    auto* PTarget = static_cast<CCharEntity*>(PChar->GetEntity(ActIndex, TYPE_PC));
-    if (!PTarget || PTarget->id != UniqueNo)
+    auto* PTarget = static_cast<CCharEntity*>(PChar->GetEntity(this->ActIndex, TYPE_PC));
+    if (!PTarget || PTarget->id != this->UniqueNo)
     {
         return;
     }
@@ -58,8 +58,7 @@ void GP_CLI_COMMAND_TRADE_REQ::process(MapSession* PSession, CCharEntity* PChar)
 
     // If either player is crafting, don't allow the trade request.
     // TODO: Not retail accurate but leaving it here for now.
-    if (PChar->animation == ANIMATION_SYNTH || (PChar->CraftContainer && PChar->CraftContainer->getItemsCount() > 0) ||
-        PTarget->animation == ANIMATION_SYNTH || (PTarget->CraftContainer && PTarget->CraftContainer->getItemsCount() > 0))
+    if (PChar->isCrafting() || PTarget->isCrafting())
     {
         ShowError("%s trade request with %s was blocked. They are synthing!", PChar->getName(), PTarget->getName());
         PChar->pushPacket<GP_SERV_COMMAND_ITEM_TRADE_RES>(PTarget, GP_ITEM_TRADE_RES_KIND::ErrYouTrade);
@@ -120,8 +119,8 @@ void GP_CLI_COMMAND_TRADE_REQ::process(MapSession* PSession, CCharEntity* PChar)
     }
 
     PChar->lastTradeInvite     = currentTime;
-    PChar->TradePending.id     = UniqueNo;
-    PChar->TradePending.targid = ActIndex;
+    PChar->TradePending.id     = this->UniqueNo;
+    PChar->TradePending.targid = this->ActIndex;
 
     PTarget->lastTradeInvite     = currentTime;
     PTarget->TradePending.id     = PChar->id;

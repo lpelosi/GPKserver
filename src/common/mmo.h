@@ -31,6 +31,10 @@
 #include <cstring>
 #include <string>
 
+//
+// Types inferred or reversed from the client
+//
+
 #define FFXI_HEADER_SIZE 0x1C // common packet header size
 
 // For filters1_t, filters2_t and SAVE_CONF:
@@ -242,7 +246,7 @@ struct keyitems_table_t
 
 struct keyitems_t
 {
-    std::array<keyitems_table_t, 7> tables;
+    std::array<keyitems_table_t, 8> tables; // 8 tables of key items as of December 2025
 };
 
 struct position_t

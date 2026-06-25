@@ -26,7 +26,7 @@
 ---@type TItem
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     if target:hasStatusEffect(xi.effect.TRANSCENDENCY) then
         return 523
     else
@@ -34,8 +34,8 @@ itemObject.onItemCheck = function(target, item, param, caster)
     end
 end
 
-itemObject.onItemUse = function(target)
-    target:addStatusEffect(xi.effect.TRANSCENDENCY, 1, 0, 180)
+itemObject.onItemUse = function(target, user)
+    target:addStatusEffect(xi.effect.TRANSCENDENCY, { power = 1, duration = 180, origin = user })
 end
 
 return itemObject

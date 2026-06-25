@@ -12,9 +12,7 @@ entity.onMobInitialize = function(mob)
     mob:addImmunity(xi.immunity.TERROR)
     mob:addImmunity(xi.immunity.PLAGUE)
     mob:addMod(xi.mod.REGAIN, 1000) -- Rapid Heavy Strike usage
-end
-
-entity.onMobDeath = function(mob, player, optParams)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MULTIPLIER, 150)
 end
 
 return entity

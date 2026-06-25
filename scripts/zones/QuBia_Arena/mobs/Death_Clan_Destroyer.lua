@@ -20,10 +20,11 @@ entity.onMobFight = function(mob, target)
 
     -- queue curaga II on any sleeping ally
     for i = instOffset + 3, instOffset + 12 do
-        if GetMobByID(i):getCurrentAction() == xi.action.SLEEP then
+        local allyMob = GetMobByID(i)
+        if allyMob and allyMob:getCurrentAction() == xi.action.category.SLEEP then
             if not xi.combat.behavior.isEntityBusy(mob) then
                 if mob:getLocalVar('cooldown') == 0 then
-                    mob:castSpell(8, GetMobByID(i))
+                    mob:castSpell(8, allyMob)
                     mob:setLocalVar('cooldown', 20)
                 end
             else
@@ -35,9 +36,6 @@ entity.onMobFight = function(mob, target)
     if mob:getLocalVar('cooldown') > 0 then
         mob:setLocalVar('cooldown', mob:getLocalVar('cooldown') - 1)
     end
-end
-
-entity.onMobDeath = function(mob, player, optParams)
 end
 
 return entity

@@ -95,7 +95,7 @@ entity.onMobSpawn = function(mob)
         specials =
         {
             {
-                id = xi.jsa.BLOOD_WEAPON_IXDRK,
+                id = xi.mobSkill.BLOOD_WEAPON_IXDRK,
                 hpp = math.random(90, 95),
                 cooldown = 120,
                 endCode = function(mobArg)
@@ -107,9 +107,6 @@ entity.onMobSpawn = function(mob)
             }
         }
     })
-end
-
-entity.onMobDeath = function(mob, player, optParams)
 end
 
 entity.onMobDespawn = function(mob)

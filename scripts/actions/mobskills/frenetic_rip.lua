@@ -1,27 +1,39 @@
 -----------------------------------
---  Frenetic Rip
---  Description: Delivers a threefold attack. Damage varies with TP.
---  Type: Physical (Blunt)
+-- Frenetic Rip
+-- Family: Imp
+-- Description: Delivers a threefold attack.
 -----------------------------------
 ---@type TMobSkill
 local mobskillObject = {}
 
 mobskillObject.onMobSkillCheck = function(target, mob, skill)
-    if mob:getAnimationSub() == 4 and mob:getFamily() == 165 then -- Imps - with horn
+    if
+        mob:getAnimationSub() == 4 and
+        mob:getSpecies() == xi.mobSpecies.HORNED_IMP
+    then
         return 1
     else
         return 0
     end
 end
 
-mobskillObject.onMobWeaponSkill = function(target, mob, skill)
-    local numhits = 3
-    local accmod = 1
-    local ftp    = 1
-    local info = xi.mobskills.mobPhysicalMove(mob, target, skill, numhits, accmod, ftp, xi.mobskills.physicalTpBonus.NO_EFFECT, 0, 0, 0)
-    local dmg = xi.mobskills.mobFinalAdjustments(info.dmg, mob, skill, target, xi.attackType.PHYSICAL, xi.damageType.BLUNT, info.hitslanded)
-    target:takeDamage(dmg, mob, xi.attackType.PHYSICAL, xi.damageType.BLUNT)
-    return dmg
+mobskillObject.onMobWeaponSkill = function(mob, target, skill, action)
+    local params = {}
+
+    params.baseDamage     = mob:getWeaponDmg()
+    params.numHits        = 3
+    params.fTP            = { 1.334, 1.334, 1.334 }
+    params.attackType     = xi.attackType.PHYSICAL
+    params.damageType     = xi.damageType.BLUNT
+    params.shadowBehavior = xi.mobskills.shadowBehavior.NUMSHADOWS_3
+
+    local info = xi.mobskills.mobPhysicalMove(mob, target, skill, action, params)
+
+    if xi.mobskills.processDamage(mob, target, skill, action, info) then
+        target:takeDamage(info.damage, mob, info.attackType, info.damageType)
+    end
+
+    return info.damage
 end
 
 return mobskillObject

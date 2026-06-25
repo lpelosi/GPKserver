@@ -7,7 +7,7 @@
 ---@type TItem
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     if target:getStatusEffectBySource(xi.effect.ENCHANTMENT, xi.effectSourceType.EQUIPPED_ITEM, xi.item.ASSASSINS_RING) ~= nil then
         target:delStatusEffect(xi.effect.ENCHANTMENT, nil, xi.effectSourceType.EQUIPPED_ITEM, xi.item.ASSASSINS_RING)
     end
@@ -15,18 +15,17 @@ itemObject.onItemCheck = function(target, item, param, caster)
     return 0
 end
 
-itemObject.onItemUse = function(target)
+itemObject.onItemUse = function(target, user)
     if target:hasEquipped(xi.item.ASSASSINS_RING) then
-        target:addStatusEffect(xi.effect.ENCHANTMENT, 0, 0, 180, 0, 0, 0, xi.effectSourceType.EQUIPPED_ITEM, xi.item.ASSASSINS_RING)
+        target:addStatusEffect(xi.effect.ENCHANTMENT, { duration = 180, origin = user, sourceType = xi.effectSourceType.EQUIPPED_ITEM, sourceTypeParam = xi.item.ASSASSINS_RING })
     end
 end
 
 itemObject.onEffectGain = function(target, effect)
-    target:addMod(xi.mod.RACC, 20)
+    effect:addMod(xi.mod.RACC, 20)
 end
 
 itemObject.onEffectLose = function(target, effect)
-    target:delMod(xi.mod.RACC, 20)
 end
 
 return itemObject

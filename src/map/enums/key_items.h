@@ -56,6 +56,9 @@ enum class KeyItem : uint16_t
     FROG_FISHING                 = 1976,
     SERPENT_RUMORS               = 1977,
     MOOCHING                     = 1978,
+    WINDURST_TRUST_PERMIT        = 2497,
+    BASTOK_TRUST_PERMIT          = 2499,
+    SAN_DORIA_TRUST_PERMIT       = 2501,
     JOB_BREAKER                  = 2544,
     IMPERIAL_CHAIR               = 2826,
     DECORATIVE_CHAIR             = 2827,
@@ -82,4 +85,5 @@ enum class KeyItem : uint16_t
     JOB_GESTURE_RUNE_FENCER      = 2964,
     MOG_PATIO_DESIGN_DOCUMENT    = 3051,
     CHOCOBO_COMPANION            = 3072,
+    CIPHER_BRACELET              = 3361,
 };

@@ -7,7 +7,7 @@
 ---@type TItem
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     if target:getStatusEffectBySource(xi.effect.ENCHANTMENT, xi.effectSourceType.EQUIPPED_ITEM, xi.item.ELDRITCH_HORN_HAIRPIN) ~= nil then
         target:delStatusEffect(xi.effect.ENCHANTMENT, nil, xi.effectSourceType.EQUIPPED_ITEM, xi.item.ELDRITCH_HORN_HAIRPIN)
     end
@@ -15,20 +15,18 @@ itemObject.onItemCheck = function(target, item, param, caster)
     return 0
 end
 
-itemObject.onItemUse = function(target)
+itemObject.onItemUse = function(target, user)
     if target:hasEquipped(xi.item.ELDRITCH_HORN_HAIRPIN) then
-        target:addStatusEffect(xi.effect.ENCHANTMENT, 0, 0, 1800, 0, 0, 0, xi.effectSourceType.EQUIPPED_ITEM, xi.item.ELDRITCH_HORN_HAIRPIN)
+        target:addStatusEffect(xi.effect.ENCHANTMENT, { duration = 1800, origin = user, sourceType = xi.effectSourceType.EQUIPPED_ITEM, sourceTypeParam = xi.item.ELDRITCH_HORN_HAIRPIN })
     end
 end
 
 itemObject.onEffectGain = function(target, effect)
-    target:addMod(xi.mod.INT, 3)
-    target:addMod(xi.mod.MND, 3)
+    effect:addMod(xi.mod.INT, 3)
+    effect:addMod(xi.mod.MND, 3)
 end
 
 itemObject.onEffectLose = function(target, effect)
-    target:delMod(xi.mod.INT, 3)
-    target:delMod(xi.mod.MND, 3)
 end
 
 return itemObject

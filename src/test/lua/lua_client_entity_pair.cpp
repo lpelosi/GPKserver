@@ -22,11 +22,11 @@
 #include "lua_client_entity_pair.h"
 #include "common/lua.h"
 #include "enums/tick_type.h"
-#include "map/entities/baseentity.h"
-#include "map/entities/charentity.h"
+#include "map/entities/base_entity.h"
+#include "map/entities/char_entity.h"
 #include "map/item_container.h"
 #include "map/items/item.h"
-#include "map/lua/lua_baseentity.h"
+#include "map/lua/lua_base_entity.h"
 #include "map/lua/sol_bindings.h"
 #include "map/utils/charutils.h"
 #include "map/utils/zoneutils.h"
@@ -43,7 +43,7 @@
 // A test player that combines client and player entity functionality
 // Common test patterns are exposed as properties
 CLuaClientEntityPair::CLuaClientEntityPair(std::unique_ptr<TestChar> testChar, CLuaSimulation* simulation, MapEngine* mapServer)
-: CLuaTestEntity(testChar->entity())
+: CLuaTestEntity(mapServer->scheduler(), testChar->entity())
 , testChar_(std::move(testChar))
 , simulation_(simulation)
 , engine_(mapServer)
@@ -151,7 +151,7 @@ auto CLuaClientEntityPair::isPendingZone() const -> bool
  *  Notes   : Only for LOC_INVENTORY, player-specific
  ************************************************************************/
 
-auto CLuaClientEntityPair::getItemInvSlot(const uint16 itemId, const uint8 quantity) const -> std::optional<uint16>
+auto CLuaClientEntityPair::getItemInvSlot(const uint16 itemId, const uint8 quantity) const -> Maybe<uint16>
 {
     uint8       slotId = 0;
     const auto* PChar  = testChar_->entity();
@@ -331,6 +331,11 @@ auto CLuaClientEntityPair::testChar() const -> TestChar*
 auto CLuaClientEntityPair::simulation() const -> CLuaSimulation*
 {
     return simulation_;
+}
+
+auto CLuaClientEntityPair::engine() -> MapEngine*
+{
+    return engine_;
 }
 
 void CLuaClientEntityPair::Register()

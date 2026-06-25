@@ -21,7 +21,7 @@
 
 #include "0x056_mission_other.h"
 
-#include "entities/charentity.h"
+#include "entities/char_entity.h"
 #include "enums/mission_log.h"
 #include "enums/quest_log.h"
 
@@ -141,7 +141,7 @@ GP_SERV_COMMAND_MISSION::OTHER::OTHER(const CCharEntity* PChar, MissionComplete 
     {
         case MissionComplete::Campaign1:
         {
-            for (uint16 missionID = 256; missionID < 256; missionID++)
+            for (uint16 missionID = 0; missionID < 256; missionID++)
             {
                 if (PChar->m_campaignLog.complete[missionID])
                 {

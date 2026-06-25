@@ -26,9 +26,9 @@
 #include "ai/ai_container.h"
 #include "alliance.h"
 #include "enmity_container.h"
-#include "entities/battleentity.h"
-#include "entities/charentity.h"
-#include "entities/mobentity.h"
+#include "entities/battle_entity.h"
+#include "entities/char_entity.h"
+#include "entities/mob_entity.h"
 #include "notoriety_container.h"
 #include "packets/entity_update.h"
 #include "status_effect_container.h"
@@ -61,6 +61,7 @@ CEnmityContainer::~CEnmityContainer()
 void CEnmityContainer::Clear(uint32 EntityID)
 {
     TracyZoneScoped;
+
     if (EntityID == 0)
     {
         // Iterate over all all entries and remove the relevant entry from their notoriety list
@@ -98,7 +99,14 @@ void CEnmityContainer::LogoutReset(uint32 EntityID)
     if (const auto& enmity_obj = m_EnmityList.find(EntityID); enmity_obj != m_EnmityList.end())
     {
         enmity_obj->second.PEnmityOwner = nullptr;
-        enmity_obj->second.active       = false;
+    }
+}
+
+void CEnmityContainer::SetActive(uint32 EntityID, bool active)
+{
+    if (const auto& enmity_obj = m_EnmityList.find(EntityID); enmity_obj != m_EnmityList.end())
+    {
+        enmity_obj->second.active = active;
     }
 }
 
@@ -111,11 +119,12 @@ void CEnmityContainer::LogoutReset(uint32 EntityID)
 void CEnmityContainer::AddBaseEnmity(CBattleEntity* PChar)
 {
     TracyZoneScoped;
+
     if (PChar->getZone() != m_EnmityHolder->getZone())
     {
         return;
     }
-    m_EnmityList.emplace(PChar->id, EnmityObject_t{ PChar, 0, 0, false });
+    m_EnmityList.emplace(PChar->id, EnmityObject_t{ PChar, 0, 0, true });
     PChar->PNotorietyContainer->add(m_EnmityHolder);
 }
 
@@ -128,13 +137,14 @@ void CEnmityContainer::AddBaseEnmity(CBattleEntity* PChar)
 float CEnmityContainer::CalculateEnmityBonus(CBattleEntity* PEntity)
 {
     TracyZoneScoped;
+
     int enmityBonus = PEntity->getMod(Mod::ENMITY);
 
     if (auto* PChar = dynamic_cast<CCharEntity*>(PEntity))
     {
         enmityBonus += PChar->PMeritPoints->GetMeritValue(MERIT_ENMITY_INCREASE, PChar) - PChar->PMeritPoints->GetMeritValue(MERIT_ENMITY_DECREASE, PChar);
 
-        if (PChar->StatusEffectContainer->HasStatusEffect(EFFECT_SOULEATER))
+        if (PChar->StatusEffectContainer->HasStatusEffect(xi::StatusEffect::Souleater))
         {
             enmityBonus -= PChar->PMeritPoints->GetMeritValue(MERIT_MUTED_SOUL, PChar);
         }
@@ -204,9 +214,13 @@ void CEnmityContainer::UpdateEnmity(CBattleEntity* PEntity, int32 CE, int32 VE, 
         int32 newVE = (int32)(enmity_obj->second.VE + (VE > 0 ? VE * bonus : VE));
 
         // Check for cap limit
-        enmity_obj->second.CE     = std::clamp(newCE, 0, EnmityCap);
-        enmity_obj->second.VE     = std::clamp(newVE, 0, EnmityCap);
-        enmity_obj->second.active = true;
+        enmity_obj->second.CE = std::clamp(newCE, 0, EnmityCap);
+        enmity_obj->second.VE = std::clamp(newVE, 0, EnmityCap);
+
+        if (CE >= 0 && VE >= 0)
+        {
+            enmity_obj->second.active = true;
+        }
     }
     else if (CE >= 0 && VE >= 0)
     {
@@ -252,12 +266,13 @@ void CEnmityContainer::UpdateEnmity(CBattleEntity* PEntity, int32 CE, int32 VE, 
 
 bool CEnmityContainer::HasID(uint32 TargetID)
 {
-    // clang-format off
-    auto maybeID = std::find_if(m_EnmityList.begin(), m_EnmityList.end(), [TargetID](auto elem)
-    {
-        return elem.first == TargetID && elem.second.active;
-    });
-    // clang-format on
+    auto maybeID = std::find_if(
+        m_EnmityList.begin(),
+        m_EnmityList.end(),
+        [TargetID](auto elem)
+        {
+            return elem.first == TargetID;
+        });
 
     return maybeID != m_EnmityList.end();
 }
@@ -271,6 +286,7 @@ bool CEnmityContainer::HasID(uint32 TargetID)
 void CEnmityContainer::UpdateEnmityFromCure(CBattleEntity* PEntity, uint8 level, int32 CureAmount, int32 fixedCE, int32 fixedVE)
 {
     TracyZoneScoped;
+
     if (!IsWithinEnmityRange(PEntity))
     {
         return;
@@ -318,6 +334,7 @@ void CEnmityContainer::UpdateEnmityFromCure(CBattleEntity* PEntity, uint8 level,
 void CEnmityContainer::LowerEnmityByPercent(CBattleEntity* PEntity, uint8 percent, CBattleEntity* HateReceiver)
 {
     TracyZoneScoped;
+
     auto enmity_obj = m_EnmityList.find(PEntity->id);
 
     if (enmity_obj != m_EnmityList.end())
@@ -432,6 +449,7 @@ void CEnmityContainer::UpdateEnmityFromDamage(CBattleEntity* PEntity, int32 Dama
 void CEnmityContainer::UpdateEnmityFromAttack(CBattleEntity* PEntity, int32 Damage)
 {
     TracyZoneScoped;
+
     if (auto enmity_obj = m_EnmityList.find(PEntity->id); enmity_obj != m_EnmityList.end())
     {
         float reduction = (100.0f - std::min<int16>(PEntity->getMod(Mod::ENMITY_LOSS_REDUCTION), 100)) / 100.0f;
@@ -450,20 +468,20 @@ void CEnmityContainer::UpdateEnmityFromAttack(CBattleEntity* PEntity, int32 Dama
 CBattleEntity* CEnmityContainer::GetHighestEnmity()
 {
     TracyZoneScoped;
+
     if (m_EnmityList.empty())
     {
         return nullptr;
     }
     uint32 HighestEnmity = 0;
     auto   highest       = m_EnmityList.end();
-    bool   active        = false;
 
     for (auto it = m_EnmityList.begin(); it != m_EnmityList.end(); ++it)
     {
         const EnmityObject_t& PEnmityObject = it->second;
         uint32                Enmity        = PEnmityObject.CE + PEnmityObject.VE;
 
-        if (Enmity >= HighestEnmity && ((PEnmityObject.active == active) || (PEnmityObject.active && !active)))
+        if (Enmity >= HighestEnmity && PEnmityObject.active)
         {
             auto* POwner = PEnmityObject.PEnmityOwner;
             if (!POwner || (POwner->allegiance != m_EnmityHolder->allegiance))
@@ -476,12 +494,13 @@ CBattleEntity* CEnmityContainer::GetHighestEnmity()
                 {
                     continue;
                 }
-                active        = PEnmityObject.active;
+
                 HighestEnmity = Enmity;
                 highest       = it;
             }
         }
     }
+
     CBattleEntity* PEntity = nullptr;
     if (highest != m_EnmityList.end())
     {
@@ -491,7 +510,9 @@ CBattleEntity* CEnmityContainer::GetHighestEnmity()
             PEntity = zoneutils::GetChar(highest->first);
         }
 
-        if (!PEntity || PEntity->getZone() != m_EnmityHolder->getZone() || PEntity->PInstance != m_EnmityHolder->PInstance)
+        // TODO: Kaeko's blog indicates talking to NPCs/being in a CS also will reset hate here?
+        // Is this still true?
+        if (!PEntity || PEntity->getZone() != m_EnmityHolder->getZone() || PEntity->PInstance != m_EnmityHolder->PInstance || PEntity->isDead())
         {
             m_EnmityList.erase(highest);
             PEntity = GetHighestEnmity();
@@ -534,6 +555,7 @@ bool CEnmityContainer::IsTameable() const
 void CEnmityContainer::UpdateEnmityFromCover(CBattleEntity* PCoverAbilityTarget, CBattleEntity* PCoverAbilityUser)
 {
     TracyZoneScoped;
+
     // Update Enmity if cover ability target and cover ability user are not nullptr
     if (PCoverAbilityTarget != nullptr && PCoverAbilityUser != nullptr)
     {

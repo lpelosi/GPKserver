@@ -14,6 +14,7 @@ entity.onMobInitialize = function(mob)
     mob:addImmunity(xi.immunity.DARK_SLEEP)
     mob:setMobMod(xi.mobMod.ADD_EFFECT, 1)
     mob:setMobMod(xi.mobMod.MAGIC_COOL, 25)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MULTIPLIER, 150)
 end
 
 entity.onMobSpawn = function(mob)
@@ -24,13 +25,14 @@ entity.onAdditionalEffect = function(mob, target, damage)
     return xi.mob.onAddEffect(mob, target, damage, xi.mob.ae.POISON, { chance = 20, power = 50, duration = 40 }) -- Very powerful additional effect: poison
 end
 
-entity.onMobMagicPrepare = function(mob, target, spellId) -- Anansi only casts Paralyga, Slowga, and Poisonga II
+entity.onMobSpellChoose = function(mob, target, spellId)
     local spellList =
     {
         xi.magic.spell.PARALYGA,
         xi.magic.spell.SLOWGA,
         xi.magic.spell.POISONGA_II,
     }
+
     return spellList[math.random(1, #spellList)]
 end
 

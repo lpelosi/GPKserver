@@ -6,19 +6,19 @@
 ---@type TItem
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     return 0
 end
 
-itemObject.onItemUse = function(target)
+itemObject.onItemUse = function(target, user)
     local worked = false
     if not target:hasStatusEffect(xi.effect.REGEN) then
-        target:addStatusEffect(xi.effect.REGEN, 5, 3, 300)
+        target:addStatusEffect(xi.effect.REGEN, { power = 5, duration = 300, origin = user, tick = 3 })
         worked = true
     end
 
     if not target:hasStatusEffect(xi.effect.REFRESH) then
-        target:addStatusEffect(xi.effect.REFRESH, 5, 3, 300)
+        target:addStatusEffect(xi.effect.REFRESH, { power = 5, duration = 300, origin = user, tick = 3 })
         worked = true
     end
 

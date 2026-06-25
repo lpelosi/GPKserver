@@ -20,11 +20,18 @@ entity.phList =
     [ID.mob.EASTERN_SHADOW - 2] = ID.mob.EASTERN_SHADOW, -- -159.000 -16.000 146.000
 }
 
-entity.onMobSpawn = function(mob)
-    mob:setMobMod(xi.mobMod.ALWAYS_AGGRO, 1)
+entity.onMobInitialize = function(mob)
+    xi.mob.updateNMSpawnPoint(mob)
 end
 
-entity.onMobDeath = function(mob, player, optParams)
+entity.onMobSpawn = function(mob)
+    mob:setMobMod(xi.mobMod.ALWAYS_AGGRO, 1)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MULTIPLIER, 150)
+    mob:setMod(xi.mod.DOUBLE_ATTACK, 0)
+end
+
+entity.onMobDespawn = function(mob)
+    xi.mob.updateNMSpawnPoint(mob)
 end
 
 return entity

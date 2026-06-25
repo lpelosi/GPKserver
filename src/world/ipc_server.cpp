@@ -38,14 +38,18 @@ namespace
 
 auto getZMQEndpointString() -> std::string
 {
-    return fmt::format("tcp://{}:{}", settings::get<std::string>("network.ZMQ_IP"), settings::get<uint16>("network.ZMQ_PORT"));
+    return fmt::format(
+        "{}://{}:{}",
+        settings::get<std::string>("network.ZMQ_TRANSPORT"),
+        settings::get<std::string>("network.ZMQ_IP"),
+        settings::get<uint16>("network.ZMQ_PORT"));
 }
 
 } // namespace
 
-IPCServer::IPCServer(WorldEngine& worldServer)
+IPCServer::IPCServer(WorldEngine& worldServer, ZMQService& zmqService)
 : worldServer_(worldServer)
-, zmqRouterWrapper_(getZMQEndpointString())
+, channel_(zmqService.registerRouter(getZMQEndpointString()))
 {
     TracyZoneScoped;
 }
@@ -54,7 +58,7 @@ IPCServer::IPCServer(WorldEngine& worldServer)
 // IPP Lookup
 //
 
-auto IPCServer::getIPPForCharId(uint32 charId) -> std::optional<IPP>
+auto IPCServer::getIPPForCharId(uint32 charId) -> Maybe<IPP>
 {
     TracyZoneScoped;
 
@@ -79,7 +83,7 @@ auto IPCServer::getIPPForCharId(uint32 charId) -> std::optional<IPP>
     return std::nullopt;
 }
 
-auto IPCServer::getIPPForCharName(const std::string& charName) -> std::optional<IPP>
+auto IPCServer::getIPPForCharName(const std::string& charName) -> Maybe<IPP>
 {
     TracyZoneScoped;
 
@@ -98,7 +102,7 @@ auto IPCServer::getIPPForCharName(const std::string& charName) -> std::optional<
     return std::nullopt;
 }
 
-auto IPCServer::getIPPForZoneId(uint16 zoneId) -> std::optional<IPP>
+auto IPCServer::getIPPForZoneId(uint16 zoneId) -> Maybe<IPP>
 {
     TracyZoneScoped;
 
@@ -365,9 +369,9 @@ void IPCServer::handleIncomingMessages()
 {
     TracyZoneScoped;
 
-    // TODO: Can we stop more messages appearing on the queue while we're processing?
+    // TODO: Should we stop more messages appearing on the queue while we're processing?
     IPPMessage message;
-    while (zmqRouterWrapper_.incomingQueue_.try_dequeue(message))
+    while (channel_.tryReceive(message))
     {
         const auto firstByte = message.payload[0];
         const auto msgType   = ipc::toString(static_cast<ipc::MessageType>(firstByte));
@@ -710,6 +714,41 @@ void IPCServer::handleMessage_AssistChannelEvent(const IPP& ipp, const ipc::Assi
     TracyZoneScoped;
 
     rerouteMessageToCharId(message.receiverId, message);
+}
+
+void IPCServer::handleMessage_GMCallRequest(const IPP& ipp, const ipc::GMCallRequest& message)
+{
+    TracyZoneScoped;
+
+    ShowInfoFmt("GM Call #{} from {} (charId: {}, accId: {}, zone: {}): {}",
+                message.callId,
+                message.charName,
+                message.charId,
+                message.accId,
+                message.zoneId,
+                message.message);
+
+    // TODO: Route this to external clients
+}
+
+void IPCServer::handleMessage_GMCallResponse(const IPP& ipp, const ipc::GMCallResponse& message)
+{
+    TracyZoneScoped;
+
+    // Client can only read up to 1024 characters, drop any extra characters now.
+    auto truncatedMessage    = message;
+    truncatedMessage.message = truncatedMessage.message.substr(0, 1024);
+
+    db::preparedStmt("UPDATE help_desk "
+                     "SET response = ?, responded_at = NOW() "
+                     "WHERE id = ?",
+                     truncatedMessage.message,
+                     truncatedMessage.callId);
+
+    if (const auto maybeCharIPP = getIPPForCharId(truncatedMessage.charId))
+    {
+        sendMessage(*maybeCharIPP, truncatedMessage);
+    }
 }
 
 void IPCServer::handleUnknownMessage(const IPP& ipp, const std::span<uint8_t> message)

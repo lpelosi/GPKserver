@@ -6,14 +6,17 @@
 ---@type TItem
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     return 0
 end
 
-itemObject.onItemUse = function(target)
-    local duration = 7200
+itemObject.onItemUse = function(target, user)
+    local duration = 28800 -- 8 hours
     target:delStatusEffect(xi.effect.RERAISE)
-    target:addStatusEffect(xi.effect.RERAISE, 1, 0, duration)
+    -- Test EXP
+    -- * No Raise       - 26740 -> 25114 = 1626 lost
+    -- * Revive Feather - 27553 -> 26740 = 813 lost (50%)
+    target:addStatusEffect(xi.effect.RERAISE, { power = 1, duration = duration, origin = user })
     target:messageBasic(xi.msg.basic.GAINS_EFFECT_OF_STATUS, xi.effect.RERAISE)
 end
 

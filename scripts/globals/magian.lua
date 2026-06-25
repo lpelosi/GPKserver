@@ -266,7 +266,7 @@ end
 -- since onItemEquip/unEquip functions only exist for two items.
 -- NOTE: This function isn't the most efficient, but is only executed on server
 -- start, or magian reload.
-local function registerTrialListeners()
+xi.magian.registerTrialListeners = function()
     xi.items = xi.items or {}
 
     for trialId, magianData in pairs(xi.magian.trials) do
@@ -309,16 +309,25 @@ end
 -----------------------------------
 
 local function giveMagianItem(player, itemData, inscribeTrialId)
-    local itemParameters = { itemData.itemId, 1, 0, 0, 0, 0, 0, 0, 0, 0, inscribeTrialId and inscribeTrialId or 0 }
+    local exdata =
+    {
+        augmentKind    = xi.augment.kind.HAS_AUGMENTS,
+        augmentSubKind = xi.augment.subKind.STANDARD,
+    }
 
     if itemData.itemAugments then
-        for augIndex, augData in pairs(itemData.itemAugments) do
-            itemParameters[augIndex * 2 + 1] = augData[1]
-            itemParameters[augIndex * 2 + 2] = augData[2]
+        exdata.augments = {}
+        for _, augData in pairs(itemData.itemAugments) do
+            table.insert(exdata.augments, { id = augData[1], value = augData[2] })
         end
     end
 
-    player:addItem(unpack(itemParameters))
+    if inscribeTrialId and inscribeTrialId ~= 0 then
+        exdata.augmentSubKind = exdata.augmentSubKind + xi.augment.subKind.TRIAL
+        exdata.trial = { id = inscribeTrialId, completed = false }
+    end
+
+    player:addItem({ id = itemData.itemId, exdata = exdata })
 end
 
 xi.magian.giveRequiredItem = function(player, trialId, inscribeTrialId)
@@ -885,12 +894,12 @@ local trialConditions =
         return not trialData.mobEcosystem or mob:getEcosystem() == trialData.mobEcosystem
     end,
 
-    ['mobFamily'] = function(trialData, player, mob, paramTable)
-        return not trialData.mobFamily or trialData.mobFamily[mob:getFamily()]
+    ['mobSpecies'] = function(trialData, player, mob, paramTable)
+        return not trialData.mobSpecies or trialData.mobSpecies[mob:getSpecies()]
     end,
 
-    ['mobSuperFamily'] = function(trialData, player, mob, paramTable)
-        return not trialData.mobSuperFamily or trialData.mobSuperFamily[mob:getSuperFamily()]
+    ['mobFamily'] = function(trialData, player, mob, paramTable)
+        return not trialData.mobFamily or trialData.mobFamily[mob:getFamily()]
     end,
 
     ['useWeaponskill'] = function(trialData, player, mob, paramTable)
@@ -963,9 +972,9 @@ xi.magian.onItemEquip = function(player, itemObj)
         end)
 
     elseif trialData.useWeaponskill then
-        player:addListener('WEAPONSKILL_USE', 'TRIAL_' .. itemTrialId, function(playerObj, mobObj, weaponskillId, tpSpent, action, damage)
+        player:addListener('WEAPONSKILL_USE', 'TRIAL_' .. itemTrialId, function(playerObj, mobObj, skill, tp, action, damage)
             if not playerObj:isDead() and playerObj:checkKillCredit(mobObj) then
-                local conditionResult = checkConditions(trialData, playerObj, mobObj, { weaponskillUsed = weaponskillId, weaponskillDamage = damage })
+                local conditionResult = checkConditions(trialData, playerObj, mobObj, { weaponskillUsed = skill:getID(), weaponskillDamage = damage })
 
                 if conditionResult then
                     progressPlayerTrial(playerObj, itemTrialId, conditionResult)
@@ -998,6 +1007,14 @@ end
 xi.magian.onMobDeath = function(mob, player, optParams, trialTable)
     local relevantTrials = {}
 
+    if not player then
+        return
+    end
+
+    if not trialTable then
+        return
+    end
+
     for equipSlot = xi.slot.MAIN, xi.slot.FEET do
         local itemObj = player:getEquippedItem(equipSlot)
 
@@ -1017,6 +1034,3 @@ xi.magian.onMobDeath = function(mob, player, optParams, trialTable)
         progressPlayerTrial(player, trialId, 1)
     end
 end
-
--- Once everything else is setup, register listeners with the appropriate items
-registerTrialListeners()

@@ -11,14 +11,14 @@
 local mobskillObject = {}
 
 mobskillObject.onMobSkillCheck = function(target, mob, skill)
-    if mob:getAnimationSub() == 5 and mob:getFamily() == 165 then -- Imps without horn
+    if mob:getAnimationSub() == 5 and mob:getSpecies() == xi.mobSpecies.IMP then -- Imps without horn
         return 1
     else
         return 0
     end
 end
 
-mobskillObject.onMobWeaponSkill = function(target, mob, skill)
+mobskillObject.onMobWeaponSkill = function(mob, target, skill, action)
     local power    = 1
     local duration = 60
 

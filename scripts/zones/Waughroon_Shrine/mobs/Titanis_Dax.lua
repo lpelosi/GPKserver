@@ -14,16 +14,19 @@ end
 
 entity.onMobSpawn = function(mob)
     mob:setLocalVar('spellList', 1)
+    mob:setMod(xi.mod.DARK_SLEEP_RES_RANK, 7)
+    mob:setMod(xi.mod.LIGHT_SLEEP_RES_RANK, 7)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MULTIPLIER, 150)
     mob:setMod(xi.mod.REGAIN, 200)
     xi.mix.jobSpecial.config(mob, {
         specials =
         {
-            { id = xi.jsa.SOUL_VOICE, hpp = 60 },
+            { id = xi.mobSkill.SOUL_VOICE_1, hpp = 60 },
         },
     })
 end
 
-entity.onMobMagicPrepare = function(mob, target, spellId)
+entity.onMobSpellChoose = function(mob, target, spellId)
     local spellTable =
     {
         [1] =
@@ -37,7 +40,11 @@ entity.onMobMagicPrepare = function(mob, target, spellId)
             xi.magic.spell.MAGIC_FINALE,
         },
     }
-    local spellList = spellTable[mob:getLocalVar('spellList')]
+
+    local list      = mob:getLocalVar('spellList')
+    list            = list > 0 and list or 1
+    local spellList = spellTable[list]
+
     return spellList[math.random(1, #spellList)]
 end
 
@@ -47,6 +54,7 @@ entity.onMobFight = function(mob, target)
         local deathCount = battlefield:getLocalVar('pigeonDeaths')
         if deathCount > 0 then
             local hasteValue = 750 * deathCount
+            mob:setMobMod(xi.mobMod.BASE_DAMAGE_MULTIPLIER, 150 + 16 * deathCount)
             mob:setMod(xi.mod.HASTE_ABILITY, hasteValue)
             mob:setMod(xi.mod.HASTE_GEAR, hasteValue)
             mob:setMod(xi.mod.HASTE_MAGIC, hasteValue)
@@ -54,7 +62,7 @@ entity.onMobFight = function(mob, target)
     end
 end
 
-entity.onMobWeaponSkill = function(target, mob, skill)
+entity.onMobWeaponSkill = function(mob, target, skill, action)
     if skill:getID() == xi.mobSkill.SOUL_VOICE_1 then -- 696
         mob:setLocalVar('spellList', 2)
     end

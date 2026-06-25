@@ -17,14 +17,14 @@ g_mixins.families.antlion_ambush_no_rehide = function(antlion)
     end)
 
     antlion:addListener('ENGAGE', 'ANTLION_AMBUSH_ENGAGE', function(mob, target)
-        if mob:setLocalVar('[Ambush]Done') == 0 then
+        if mob:getLocalVar('[Ambush]Done') == 0 then
             -- mob:setStatus(xi.status.UPDATE)
             mob:useMobAbility(xi.mobSkill.PIT_AMBUSH_1)
         end
     end)
 
     -- Ensures an interupted pit ambush doesn't let the mob stay hidden underground
-    antlion:addListener('WEAPONSKILL_STATE_EXIT', 'ANTLION_AMBUSH_FINISH', function(mob, skillId)
+    antlion:addListener('WEAPONSKILL_STATE_EXIT', 'ANTLION_AMBUSH_FINISH', function(mob, skillId, wasExecuted)
         if skillId == xi.mobSkill.PIT_AMBUSH_1 then
             mob:hideName(false)
             mob:setUntargetable(false)

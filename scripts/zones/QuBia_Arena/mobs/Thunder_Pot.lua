@@ -20,6 +20,7 @@ entity.onMobInitialize = function(mob)
     mob:setMobMod(xi.mobMod.MAGIC_COOL, 20)
     mob:setMobMod(xi.mobMod.ADD_EFFECT, 1)
     mob:setMobMod(xi.mobMod.NO_LINK, 1)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MULTIPLIER, 150)
 end
 
  -- If Thunder Pot is engaged first, despawn all other pots.
@@ -32,7 +33,7 @@ entity.onMobEngage = function(mob)
     DespawnMob(mobId + 1) -- Water
 end
 
-entity.onMobMagicPrepare = function(mob, target, spellId)
+entity.onMobSpellChoose = function(mob, target, spellId)
     local spellList =
     {
         xi.magic.spell.STUN,
@@ -41,14 +42,12 @@ entity.onMobMagicPrepare = function(mob, target, spellId)
         xi.magic.spell.THUNDAGA_III,
         xi.magic.spell.THUNDER_IV,
     }
+
     return spellList[math.random(1, #spellList)]
 end
 
 entity.onAdditionalEffect = function(mob, target, damage)
     return xi.mob.onAddEffect(mob, target, damage, xi.mob.ae.STUN)
-end
-
-entity.onMobDeath = function(mob, player, optParams)
 end
 
 return entity

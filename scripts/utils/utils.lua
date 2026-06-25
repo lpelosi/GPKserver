@@ -253,14 +253,31 @@ end
 
 ---@nodiscard
 ---@param input number
----@param min_val number?
----@param max_val number?
+---@param minValue number
+---@param maxValue number
 ---@return number
-function utils.clamp(input, min_val, max_val)
-    if min_val ~= nil and input < min_val then
-        input = min_val
-    elseif max_val ~= nil and input > max_val then
-        input = max_val
+function utils.clamp(input, minValue, maxValue)
+    if minValue == nil then
+        print('utils.clamp() -> invalid "min" value.')
+        return input
+    end
+
+    if maxValue == nil then
+        print('utils.clamp() -> invalid "max" value.')
+        return input
+    end
+
+    if minValue > maxValue then
+        print('utils.clamp() -> "min" value.is higher than "max" value.')
+        return input
+    end
+
+    if input < minValue then
+        return minValue
+    end
+
+    if input > maxValue then
+        return maxValue
     end
 
     return input
@@ -440,123 +457,6 @@ function utils.counter(predicate)
     end
 end
 
--- returns unabsorbed damage
----@nodiscard
----@param target CBaseEntity
----@param dmg integer
----@return integer
-function utils.stoneskin(target, dmg)
-    --handling stoneskin
-    if dmg > 0 then
-        local skin = target:getMod(xi.mod.STONESKIN)
-        if skin > 0 then
-            if skin > dmg then --absorb all damage
-                target:delMod(xi.mod.STONESKIN, dmg)
-                return 0
-            else --absorbs some damage then wear
-                target:delStatusEffect(xi.effect.STONESKIN)
-                target:setMod(xi.mod.STONESKIN, 0)
-                return dmg - skin
-            end
-        end
-    end
-
-    return dmg
-end
-
--- returns reduced magic damage from RUN buff, 'One for All'
----@nodiscard
----@param target CBaseEntity
----@param dmg integer
----@return integer
-function utils.oneforall(target, dmg)
-    if dmg > 0 then
-        local oneForAllEffect = target:getStatusEffect(xi.effect.ONE_FOR_ALL)
-
-        if oneForAllEffect ~= nil then
-            local power = oneForAllEffect:getPower()
-            dmg = math.max(0, dmg - power)
-        end
-    end
-
-    return dmg
-end
-
----@param target CBaseEntity
----@param dmg integer
----@param shadowbehav integer?
----@return integer
-function utils.takeShadows(target, dmg, shadowbehav)
-    if shadowbehav == nil then
-        shadowbehav = 1
-    end
-
-    local targShadows = target:getMod(xi.mod.UTSUSEMI)
-    local shadowType = xi.mod.UTSUSEMI
-
-    if targShadows == 0 then
-        --try blink, as utsusemi always overwrites blink this is okay
-        targShadows = target:getMod(xi.mod.BLINK)
-        shadowType = xi.mod.BLINK
-    end
-
-    local shadowsLeft = targShadows
-    local shadowsUsed = 0
-
-    if targShadows > 0 then
-        if shadowType == xi.mod.BLINK then
-            for i = 1, shadowbehav, 1 do
-                if shadowsLeft > 0 then
-                    if math.random() <= 0.8 then
-                        shadowsUsed = shadowsUsed + 1
-                        shadowsLeft = shadowsLeft - 1
-                    end
-                end
-            end
-
-            if shadowsUsed >= shadowbehav then
-                dmg = 0
-            else
-                dmg = (dmg / shadowbehav) * (shadowbehav - shadowsUsed)
-            end
-        else
-            if targShadows >= shadowbehav then
-                shadowsLeft = targShadows - shadowbehav
-
-                if shadowsLeft > 0 then
-                    -- Update icon
-                    local effect = target:getStatusEffect(xi.effect.COPY_IMAGE)
-                    if effect ~= nil then
-                        if shadowsLeft == 1 then
-                            effect:setIcon(xi.effect.COPY_IMAGE)
-                        elseif shadowsLeft == 2 then
-                            effect:setIcon(xi.effect.COPY_IMAGE_2)
-                        elseif shadowsLeft == 3 then
-                            effect:setIcon(xi.effect.COPY_IMAGE_3)
-                        elseif shadowsLeft >= 4 then
-                            effect:setIcon(xi.effect.COPY_IMAGE_4)
-                        end
-                    end
-                end
-
-                dmg = 0
-            else
-                shadowsLeft = 0
-                dmg = dmg * (shadowbehav - targShadows) / shadowbehav
-            end
-        end
-
-        target:setMod(shadowType, shadowsLeft)
-
-        if shadowsLeft <= 0 then
-            target:delStatusEffect(xi.effect.COPY_IMAGE)
-            target:delStatusEffect(xi.effect.BLINK)
-        end
-    end
-
-    return dmg
-end
-
 ---@nodiscard
 ---@param attacker CBaseEntity
 ---@param target CBaseEntity
@@ -615,24 +515,24 @@ end
 -- Values: 1 == Bonus, -1 == Weakness, 0 == Default (No Weakness or Bonus)
 local systemStrengthTable =
 {
-    [xi.eco.BEAST   ] = { [xi.eco.LIZARD  ] = 1, [xi.eco.PLANTOID] = -1, },
-    [xi.eco.LIZARD  ] = { [xi.eco.VERMIN  ] = 1, [xi.eco.BEAST   ] = -1, },
-    [xi.eco.VERMIN  ] = { [xi.eco.PLANTOID] = 1, [xi.eco.LIZARD  ] = -1, },
-    [xi.eco.PLANTOID] = { [xi.eco.BEAST   ] = 1, [xi.eco.VERMIN  ] = -1, },
-    [xi.eco.AQUAN   ] = { [xi.eco.AMORPH  ] = 1, [xi.eco.BIRD    ] = -1, },
-    [xi.eco.AMORPH  ] = { [xi.eco.BIRD    ] = 1, [xi.eco.AQUAN   ] = -1, },
-    [xi.eco.BIRD    ] = { [xi.eco.AQUAN   ] = 1, [xi.eco.AMORPH  ] = -1, },
-    [xi.eco.UNDEAD  ] = { [xi.eco.ARCANA  ] = 1, },
-    [xi.eco.ARCANA  ] = { [xi.eco.UNDEAD  ] = 1, },
-    [xi.eco.DRAGON  ] = { [xi.eco.DEMON   ] = 1, },
-    [xi.eco.DEMON   ] = { [xi.eco.DRAGON  ] = 1, },
-    [xi.eco.LUMINIAN] = { [xi.eco.LUMINION] = 1, },
-    [xi.eco.LUMINION] = { [xi.eco.LUMINIAN] = 1, },
+    [xi.ecosystem.BEAST   ] = { [xi.ecosystem.LIZARD  ] = 1, [xi.ecosystem.PLANTOID] = -1, },
+    [xi.ecosystem.LIZARD  ] = { [xi.ecosystem.VERMIN  ] = 1, [xi.ecosystem.BEAST   ] = -1, },
+    [xi.ecosystem.VERMIN  ] = { [xi.ecosystem.PLANTOID] = 1, [xi.ecosystem.LIZARD  ] = -1, },
+    [xi.ecosystem.PLANTOID] = { [xi.ecosystem.BEAST   ] = 1, [xi.ecosystem.VERMIN  ] = -1, },
+    [xi.ecosystem.AQUAN   ] = { [xi.ecosystem.AMORPH  ] = 1, [xi.ecosystem.BIRD    ] = -1, },
+    [xi.ecosystem.AMORPH  ] = { [xi.ecosystem.BIRD    ] = 1, [xi.ecosystem.AQUAN   ] = -1, },
+    [xi.ecosystem.BIRD    ] = { [xi.ecosystem.AQUAN   ] = 1, [xi.ecosystem.AMORPH  ] = -1, },
+    [xi.ecosystem.UNDEAD  ] = { [xi.ecosystem.ARCANA  ] = 1, },
+    [xi.ecosystem.ARCANA  ] = { [xi.ecosystem.UNDEAD  ] = 1, },
+    [xi.ecosystem.DRAGON  ] = { [xi.ecosystem.DEMON   ] = 1, },
+    [xi.ecosystem.DEMON   ] = { [xi.ecosystem.DRAGON  ] = 1, },
+    [xi.ecosystem.LUMINIAN] = { [xi.ecosystem.LUMINION] = 1, },
+    [xi.ecosystem.LUMINION] = { [xi.ecosystem.LUMINIAN] = 1, },
 }
 
 ---@nodiscard
----@param attackerSystem xi.eco
----@param defenderSystem xi.eco
+---@param attackerSystem xi.ecosystem
+---@param defenderSystem xi.ecosystem
 ---@return integer
 function utils.getEcosystemStrengthBonus(attackerSystem, defenderSystem)
     for k, v in pairs(systemStrengthTable) do
@@ -1220,8 +1120,8 @@ end
 
 function utils.defaultIfNil(inputValue, defaultValue)
     if inputValue == nil then
-        local info = debug.getinfo(2, 'Sl')
-        print(string.format('nil value encounted at %s:%i, defaulting to %i', info.source, info.currentline, defaultValue))
+        -- local info = debug.getinfo(2, 'Sl')
+        -- print(string.format('nil value encounted at %s:%i, defaulting to %s', info.source, info.currentline, tostring(defaultValue)))
 
         return defaultValue
     end
@@ -1300,4 +1200,27 @@ function utils.selectFromLootGroups(actor, lootTable)
     end
 
     return selectedLoot
+end
+
+-- Returns the lowest slot number not currently occupied by any status effect on the entity
+---@param entity table
+---@return integer
+function utils.getLowestFreeSlot(entity)
+    local effects = entity:getStatusEffects()
+
+    -- Sort effects by slot number to ensure we can find the lowest free slot
+    table.sort(effects, function(a, b)
+        return a:getEffectSlot() < b:getEffectSlot()
+    end)
+
+    local lowestFreeSlot = 1
+    for _, effect in ipairs(effects) do
+        if effect:getEffectSlot() == lowestFreeSlot then
+            lowestFreeSlot = lowestFreeSlot + 1
+        elseif effect:getEffectSlot() > lowestFreeSlot then
+            break
+        end
+    end
+
+    return lowestFreeSlot
 end

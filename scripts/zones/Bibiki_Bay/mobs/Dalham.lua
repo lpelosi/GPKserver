@@ -19,7 +19,16 @@ entity.onMobSpawn = function(mob)
 end
 
 entity.onAdditionalEffect = function(mob, target, damage)
-    return xi.mob.onAddEffect(mob, target, damage, xi.mob.ae.ENWATER, { chance = 100 })
+    local pTable =
+    {
+        chance         = 100,
+        attackType     = xi.attackType.MAGICAL,
+        magicalElement = xi.element.WATER,
+        basePower      = math.floor(damage / 2),
+        actorStat      = xi.mod.INT,
+    }
+
+    return xi.combat.action.executeAddEffectDamage(mob, target, pTable)
 end
 
 entity.onMobFight = function(mob, target)
@@ -48,9 +57,6 @@ entity.onMobFight = function(mob, target)
         -- inject packet for 2hr animation
         mob:injectActionPacket(mob:getID(), 11, 437, 0, 0x18, 0, 0, 626)
     end
-end
-
-entity.onMobDeath = function(mob, player, optParams)
 end
 
 return entity

@@ -1,9 +1,7 @@
 -----------------------------------
 -- Sand Trap
--- Description: AOE Petrify and resets hate.
--- Type: Physical
--- Utsusemi/Blink absorb: Ignore
--- Range: 15' radial
+-- Family: Antica
+-- Description: Deals physical damage to targets in range. Additional Effect: Petrification
 -----------------------------------
 ---@type TMobSkill
 local mobskillObject = {}
@@ -12,21 +10,28 @@ mobskillObject.onMobSkillCheck = function(target, mob, skill)
     return 0
 end
 
-mobskillObject.onMobWeaponSkill = function(target, mob, skill)
-    local numhits = 1
-    local accmod = 1
-    local ftp    = 1
-    local info = xi.mobskills.mobPhysicalMove(mob, target, skill, numhits, accmod, ftp, xi.mobskills.physicalTpBonus.NO_EFFECT, 0, 0, 0)
-    local dmg = xi.mobskills.mobFinalAdjustments(info.dmg, mob, skill, target, xi.attackType.PHYSICAL, xi.damageType.SLASHING, info.hitslanded)
+mobskillObject.onMobWeaponSkill = function(mob, target, skill, action)
+    local params = {}
 
-    target:takeDamage(dmg, mob, xi.attackType.PHYSICAL, xi.damageType.SLASHING)
+    params.baseDamage     = mob:getWeaponDmg()
+    params.numHits        = 1
+    params.fTP            = { 0.5, 0.5, 0.5 }
+    params.attackType     = xi.attackType.PHYSICAL
+    params.damageType     = xi.damageType.SLASHING
+    params.shadowBehavior = xi.mobskills.shadowBehavior.IGNORE_SHADOWS
 
-    xi.mobskills.mobStatusEffectMove(mob, target, xi.effect.PETRIFICATION, 1, 0, 15)
+    local info = xi.mobskills.mobPhysicalMove(mob, target, skill, action, params)
 
-    -- reset everyones enmity
-    mob:resetEnmity(target)
+    if xi.mobskills.processDamage(mob, target, skill, action, info) then
+        target:takeDamage(info.damage, mob, info.attackType, info.damageType)
 
-    return dmg
+        xi.mobskills.mobStatusEffectMove(mob, target, xi.effect.PETRIFICATION, 1, 0, 15)
+
+        -- Set everyone's enmity inactive (Not a full hate reset)
+        mob:setEnmityActive(target, false)
+    end
+
+    return info.damage
 end
 
 return mobskillObject

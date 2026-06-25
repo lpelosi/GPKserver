@@ -63,8 +63,14 @@ entity.spawnPoints =
 
 entity.phList =
 {
-    [ID.mob.DUNE_WIDOW - 1] = ID.mob.DUNE_WIDOW,
+    [ID.mob.DUNE_WIDOW - 1] = ID.mob.DUNE_WIDOW, -- Confirmed on retail
 }
+
+entity.onMobInitialize = function(mob)
+    mob:addImmunity(xi.immunity.DARK_SLEEP)
+    mob:addImmunity(xi.immunity.TERROR)
+    mob:addImmunity(xi.immunity.SILENCE)
+end
 
 entity.onMobDeath = function(mob, player, optParams)
     xi.hunts.checkHunt(mob, player, 408)

@@ -25,7 +25,7 @@
 #include "common/vana_time.h"
 
 #include "daily_system.h"
-#include "entities/charentity.h"
+#include "entities/char_entity.h"
 #include "latent_effect_container.h"
 #include "lua/luautils.h"
 #include "map_constants.h"
@@ -37,9 +37,12 @@
 #include "utils/moduleutils.h"
 #include "utils/zoneutils.h"
 
-int32 time_server(timer::time_point tick, CTaskManager::CTask* PTask)
+auto time_server(Scheduler& scheduler, MapConfig config) -> Task<void>
 {
     TracyZoneScoped;
+
+    auto tick = timer::now();
+
     // Track elapsed ticks.
     static auto tickNum = 0;
     ++tickNum;
@@ -111,33 +114,44 @@ int32 time_server(timer::time_point tick, CTaskManager::CTask* PTask)
     if (vanaTime >= nextVHourlyUpdate)
     {
         // Vana'diel Hour
-        // clang-format off
-        zoneutils::ForEachZone([](CZone* PZone)
-        {
-            luautils::OnGameHour(PZone);
-            PZone->ForEachChar([](CCharEntity* PChar)
+        zoneutils::ForEachZone(
+            [](CZone* PZone)
             {
-                PChar->PLatentEffectContainer->CheckLatentsHours();
-                PChar->PLatentEffectContainer->CheckLatentsMoonPhase();
+                luautils::OnGameHour(PZone);
+                PZone->ForEachChar(
+                    [](CCharEntity* PChar)
+                    {
+                        PChar->PLatentEffectContainer->CheckLatentsHours();
+                        PChar->PLatentEffectContainer->CheckLatentsMoonPhase();
+
+                        if (PChar->guildShopNpc_.id != 0)
+                        {
+                            if (auto* PNpc = zoneutils::GetEntity(PChar->guildShopNpc_.id, TYPE_NPC))
+                            {
+                                luautils::callGlobal<void>("xi.guildShops.onGameHour", PChar, PNpc);
+                            }
+                        }
+                    });
             });
-        });
-        // clang-format on
 
         if (vanaHour == 0)
         {
             // Vana'diel Day
             TracyZoneScoped;
+
             ShowDebugFmt("Vana'diel day tick... (current tick: {})", tickNum);
-            // clang-format off
-            zoneutils::ForEachZone([](CZone* PZone)
-            {
-                luautils::OnGameDay(PZone);
-                PZone->ForEachChar([](CCharEntity* PChar)
+
+            zoneutils::ForEachZone(
+                [](CZone* PZone)
                 {
-                    PChar->PLatentEffectContainer->CheckLatentsWeekDay();
+                    luautils::OnGameDay(PZone);
+                    PZone->ForEachChar(
+                        [](CCharEntity* PChar)
+                        {
+                            PChar->PLatentEffectContainer->CheckLatentsWeekDay();
+                        });
                 });
-            });
-            // clang-format on
+
             guildutils::UpdateGuildsStock();
             zoneutils::SavePlayTime();
         }
@@ -146,19 +160,20 @@ int32 time_server(timer::time_point tick, CTaskManager::CTask* PTask)
         {
             // MIDNIGHT -> NEWDAY -> DAWN -> DAY -> DUSK -> EVENING -> NIGHT
             TracyZoneScoped;
+
             zoneutils::TOTDChange(vanaTotd);
             fishingutils::RestockFishingAreas();
 
-            // clang-format off
-            zoneutils::ForEachZone([](CZone* PZone)
-            {
-                PZone->ForEachChar([](CCharEntity* PChar)
+            zoneutils::ForEachZone(
+                [](CZone* PZone)
                 {
-                    PChar->PLatentEffectContainer->CheckLatentsDay();
-                    PChar->PLatentEffectContainer->CheckLatentsJobLevel(); // Eerie CLoak +1 latent is nighttime + level multiple of 13
+                    PZone->ForEachChar(
+                        [](CCharEntity* PChar)
+                        {
+                            PChar->PLatentEffectContainer->CheckLatentsDay();
+                            PChar->PLatentEffectContainer->CheckLatentsJobLevel(); // Eerie CLoak +1 latent is nighttime + level multiple of 13
+                        });
                 });
-            });
-            // clang-format on
 
             prevTotd = vanaTotd;
         }
@@ -168,12 +183,11 @@ int32 time_server(timer::time_point tick, CTaskManager::CTask* PTask)
 
     CTriggerHandler::getInstance()->triggerTimer();
     CTransportHandler::getInstance()->TransportTimer();
-    instanceutils::CheckInstance();
-    zoneutils::ProcessLoadQueue();
+    co_await instanceutils::CheckInstance(scheduler, config);
+    co_await zoneutils::ProcessLoadQueue(scheduler, config);
     luautils::OnTimeServerTick();
     luautils::TryReloadFilewatchList();
     moduleutils::OnTimeServerTick();
 
     TracyFrameMark;
-    return 0;
 }

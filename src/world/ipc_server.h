@@ -24,20 +24,22 @@
 #include "common/ipc.h"
 #include "common/ipp.h"
 #include "common/mmo.h"
-#include "common/zmq_dealer_wrapper.h"
+#include "common/zmq/zmq_service.h"
 
 #include "character_cache.h"
 #include "world_engine.h"
 #include "zone_settings.h"
 
-#include <nonstd/jthread.hpp>
+#include <atomic>
+#include <thread>
+
 #include <zmq.hpp>
 #include <zmq_addon.hpp>
 
 class IPCServer final : public ipc::IPCMessageHandlerBase<IPCServer>
 {
 public:
-    IPCServer(WorldEngine& worldServer);
+    IPCServer(WorldEngine& worldServer, ZMQService& zmqService);
 
     void handleIncomingMessages();
 
@@ -51,9 +53,9 @@ public:
     // IPP Lookup
     //
 
-    auto getIPPForCharId(uint32 charId) -> std::optional<IPP>;
-    auto getIPPForCharName(const std::string& charName) -> std::optional<IPP>;
-    auto getIPPForZoneId(uint16 zoneId) -> std::optional<IPP>;
+    auto getIPPForCharId(uint32 charId) -> Maybe<IPP>;
+    auto getIPPForCharName(const std::string& charName) -> Maybe<IPP>;
+    auto getIPPForZoneId(uint16 zoneId) -> Maybe<IPP>;
     auto getIPPsForParty(uint32 partyId) -> std::vector<IPP>;
     auto getIPPsForAlliance(uint32 allianceId) -> std::vector<IPP>;
     auto getIPPsForLinkshell(uint32 linkshellId) -> std::vector<IPP>;
@@ -116,15 +118,18 @@ public:
     void handleMessage_EntityInformationResponse(const IPP& ipp, const ipc::EntityInformationResponse& message);
     void handleMessage_SendPlayerToLocation(const IPP& ipp, const ipc::SendPlayerToLocation& message);
     void handleMessage_AssistChannelEvent(const IPP& ipp, const ipc::AssistChannelEvent& message);
+    void handleMessage_GMCallRequest(const IPP& ipp, const ipc::GMCallRequest& message);
+    void handleMessage_GMCallResponse(const IPP& ipp, const ipc::GMCallResponse& message);
 
     void handleUnknownMessage(const IPP& ipp, const std::span<uint8_t> message);
 
 private:
     WorldEngine& worldServer_;
 
-    CharacterCache   characterCache_;
-    ZoneSettings     zoneSettings_;
-    ZMQRouterWrapper zmqRouterWrapper_;
+    CharacterCache characterCache_;
+    ZoneSettings   zoneSettings_;
+
+    ipc::Channel<IPPMessage> channel_;
 };
 
 //
@@ -139,9 +144,7 @@ void IPCServer::sendMessage(const IPP& ipp, const T& message)
     DebugIPCFmt("Sending {} message to {}", ipc::toStringV<T>, ipp.toString());
 
     const auto bytes = ipc::toBytesWithHeader<T>(message);
-    const auto out   = IPPMessage{ ipp, std::vector<uint8>{ bytes.begin(), bytes.end() } };
-
-    zmqRouterWrapper_.outgoingQueue_.enqueue(std::move(out));
+    channel_.send(IPPMessage{ ipp, std::vector<uint8>{ bytes.begin(), bytes.end() } });
 }
 
 template <typename T>
@@ -154,7 +157,6 @@ void IPCServer::broadcastMessage(const T& message)
     for (const auto& ipp : zoneSettings_.mapEndpoints_)
     {
         const auto bytes = ipc::toBytesWithHeader<T>(message);
-        const auto out   = IPPMessage{ ipp, std::vector<uint8>{ bytes.begin(), bytes.end() } };
-        zmqRouterWrapper_.outgoingQueue_.enqueue(std::move(out));
+        channel_.send(IPPMessage{ ipp, std::vector<uint8>{ bytes.begin(), bytes.end() } });
     }
 }

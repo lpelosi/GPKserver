@@ -3,7 +3,8 @@
 ########
 # Base #
 ########
-FROM --platform=$BUILDPLATFORM alpine:3.22 AS base
+ARG BASE_TAG=3.24
+FROM --platform=$BUILDPLATFORM alpine:$BASE_TAG AS base
 
 # Install runtime dependencies.
 RUN <<EOF
@@ -11,8 +12,6 @@ apk --update-cache add \
     bash \
     binutils \
     git \
-    libc++ \
-    llvm-libunwind \
     lua5.1-dev \
     luajit \
     mariadb-client \
@@ -24,6 +23,7 @@ apk --update-cache add \
     tzdata \
     zeromq \
     zlib
+apk cache clean
 EOF
 
 # Setup runtime user.
@@ -31,17 +31,22 @@ ARG UNAME=xiadmin
 ARG UGROUP=xiadmin
 ARG UID=1000
 ARG GID=1000
-RUN addgroup --gid $GID $UGROUP && \
-    adduser  --uid $UID $UNAME --ingroup $UGROUP --home /xiadmin --disabled-password && \
-    echo "$UNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$UNAME && \
-    chmod 0440 /etc/sudoers.d/$UNAME
 
 WORKDIR /server
-RUN chown $UNAME:$UGROUP /server
-RUN git config --system --add safe.directory /server
 
+RUN <<EOF
+addgroup --gid $GID $UGROUP
+adduser  --uid $UID $UNAME --ingroup $UGROUP --home /xiadmin --disabled-password
+echo "$UNAME ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/$UNAME
+chmod 0440 /etc/sudoers.d/$UNAME
+chown $UNAME:$UGROUP /server
+git config --system --add safe.directory /server
+EOF
+
+# Pre-enable Python virtual environment.
 ENV VIRTUAL_ENV=/xiadmin/.venv
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
 ENV TRACY_NO_INVARIANT_CHECK=1
 
 SHELL ["/bin/bash", "-c"]
@@ -51,15 +56,15 @@ SHELL ["/bin/bash", "-c"]
 ###########
 FROM base AS staging
 
+ARG LLVM_VERSION=22
+
 # Install build dependencies.
-RUN --mount=type=cache,target=/var/cache/apk,id=cache-apk,sharing=locked \
-    apk --update-cache add \
+RUN --mount=type=cache,target=/var/cache/apk,id=cache-apk,sharing=locked <<EOF
+apk --update-cache add \
     binutils-dev \
     ccache \
     cmake \
     g++ \
-    libc++-dev \
-    llvm-libunwind-dev \
     linux-headers \
     luajit-dev \
     make \
@@ -68,16 +73,19 @@ RUN --mount=type=cache,target=/var/cache/apk,id=cache-apk,sharing=locked \
     python3-dev \
     samurai \
     zeromq-dev \
-    zlib-dev
+    zlib-dev \
+    zstd-dev
+EOF
 
-    
 # Install secondary dependencies as user.
+# python3 = global, python = (pre-enabled) venv
 USER $UNAME
 RUN --mount=type=bind,source=tools/requirements.txt,target=/tmp/requirements.txt \
-    --mount=type=cache,target=/xiadmin/.cache/pip,id=cache-pip-alpine \
-    python3 -m venv $VIRTUAL_ENV && \
-    python -m pip install --upgrade pip setuptools wheel && \
-    python -m pip install --upgrade -r /tmp/requirements.txt
+    --mount=type=cache,target=/xiadmin/.cache/pip,id=cache-pip-alpine <<EOF
+python3 -m venv $VIRTUAL_ENV
+python -m pip install --upgrade pip setuptools wheel
+python -m pip install --upgrade -r /tmp/requirements.txt
+EOF
 USER root
 
 ############
@@ -86,14 +94,17 @@ USER root
 FROM staging AS devtools
 
 # Install misc dev/ci tools on top of build tools.
-RUN apk --update-cache add \
-    clang20-extra-tools \
+RUN <<EOF
+apk --update-cache add \
+    clang$LLVM_VERSION-extra-tools \
     cppcheck \
     gdb \
-    luarocks \
-    && apk cache clean
-RUN ln -s /usr/bin/luarocks-5.1 /usr/bin/luarocks && \
-    luarocks --tree /xiadmin/.luarocks install luacheck
+    luarocks
+apk cache clean
+ln -s /usr/lib/llvm$LLVM_VERSION/bin/clang-format /usr/bin/clang-format
+ln -s /usr/bin/luarocks-5.1 /usr/bin/luarocks
+EOF
+RUN luarocks --tree /xiadmin/.luarocks install luacheck
 ENV PATH="/xiadmin/.luarocks/bin:$PATH"
 
 COPY --chmod=0755 docker/entrypoint.sh /entrypoint.sh
@@ -105,16 +116,16 @@ CMD ["/bin/bash"]
 #########
 FROM staging AS build
 
-ARG COMPILER=clang20
+ARG COMPILER=clang
 ARG ENABLE_CLANG_TIDY=OFF
 RUN <<EOF
 if [[ $COMPILER == clang* || $ENABLE_CLANG_TIDY == ON ]]; then
     apk --update-cache add \
-    clang20 \
-    clang20-extra-tools \
-    compiler-rt \
-    lld \
-    llvm20
+        clang$LLVM_VERSION \
+        clang$LLVM_VERSION-extra-tools \
+        compiler-rt \
+        llvm$LLVM_VERSION
+    apk cache clean
 fi
 EOF
 
@@ -126,9 +137,8 @@ USER $UNAME
 # https://docs.docker.com/reference/dockerfile/#copy---exclude (docker/dockerfile:1.7-labs)
 COPY --chown=$UNAME:$UGROUP \
     --exclude=.git \
-    --exclude=losmeshes/** \
     --exclude=navmeshes/** \
-    --exclude=scripts \
+    --exclude=ximeshes/** \
     --exclude=sql \
     . /server
 
@@ -141,20 +151,17 @@ ENV CCACHE_DIR=/xiadmin/.ccache
 RUN --mount=type=cache,target=/xiadmin/build,uid=$UID,gid=$GID,id=build-alpine-$COMPILER-$CMAKE_BUILD_TYPE-tracy$TRACY_ENABLE-pch$PCH_ENABLE \
     --mount=type=cache,target=/xiadmin/.ccache,uid=$UID,gid=$GID,id=ccache-alpine-$COMPILER-$CMAKE_BUILD_TYPE-tracy$TRACY_ENABLE-pch$PCH_ENABLE \
     --mount=type=bind,source=.git,target=/server/.git \
-    --mount=type=bind,source=scripts,target=/server/scripts \
     --mount=type=bind,source=sql,target=/server/sql <<EOF
 set -eo pipefail
 cp -p /xiadmin/build/version.cpp /server/src/common/ 2> /dev/null || true
 cp -p /xiadmin/build/xi_* /server/ 2> /dev/null || true
 
 if [[ $COMPILER == clang* || $ENABLE_CLANG_TIDY == ON ]]; then
-    export CC=/usr/bin/clang
-    export CXX=/usr/bin/clang++
-    export CXXFLAGS="-stdlib=libc++ -flto=thin"
-    export LDFLAGS="-fuse-ld=lld -flto=thin"
+    export CC=/usr/bin/clang-$LLVM_VERSION
+    export CXX=/usr/bin/clang++-$LLVM_VERSION
 fi
 
-cmake -G Ninja -S /server -B /xiadmin/build \
+cmake -G Ninja -S /server -B /xiadmin/build --fresh \
     -DENABLE_CLANG_TIDY=$ENABLE_CLANG_TIDY \
     -DCMAKE_BUILD_TYPE=$CMAKE_BUILD_TYPE \
     -DTRACY_ENABLE=$TRACY_ENABLE \
@@ -168,7 +175,6 @@ ccache -s
 cp -p /server/xi_* /xiadmin/build/
 cp -p /server/src/common/version.cpp /xiadmin/build/
 mv xi_map_tracy xi_map 2> /dev/null || true
-
 EOF
 
 ###########
@@ -176,23 +182,25 @@ EOF
 ###########
 FROM base AS service
 
-RUN apk cache clean
-
 USER $UNAME
 
+COPY --chown=$UNAME:$UGROUP LICENSE /server/LICENSE
 COPY --chown=$UNAME:$UGROUP res/compress.dat res/decompress.dat /server/res/
-COPY --chown=$UNAME:$UGROUP scripts /server/scripts
 COPY --chown=$UNAME:$UGROUP sql /server/sql
 COPY --chown=$UNAME:$UGROUP tools /server/tools
 COPY --chown=$UNAME:$UGROUP modules /server/modules
 COPY --chown=$UNAME:$UGROUP settings /server/settings
 
-COPY --chown=$UNAME:$UGROUP --from=staging /xiadmin/.venv /xiadmin/.venv
+COPY --chown=$UNAME:$UGROUP --from=staging $VIRTUAL_ENV $VIRTUAL_ENV
+COPY --chown=$UNAME:$UGROUP --from=build /server/data /server/data
+COPY --chown=$UNAME:$UGROUP --from=build /server/scripts /server/scripts
 COPY --chown=$UNAME:$UGROUP --from=build /server/xi_* /server/
 COPY --chown=$UNAME:$UGROUP --from=build /server/build.log /server/build.log
 
 ARG REPO_URL
 ARG COMMIT_SHA
+LABEL org.opencontainers.image.source="$REPO_URL"
+LABEL org.opencontainers.image.revision="$COMMIT_SHA"
 RUN <<EOF
 if [ -n "$REPO_URL" ] && [ -n "$COMMIT_SHA" ]; then
     git init

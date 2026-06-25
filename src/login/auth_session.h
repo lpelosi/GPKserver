@@ -28,7 +28,9 @@
 #include "handler_session.h"
 #include "login_helpers.h"
 
-#include "common/zmq_dealer_wrapper.h"
+#include "common/zmq/channel.h"
+
+#include <zmq.hpp>
 
 enum class login_cmd : uint8_t
 {
@@ -62,9 +64,10 @@ enum class login_result : uint8_t
     LOGIN_SUCCESS_CREATE_TOTP       = 0x10,
     LOGIN_SUCCESS_VERIFY_TOTP       = 0x11,
     LOGIN_SUCCESS_REMOVE_TOTP       = 0x12,
+    LOGIN_ERROR_TRUST_TOKEN_INVALID = 0x13,
 };
 
-constexpr std::array<uint8, 3> SupportedXiloaderVersion = { 2, 0, 0 };
+constexpr std::array<uint8, 3> SupportedXiloaderVersion = { 2, 1, 0 };
 
 // NOTE: This collection of flags is 64-bits wide!
 enum AUTH_COMPONENTS
@@ -105,9 +108,9 @@ DECLARE_FORMAT_AS_UNDERLYING(ACCOUNT_PRIVILEGE_CODE);
 class auth_session : public handler_session
 {
 public:
-    auth_session(asio::ssl::stream<asio::ip::tcp::socket> socket, ZMQDealerWrapper& zmqDealerWrapper)
+    auth_session(asio::ssl::stream<asio::ip::tcp::socket> socket, ipc::Channel<zmq::message_t> dealerChannel)
     : handler_session(std::move(socket))
-    , zmqDealerWrapper_(zmqDealerWrapper)
+    , dealerChannel_(dealerChannel)
     {
         DebugSockets(fmt::format("auth_session from {}", ipAddress));
     }
@@ -134,7 +137,7 @@ protected:
     void do_write(std::size_t length);
 
 private:
-    ZMQDealerWrapper& zmqDealerWrapper_;
+    ipc::Channel<zmq::message_t> dealerChannel_;
 
-    bool validatePassword(std::string username, std::string password);
+    Maybe<std::pair<uint32, uint32>> validatePassword(std::string username, std::string password);
 };

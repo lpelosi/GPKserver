@@ -19,8 +19,7 @@
 ===========================================================================
 */
 
-#ifndef _CZONEINSTANCE_H
-#define _CZONEINSTANCE_H
+#pragma once
 
 #include "instance.h"
 #include "zone.h"
@@ -28,7 +27,12 @@
 class CZoneInstance : public CZone
 {
 public:
+    CZoneInstance(Scheduler& scheduler, MapConfig config, ZONEID ZoneID, REGION_TYPE RegionID, CONTINENT_TYPE ContinentID, uint8 levelRestriction);
+    ~CZoneInstance() override;
+
     DISALLOW_COPY_AND_MOVE(CZoneInstance);
+
+    CInstance* CreateInstance(uint32 instanceid);
 
     virtual CCharEntity* GetCharByName(const std::string& name) override; // finds the player if exists in zone
     virtual CCharEntity* GetCharByID(uint32 id) override;
@@ -44,8 +48,8 @@ public:
 
     virtual void WideScan(CCharEntity* PChar, uint16 radius) override;
 
-    virtual void DecreaseZoneCounter(CCharEntity* PChar) override; // add a character to the zone
-    virtual void IncreaseZoneCounter(CCharEntity* PChar) override; // remove a character from the zone
+    virtual void DecreaseZoneCounter(CCharEntity* PChar) override; // Remove a character to the zone
+    virtual void IncreaseZoneCounter(CCharEntity* PChar) override; // Add a character from the zone
 
     virtual void InsertNPC(CBaseEntity* PNpc) override;
     virtual void InsertMOB(CBaseEntity* PMob) override;
@@ -62,8 +66,8 @@ public:
 
     virtual void UpdateEntityPacket(CBaseEntity* PEntity, ENTITYUPDATE type, uint8 updatemask, bool alwaysInclude = false) override;
 
-    virtual void ZoneServer(timer::time_point tick) override;
-    virtual void CheckTriggerAreas() override;
+    virtual auto ZoneServer(timer::time_point tick) -> Task<void> override;
+    virtual auto CheckTriggerAreas() -> Task<void> override;
 
     void ForEachChar(const std::function<void(CCharEntity*)>& func) override;
     void ForEachCharInstance(CBaseEntity* PEntity, const std::function<void(CCharEntity*)>& func) override;
@@ -78,15 +82,8 @@ public:
     void ForEachAlly(const std::function<void(CMobEntity*)>& func) override;
     void ForEachAllyInstance(CBaseEntity* PEntity, const std::function<void(CMobEntity*)>& func) override;
 
-    CInstance* CreateInstance(uint32 instanceid);
-
-    CZoneInstance(ZONEID ZoneID, REGION_TYPE RegionID, CONTINENT_TYPE ContinentID, uint8 levelRestriction);
-    ~CZoneInstance() override;
-
 private:
     typedef std::vector<std::unique_ptr<CInstance>> instanceList_t;
 
     instanceList_t m_InstanceList;
 };
-
-#endif // _CZONEINSTANCE_H

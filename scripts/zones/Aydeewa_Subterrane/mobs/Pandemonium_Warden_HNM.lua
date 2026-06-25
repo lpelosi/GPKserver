@@ -135,7 +135,7 @@ entity.onMobSpawn = function(mob)
     mob:setMaxHP(phaseData.mobHP)
     mob:setModelId(phaseData.mobModelId)
     mob:setMobMod(xi.mobMod.SKILL_LIST, phaseData.mobSkillList)
-    mob:setLocalVar('twoHourSkill', xi.jobSpecialAbility[phaseData.mobSpecial] or 0)
+    mob:setLocalVar('twoHourSkill', xi.mobSkill[phaseData.mobSpecial] or 0)
     mob:setMobMod(xi.mobMod.SPELL_LIST, phaseData.mobSpellList)
     if mob:getMobMod(xi.mobMod.SPELL_LIST) == 0 then
         mob:setMagicCastingEnabled(false)
@@ -199,12 +199,6 @@ entity.onMobSpawn = function(mob)
     end
 
     mob:stun(2000)
-end
-
-entity.onMobDisengage = function(mob)
-end
-
-entity.onMobEngage = function(mob, target)
 end
 
 entity.onCriticalHit = function(mob)

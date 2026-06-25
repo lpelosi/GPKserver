@@ -17,7 +17,7 @@ entity.onMobInitialize = function(mob)
     mob:setMobMod(xi.mobMod.IDLE_DESPAWN, 300)
     mob:setMobMod(xi.mobMod.GIL_MIN, 18000)
     mob:setMobMod(xi.mobMod.GIL_MAX, 18000)
-    mob:setMobMod(xi.mobMod.WEAPON_BONUS, 32)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MODIFIER, 32)
     mob:setMod(xi.mod.SILENCE_RES_RANK, 11)
     mob:setMod(xi.mod.DOUBLE_ATTACK, 10)
     mob:setMod(xi.mod.VIT, 43)
@@ -37,7 +37,16 @@ entity.onMobSpawn = function(mob)
 end
 
 entity.onAdditionalEffect = function(mob, target, damage)
-    return xi.mob.onAddEffect(mob, target, damage, xi.mob.ae.ENLIGHT)
+    local pTable =
+    {
+        chance         = 100,
+        attackType     = xi.attackType.MAGICAL,
+        magicalElement = xi.element.LIGHT,
+        basePower      = math.floor(damage / 2),
+        actorStat      = xi.mod.INT,
+    }
+
+    return xi.combat.action.executeAddEffectDamage(mob, target, pTable)
 end
 
 entity.onMobDeath = function(mob, player, optParams)

@@ -11,7 +11,9 @@ entity.onMobInitialize = function(mob)
     mob:setMobMod(xi.mobMod.IDLE_DESPAWN, 300)
 end
 
-entity.onMobDeath = function(mob, player, optParams)
+entity.onMobSpawn = function(mob)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MULTIPLIER, 150)
+    mob:setMod(xi.mod.STORETP, 150)
 end
 
 return entity

@@ -21,7 +21,7 @@
 
 #include "0x029_battle_message.h"
 
-#include "entities/baseentity.h"
+#include "entities/base_entity.h"
 #include "enums/msg_std.h"
 
 GP_SERV_COMMAND_BATTLE_MESSAGE::GP_SERV_COMMAND_BATTLE_MESSAGE(const CBaseEntity* PSender, const CBaseEntity* PTarget, const int32 param, const int32 value, const MsgStd messageId)
@@ -39,7 +39,7 @@ GP_SERV_COMMAND_BATTLE_MESSAGE::GP_SERV_COMMAND_BATTLE_MESSAGE(const CBaseEntity
     packet.padding1B   = 0;
 }
 
-GP_SERV_COMMAND_BATTLE_MESSAGE::GP_SERV_COMMAND_BATTLE_MESSAGE(const CBaseEntity* PSender, const CBaseEntity* PTarget, int32 param, int32 value, MSGBASIC_ID messageId)
+GP_SERV_COMMAND_BATTLE_MESSAGE::GP_SERV_COMMAND_BATTLE_MESSAGE(const CBaseEntity* PSender, const CBaseEntity* PTarget, int32 param, int32 value, MsgBasic messageId)
 : GP_SERV_COMMAND_BATTLE_MESSAGE(PSender, PTarget, param, value, static_cast<MsgStd>(messageId))
 {
 }

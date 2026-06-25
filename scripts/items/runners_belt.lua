@@ -7,7 +7,7 @@
 ---@type TItem
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     if target:getStatusEffectBySource(xi.effect.DEX_BOOST, xi.effectSourceType.EQUIPPED_ITEM, xi.item.RUNNERS_BELT) ~= nil then
         target:delStatusEffect(xi.effect.DEX_BOOST, nil, xi.effectSourceType.EQUIPPED_ITEM, xi.item.RUNNERS_BELT)
     end
@@ -15,9 +15,9 @@ itemObject.onItemCheck = function(target, item, param, caster)
     return 0
 end
 
-itemObject.onItemUse = function(target)
+itemObject.onItemUse = function(target, user)
     if target:hasEquipped(xi.item.RUNNERS_BELT) then
-        target:addStatusEffect(xi.effect.DEX_BOOST, 3, 0, 60, 0, 0, 0, xi.effectSourceType.EQUIPPED_ITEM, xi.item.RUNNERS_BELT)
+        target:addStatusEffect(xi.effect.DEX_BOOST, { power = 3, duration = 60, origin = user, sourceType = xi.effectSourceType.EQUIPPED_ITEM, sourceTypeParam = xi.item.RUNNERS_BELT })
     end
 end
 

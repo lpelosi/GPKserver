@@ -20,7 +20,7 @@
 */
 
 #include "merit.h"
-#include "entities/charentity.h"
+#include "entities/char_entity.h"
 
 #include "map_engine.h"
 #include "packets/s2c/0x0aa_magic_data.h"
@@ -348,6 +348,10 @@ Merit_t* CMeritPoints::GetMeritPointer(MERIT_TYPE merit)
 void CMeritPoints::RaiseMerit(MERIT_TYPE merit)
 {
     Merit_t* PMerit = GetMeritPointer(merit);
+    if (!PMerit)
+    {
+        return;
+    }
 
     if (m_MeritPoints >= PMerit->next && PMerit->count < PMerit->upgrade && GetMeritCountInSameCategory(merit) < meritCatInfo[GetMeritCategory(merit)].MaxPoints)
     {
@@ -381,6 +385,10 @@ void CMeritPoints::RaiseMerit(MERIT_TYPE merit)
 void CMeritPoints::LowerMerit(MERIT_TYPE merit)
 {
     Merit_t* PMerit = GetMeritPointer(merit);
+    if (!PMerit)
+    {
+        return;
+    }
 
     if (PMerit->count > 0)
     {

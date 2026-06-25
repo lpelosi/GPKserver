@@ -25,12 +25,12 @@
 
 #include "common/timer.h"
 
-#include "entities/baseentity.h"
-#include "entities/charentity.h"
-#include "entities/mobentity.h"
-#include "entities/npcentity.h"
-#include "entities/petentity.h"
-#include "entities/trustentity.h"
+#include "entities/base_entity.h"
+#include "entities/char_entity.h"
+#include "entities/mob_entity.h"
+#include "entities/npc_entity.h"
+#include "entities/pet_entity.h"
+#include "entities/trust_entity.h"
 #include "enums/music_slot.h"
 
 #include <set>
@@ -39,7 +39,7 @@
 class CZoneEntities
 {
 public:
-    CZoneEntities(CZone*);
+    CZoneEntities(Scheduler& scheduler, MapConfig config, CZone* zone);
     ~CZoneEntities();
 
     void HealAllMobs();
@@ -82,14 +82,14 @@ public:
 
     void PushPacket(CBaseEntity*, GLOBAL_MESSAGE_TYPE, const std::unique_ptr<CBasicPacket>&); // send a global package within the zone
 
-    void ZoneServer(timer::time_point tick);
+    auto ZoneServer(timer::time_point tick) -> Task<void>;
 
     CZone* GetZone();
 
-    auto         GetEffectCheckTime() const -> timer::time_point;
-    EntityList_t GetCharList() const;
-    EntityList_t GetMobList() const;
-    bool         CharListEmpty() const;
+    auto GetEffectCheckTime() const -> timer::time_point;
+    auto GetCharList() const -> const EntityList_t&;
+    auto GetMobList() const -> const EntityList_t&;
+    bool CharListEmpty() const;
 
     void ForEachChar(const std::function<void(CCharEntity*)>& func);
     void ForEachMob(const std::function<void(CMobEntity*)>& func);
@@ -104,6 +104,16 @@ public:
     auto GetUsedDynamicTargIDsCount() const -> std::size_t;
 
 private:
+    auto mobTick(CMobEntity* PMob, timer::time_point tick) -> Task<void>;
+    auto mobAggroCheck(CMobEntity* PMob, timer::time_point tick) -> Task<void>;
+    auto npcTick(CNpcEntity* PNpc, timer::time_point tick) -> Task<void>;
+    auto petTick(CPetEntity* PPet, timer::time_point tick) -> Task<void>;
+    auto trustTick(CTrustEntity* PTrust, timer::time_point tick) -> Task<void>;
+    auto charTick(CCharEntity* PChar, timer::time_point tick) -> Task<void>;
+
+    Scheduler& scheduler_;
+    MapConfig  config_;
+
     CZone* m_zone;
 
     // NOTE: These are all keyed by targid

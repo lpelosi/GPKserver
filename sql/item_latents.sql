@@ -68,6 +68,12 @@ INSERT INTO `item_latents` VALUES (10962,75,-5,13,14);   -- CHARMED:MOVE_SPEED_S
 INSERT INTO `item_latents` VALUES (10975,23,13,52,8);   -- DARK WEATHER:ATT
 INSERT INTO `item_latents` VALUES (10975,25,13,52,8);   -- DARK WEATHER:ACC
 
+-- Savants Bracers +2
+INSERT INTO `item_latents` VALUES (11123,175,1000,13,470);  -- EFFECT_IMMANENCE: SKILLCHAINDMG: 10%
+
+-- Savants Bracers +1
+INSERT INTO `item_latents` VALUES (11223,175,500,13,470);  -- EFFECT_IMMANENCE: SKILLCHAINDMG: 5%
+
 -- Eerie cloak +1
 INSERT INTO `item_latents` VALUES (11301,369,1,39,13);    -- Refresh+1 at night when the level of the player's main job is a multiple of 13.
 
@@ -96,10 +102,10 @@ INSERT INTO `item_latents` VALUES (11367,23,50,49,4277); -- atk+50 Tonosama Rice
 INSERT INTO `item_latents` VALUES (11367,23,50,49,4278); -- atk+50 Shogun Rice Ball
 INSERT INTO `item_latents` VALUES (11367,23,60,49,5928); -- atk+60 Hinesama Rice Ball
 INSERT INTO `item_latents` VALUES (11367,23,60,49,5929); -- atk+60 Ojo Rice Ball
-INSERT INTO `item_latents` VALUES (11367,230,5,49,4604); -- beast killer 5% (guesstimated) Rogue Rice Ball
-INSERT INTO `item_latents` VALUES (11367,232,5,49,4604); -- arcana killer 5% (guesstimated) Naval Rice Ball
+INSERT INTO `item_latents` VALUES (11367,228,4,49,4604); -- aquan killer 4% Naval Rice Ball
+INSERT INTO `item_latents` VALUES (11367,230,4,49,4604); -- beast killer 4% Rogue Rice Ball
 INSERT INTO `item_latents` VALUES (11367,288,1,49,4277); -- double attack 1% Tonosama Rice Ball
-INSERT INTO `item_latents` VALUES (11367,288,5,49,4278); -- double attack 5% Shogun Rice Ball
+INSERT INTO `item_latents` VALUES (11367,288,2,49,4278); -- double attack 2% Shogun Rice Ball
 INSERT INTO `item_latents` VALUES (11367,302,1,49,5928); -- triple attack 1% Hinesama Rice Ball
 INSERT INTO `item_latents` VALUES (11367,302,2,49,5929); -- triple attack 2% Ojo Rice Ball
 
@@ -768,10 +774,10 @@ INSERT INTO `item_latents` VALUES (13910,23,50,49,4277); -- atk+50 Tonosama Rice
 INSERT INTO `item_latents` VALUES (13910,23,50,49,4278); -- atk+50 Shogun Rice Ball
 INSERT INTO `item_latents` VALUES (13910,23,60,49,5928); -- atk+60 Hinesama Rice Ball
 INSERT INTO `item_latents` VALUES (13910,23,60,49,5929); -- atk+60 Ojo Rice Ball
-INSERT INTO `item_latents` VALUES (13910,230,5,49,4604); -- beast killer 5% (guesstimated) Rogue Rice Ball
-INSERT INTO `item_latents` VALUES (13910,232,5,49,4604); -- arcana killer 5% (guesstimated) Naval Rice Ball
+INSERT INTO `item_latents` VALUES (13910,228,4,49,4604); -- aquan killer 4% Naval Rice Ball
+INSERT INTO `item_latents` VALUES (13910,230,4,49,4604); -- beast killer 4% Rogue Rice Ball
 INSERT INTO `item_latents` VALUES (13910,288,1,49,4277); -- double attack 1% Tonosama Rice Ball
-INSERT INTO `item_latents` VALUES (13910,288,5,49,4278); -- double attack 5% Shogun Rice Ball
+INSERT INTO `item_latents` VALUES (13910,288,2,49,4278); -- double attack 2% Shogun Rice Ball
 INSERT INTO `item_latents` VALUES (13910,302,1,49,5928); -- triple attack 1% Hinesama Rice Ball
 INSERT INTO `item_latents` VALUES (13910,302,2,49,5929); -- triple attack 2% Ojo Rice Ball
 
@@ -797,10 +803,10 @@ INSERT INTO `item_latents` VALUES (13949,23,50,49,4277); -- atk+50 Tonosama Rice
 INSERT INTO `item_latents` VALUES (13949,23,50,49,4278); -- atk+50 Shogun Rice Ball
 INSERT INTO `item_latents` VALUES (13949,23,60,49,5928); -- atk+60 Hinesama Rice Ball
 INSERT INTO `item_latents` VALUES (13949,23,60,49,5929); -- atk+60 Ojo Rice Ball
-INSERT INTO `item_latents` VALUES (13949,230,5,49,4604); -- beast killer 5% (guesstimated) Rogue Rice Ball
-INSERT INTO `item_latents` VALUES (13949,232,5,49,4604); -- arcana killer 5% (guesstimated) Naval Rice Ball
+INSERT INTO `item_latents` VALUES (13949,228,4,49,4604); -- aquan killer 4% Naval Rice Ball
+INSERT INTO `item_latents` VALUES (13949,230,4,49,4604); -- beast killer 4% Rogue Rice Ball
 INSERT INTO `item_latents` VALUES (13949,288,1,49,4277); -- double attack 1% Tonosama Rice Ball
-INSERT INTO `item_latents` VALUES (13949,288,5,49,4278); -- double attack 5% Shogun Rice Ball
+INSERT INTO `item_latents` VALUES (13949,288,2,49,4278); -- double attack 2% Shogun Rice Ball
 INSERT INTO `item_latents` VALUES (13949,302,1,49,5928); -- triple attack 1% Hinesama Rice Ball
 INSERT INTO `item_latents` VALUES (13949,302,2,49,5929); -- triple attack 2% Ojo Rice Ball
 
@@ -819,10 +825,10 @@ INSERT INTO `item_latents` VALUES (13972,23,50,49,4277); -- atk+50 Tonosama Rice
 INSERT INTO `item_latents` VALUES (13972,23,50,49,4278); -- atk+50 Shogun Rice Ball
 INSERT INTO `item_latents` VALUES (13972,23,60,49,5928); -- atk+60 Hinesama Rice Ball
 INSERT INTO `item_latents` VALUES (13972,23,60,49,5929); -- atk+60 Ojo Rice Ball
-INSERT INTO `item_latents` VALUES (13972,230,5,49,4604); -- beast killer 5% (guesstimated) Rogue Rice Ball
-INSERT INTO `item_latents` VALUES (13972,232,5,49,4604); -- arcana killer 5% (guesstimated) Naval Rice Ball
+INSERT INTO `item_latents` VALUES (13972,228,4,49,4604); -- aquan killer 4% Naval Rice Ball
+INSERT INTO `item_latents` VALUES (13972,230,4,49,4604); -- beast killer 4% Rogue Rice Ball
 INSERT INTO `item_latents` VALUES (13972,288,1,49,4277); -- double attack 1% Tonosama Rice Ball
-INSERT INTO `item_latents` VALUES (13972,288,5,49,4278); -- double attack 5% Shogun Rice Ball
+INSERT INTO `item_latents` VALUES (13972,288,2,49,4278); -- double attack 2% Shogun Rice Ball
 INSERT INTO `item_latents` VALUES (13972,302,1,49,5928); -- triple attack 1% Hinesama Rice Ball
 INSERT INTO `item_latents` VALUES (13972,302,2,49,5929); -- triple attack 2% Ojo Rice Ball
 
@@ -1133,6 +1139,44 @@ INSERT INTO `item_latents` VALUES (14509,11,8,10,0);
 -- Shadow Ring
 INSERT INTO `item_latents` VALUES (14646,29,10,32,0);    -- Darksday: MDB+10
 
+-- Protean Ring
+INSERT INTO `item_latents` VALUES (14652,23,3,64,0); -- Attack +3 during Garrison
+INSERT INTO `item_latents` VALUES (14652,24,3,64,0); -- R.Attack +3 during Garrison
+-- TODO: Verify the points below.
+-- This is bare minimum to see a difference in different garrison tiers.
+-- stops at lv75 as Variable Ring likely does.
+INSERT INTO `item_latents` VALUES (14652,23,1,64,30); -- Atk +4, lv30+
+INSERT INTO `item_latents` VALUES (14652,24,1,64,30);
+INSERT INTO `item_latents` VALUES (14652,23,1,64,40); -- Atk +5, lv40+
+INSERT INTO `item_latents` VALUES (14652,24,1,64,40);
+INSERT INTO `item_latents` VALUES (14652,23,1,64,50); -- Atk +6, lv50+
+INSERT INTO `item_latents` VALUES (14652,24,1,64,50);
+INSERT INTO `item_latents` VALUES (14652,23,1,64,60); -- Atk +7, lv60+
+INSERT INTO `item_latents` VALUES (14652,24,1,64,60);
+INSERT INTO `item_latents` VALUES (14652,23,1,64,70); -- Atk +8, lv70+
+INSERT INTO `item_latents` VALUES (14652,24,1,64,70);
+INSERT INTO `item_latents` VALUES (14652,23,1,64,75); -- Atk +9, lv75+
+INSERT INTO `item_latents` VALUES (14652,24,1,64,75);
+
+-- Variable Ring
+-- [known data points]
+-- lv20: 28 MP, 1 MPHEAL
+-- lv30: 30 MP, 1 MPHEAL
+-- lv50: 40 MP, 2 MPHEAL
+-- lv99: 55 MP, 4 MPHEAL
+-- Assumption: Scaling stops at level 75. TODO: verify
+INSERT INTO `item_latents` VALUES (14653,5,28,64,0);  -- MP +28 during Garrison
+INSERT INTO `item_latents` VALUES (14653,71,1,64,0);  -- MPHEAL +1 during Garrison
+INSERT INTO `item_latents` VALUES (14653,5,2,64,30);  -- MP +2 during Garrison lv30+ (30 MP)
+INSERT INTO `item_latents` VALUES (14653,5,5,64,40);  -- (verify) MP +5 during Garrison lv40+ (35 MP)
+INSERT INTO `item_latents` VALUES (14653,71,1,64,40); -- (verify) MPHEAL +1 during Garrison lv40+
+INSERT INTO `item_latents` VALUES (14653,5,5,64,50);  -- MP +5 during Garrison lv50+ (40 MP) (2 MPHEAL)
+INSERT INTO `item_latents` VALUES (14653,5,6,64,60);  -- (verify) MP +6 during Garrison lv60+ (46 MP)
+INSERT INTO `item_latents` VALUES (14653,71,1,64,60); -- (verify) MPHEAL +1 during Garrison lv60+ (3 MPHEAL)
+INSERT INTO `item_latents` VALUES (14653,5,6,64,70);  -- (verify) MP +6 during Garrison lv70+ (52 MP)
+INSERT INTO `item_latents` VALUES (14653,5,3,64,75);  -- (verify) MP +3 during Garrison lv75+ (55 MP)
+INSERT INTO `item_latents` VALUES (14653,71,1,64,75); -- (verify) MPHEAL +1 during Garrison lv75+ (4 MPHEAL)
+
 -- Atlaua's Ring
 INSERT INTO `item_latents` VALUES (14658,304,4,59,1); -- VS_ECOSYSTEM: AMORPH - TAME: 4
 INSERT INTO `item_latents` VALUES (14658,304,4,59,2); -- VS_ECOSYSTEM: AQUAN  - TAME: 4
@@ -1176,6 +1220,26 @@ INSERT INTO `item_latents` VALUES (14737,384,500,8,14);
 
 -- Magician's Earring
 INSERT INTO `item_latents` VALUES (14738,5,30,8,15);
+
+-- Refresh Earring
+INSERT INTO `item_latents` VALUES (14755,369,1,64,0); -- Refresh +1 during Garrison
+
+-- Mecurial Earring
+-- TODO: verify (somehow...) how much evasion increases per level.
+-- Stopping at lv75 as Variable Ring likely does.
+INSERT INTO `item_latents` VALUES (14757,68,1,64,0);  -- Evasion +1 during Garrison
+INSERT INTO `item_latents` VALUES (14757,68,1,64,30); -- Evasion +1 during Garrison, level 30+ (2 Eva)
+INSERT INTO `item_latents` VALUES (14757,68,1,64,40); -- Evasion +1 during Garrison, level 40+ (3 Eva)
+INSERT INTO `item_latents` VALUES (14757,68,1,64,50); -- Evasion +1 during Garrison, level 50+ (4 Eva)
+INSERT INTO `item_latents` VALUES (14757,68,1,64,60); -- Evasion +1 during Garrison, level 60+ (5 Eva)
+INSERT INTO `item_latents` VALUES (14757,68,1,64,70); -- Evasion +1 during Garrison, level 70+ (6 Eva)
+INSERT INTO `item_latents` VALUES (14757,68,1,64,75); -- Evasion +1 during Garrison, level 75+ (7 Eva)
+
+-- Minuet Earring
+INSERT INTO `item_latents` VALUES (14764,25,3,13,198); -- While effected by Minuet : Accuracy +3
+
+-- Titanis Earring
+INSERT INTO `item_latents` VALUES (14765,27,4,13,197); -- While effected by Minne : Enmity +4
 
 -- Vampire Earring
 INSERT INTO `item_latents` VALUES (14783,8,4,26,1);      -- STR+4 during Nighttime
@@ -1230,10 +1294,10 @@ INSERT INTO `item_latents` VALUES (14901,23,50,49,4277); -- atk+50 Tonosama Rice
 INSERT INTO `item_latents` VALUES (14901,23,50,49,4278); -- atk+50 Shogun Rice Ball
 INSERT INTO `item_latents` VALUES (14901,23,60,49,5928); -- atk+60 Hinesama Rice Ball
 INSERT INTO `item_latents` VALUES (14901,23,60,49,5929); -- atk+60 Ojo Rice Ball
-INSERT INTO `item_latents` VALUES (14901,230,5,49,4604); -- beast killer 5% (guesstimated) Rogue Rice Ball
-INSERT INTO `item_latents` VALUES (14901,232,5,49,4604); -- arcana killer 5% (guesstimated) Naval Rice Ball
+INSERT INTO `item_latents` VALUES (14901,228,4,49,4604); -- aquan killer 4% Naval Rice Ball
+INSERT INTO `item_latents` VALUES (14901,230,4,49,4604); -- beast killer 4% Rogue Rice Ball
 INSERT INTO `item_latents` VALUES (14901,288,1,49,4277); -- double attack 1% Tonosama Rice Ball
-INSERT INTO `item_latents` VALUES (14901,288,5,49,4278); -- double attack 5% Shogun Rice Ball
+INSERT INTO `item_latents` VALUES (14901,288,2,49,4278); -- double attack 2% Shogun Rice Ball
 INSERT INTO `item_latents` VALUES (14901,302,1,49,5928); -- triple attack 1% Hinesama Rice Ball
 INSERT INTO `item_latents` VALUES (14901,302,2,49,5929); -- triple attack 2% Ojo Rice Ball
 
@@ -1517,28 +1581,52 @@ INSERT INTO `item_latents` VALUES (15532,369,-3,56,2);   -- Has a hidden effect 
 INSERT INTO `item_latents` VALUES (15532,370,1,56,2);    -- Latent Effect is triggered when the player's weapon is drawn and has more than 2 MP.
 
 -- Rajas Ring
-INSERT INTO `item_latents` VALUES (15543,8,1,51,45);     -- INT+1 above level 45
-INSERT INTO `item_latents` VALUES (15543,8,1,51,60);     -- INT+1 above level 60
-INSERT INTO `item_latents` VALUES (15543,8,1,51,75);     -- INT+1 above level 75
-INSERT INTO `item_latents` VALUES (15543,9,1,51,45);     -- MND+1 above level 45
-INSERT INTO `item_latents` VALUES (15543,9,1,51,60);     -- MND+1 above level 60
-INSERT INTO `item_latents` VALUES (15543,9,1,51,75);     -- MND+1 above level 75
-
--- Tamas Ring
-INSERT INTO `item_latents` VALUES (15544,2,5,51,45);     -- MP+5 above level 45
-INSERT INTO `item_latents` VALUES (15544,2,5,51,60);     -- MP+5 above level 60
-INSERT INTO `item_latents` VALUES (15544,2,5,51,75);     -- MP+5 above level 75
-INSERT INTO `item_latents` VALUES (15544,10,1,51,45);    -- INT+1 above level 45
-INSERT INTO `item_latents` VALUES (15544,10,1,51,60);    -- INT+1 above level 60
-INSERT INTO `item_latents` VALUES (15544,10,1,51,75);    -- INT+1 above level 75
-INSERT INTO `item_latents` VALUES (15544,11,1,51,45);    -- MND+1 above level 45
-INSERT INTO `item_latents` VALUES (15544,11,1,51,60);    -- MND+1 above level 60
-INSERT INTO `item_latents` VALUES (15544,11,1,51,75);    -- MND+1 above level 75
+INSERT INTO `item_latents` VALUES (15543,8,1,51,45);     -- STR+1 above level 45
+INSERT INTO `item_latents` VALUES (15543,8,1,51,60);     -- STR+1 above level 60
+INSERT INTO `item_latents` VALUES (15543,8,1,51,75);     -- STR+1 above level 75
+INSERT INTO `item_latents` VALUES (15543,9,1,51,45);     -- DEX+1 above level 45
+INSERT INTO `item_latents` VALUES (15543,9,1,51,60);     -- DEX+1 above level 60
+INSERT INTO `item_latents` VALUES (15543,9,1,51,75);     -- DEX+1 above level 75
 
 -- Sattva Ring
-INSERT INTO `item_latents` VALUES (15545,5,5,51,45);     -- MP+5 above level 45
-INSERT INTO `item_latents` VALUES (15545,5,5,51,60);     -- MP+5 above level 60
-INSERT INTO `item_latents` VALUES (15545,5,5,51,75);     -- MP+5 above level 75
+INSERT INTO `item_latents` VALUES (15544,2,1,51,33);     -- HP+1 above level 33
+INSERT INTO `item_latents` VALUES (15544,2,1,51,36);     -- HP+1 above level 36
+INSERT INTO `item_latents` VALUES (15544,2,1,51,39);     -- HP+1 above level 39
+INSERT INTO `item_latents` VALUES (15544,2,1,51,42);     -- HP+1 above level 42
+INSERT INTO `item_latents` VALUES (15544,2,1,51,45);     -- HP+1 above level 45
+INSERT INTO `item_latents` VALUES (15544,2,1,51,48);     -- HP+1 above level 48
+INSERT INTO `item_latents` VALUES (15544,2,1,51,51);     -- HP+1 above level 51
+INSERT INTO `item_latents` VALUES (15544,2,1,51,54);     -- HP+1 above level 54
+INSERT INTO `item_latents` VALUES (15544,2,1,51,57);     -- HP+1 above level 57
+INSERT INTO `item_latents` VALUES (15544,2,1,51,60);     -- HP+1 above level 60
+INSERT INTO `item_latents` VALUES (15544,2,1,51,63);     -- HP+1 above level 63
+INSERT INTO `item_latents` VALUES (15544,2,1,51,66);     -- HP+1 above level 66
+INSERT INTO `item_latents` VALUES (15544,2,1,51,69);     -- HP+1 above level 69
+INSERT INTO `item_latents` VALUES (15544,2,1,51,72);     -- HP+1 above level 72
+INSERT INTO `item_latents` VALUES (15544,2,1,51,75);     -- HP+1 above level 75
+INSERT INTO `item_latents` VALUES (15544,10,1,51,45);    -- VIT+1 above level 45
+INSERT INTO `item_latents` VALUES (15544,10,1,51,60);    -- VIT+1 above level 60
+INSERT INTO `item_latents` VALUES (15544,10,1,51,75);    -- VIT+1 above level 75
+INSERT INTO `item_latents` VALUES (15544,11,1,51,45);    -- AGI+1 above level 45
+INSERT INTO `item_latents` VALUES (15544,11,1,51,60);    -- AGI+1 above level 60
+INSERT INTO `item_latents` VALUES (15544,11,1,51,75);    -- AGI+1 above level 75
+
+-- Tamas Ring
+INSERT INTO `item_latents` VALUES (15545,5,1,51,33);     -- MP+1 above level 33
+INSERT INTO `item_latents` VALUES (15545,5,1,51,36);     -- MP+1 above level 36
+INSERT INTO `item_latents` VALUES (15545,5,1,51,39);     -- MP+1 above level 39
+INSERT INTO `item_latents` VALUES (15545,5,1,51,42);     -- MP+1 above level 42
+INSERT INTO `item_latents` VALUES (15545,5,1,51,45);     -- MP+1 above level 45
+INSERT INTO `item_latents` VALUES (15545,5,1,51,48);     -- MP+1 above level 48
+INSERT INTO `item_latents` VALUES (15545,5,1,51,51);     -- MP+1 above level 51
+INSERT INTO `item_latents` VALUES (15545,5,1,51,54);     -- MP+1 above level 54
+INSERT INTO `item_latents` VALUES (15545,5,1,51,57);     -- MP+1 above level 57
+INSERT INTO `item_latents` VALUES (15545,5,1,51,60);     -- MP+1 above level 60
+INSERT INTO `item_latents` VALUES (15545,5,1,51,63);     -- MP+1 above level 63
+INSERT INTO `item_latents` VALUES (15545,5,1,51,66);     -- MP+1 above level 66
+INSERT INTO `item_latents` VALUES (15545,5,1,51,69);     -- MP+1 above level 69
+INSERT INTO `item_latents` VALUES (15545,5,1,51,72);     -- MP+1 above level 72
+INSERT INTO `item_latents` VALUES (15545,5,1,51,75);     -- MP+1 above level 75
 INSERT INTO `item_latents` VALUES (15545,12,1,51,45);    -- INT+1 above level 45
 INSERT INTO `item_latents` VALUES (15545,12,1,51,60);    -- INT+1 above level 60
 INSERT INTO `item_latents` VALUES (15545,12,1,51,75);    -- INT+1 above level 75
@@ -1960,7 +2048,7 @@ INSERT INTO `item_latents` VALUES (16735,20,-10,47,0);
 INSERT INTO `item_latents` VALUES (16756,68,20,31,0);    -- Windsdays: Evasion+20
 
 -- Goshisho's Scythe
-INSERT INTO `item_latents` VALUES (16792,25,7,59,19);    -- Vs. undead: Accuracy+7
+INSERT INTO `item_latents` VALUES (16792,25,7,59,18);    -- Vs. undead: Accuracy+7
 
 -- Scythe Of Trials
 INSERT INTO `item_latents` VALUES (16793,2,-20,47,0);
@@ -1995,7 +2083,7 @@ INSERT INTO `item_latents` VALUES (16911,287,1,0,82);    -- DMG 29~40, increases
 INSERT INTO `item_latents` VALUES (16911,287,1,0,92);    -- DMG 29~40, increases as HP% decreases
 
 -- Kitsutsuki
-INSERT INTO `item_latents` VALUES (16912,165,5,59,17);   -- Vs. plantoids: Critical hit rate +5%
+INSERT INTO `item_latents` VALUES (16912,165,5,59,16);   -- Vs. plantoids: Critical hit rate +5%
 
 -- Hocho
 INSERT INTO `item_latents` VALUES (16924,135,3,40,0);    -- Cooking +3 in Main hand
@@ -2016,12 +2104,15 @@ INSERT INTO `item_latents` VALUES (16953,25,7,44,0);  -- Citizens of San d'Oria:
 INSERT INTO `item_latents` VALUES (16968,165,7,59,3);    -- Vs. arcana: Critical hit rate +7%
 
 -- Onikiri
-INSERT INTO `item_latents` VALUES (16969,165,5,59,9);    -- Vs. demons: Critical hit rate +5%
+INSERT INTO `item_latents` VALUES (16969,165,5,59,8);    -- Vs. demons: Critical hit rate +5%
 
 -- Onimaru
 INSERT INTO `item_latents` VALUES (16976,23,18,6,1000);  -- Attack+18 while TP <100%
 INSERT INTO `item_latents` VALUES (16976,25,5,6,1000);   -- Accuracy+5 while TP <100%
 INSERT INTO `item_latents` VALUES (16976,287,6,6,1000);  -- DMG+6 while TP <100%
+
+-- Living Rod
+INSERT INTO `item_latents` VALUES (17070,370,1,52,6);    -- Regen Effect +1/tick in Water weather
 
 -- Mistilteinn
 INSERT INTO `item_latents` VALUES (17073,369,1,7,2);     -- Adds Refresh 1MP per tick
@@ -2053,8 +2144,8 @@ INSERT INTO `item_latents` VALUES (17204,287,10,31,0);   -- DMG+10 on Windsday
 INSERT INTO `item_latents` VALUES (17207,287,13,47,0);   -- DMG+13 when broken (500 WS points)
 
 -- Hamayumi
-INSERT INTO `item_latents` VALUES (17208,26,10,59,12);   -- Vs. Empty: Ranged Accuracy+10
-INSERT INTO `item_latents` VALUES (17208,66,10,59,12);   -- Vs. Empty: Ranged Attack+10%
+INSERT INTO `item_latents` VALUES (17208,26,10,59,11);   -- Vs. Empty: Ranged Accuracy+10
+INSERT INTO `item_latents` VALUES (17208,66,10,59,11);   -- Vs. Empty: Ranged Attack+10%
 
 -- Selene's Bow
 INSERT INTO `item_latents` VALUES (17212,24,5,37,4);     -- Full moon
@@ -2288,7 +2379,7 @@ INSERT INTO `item_latents` VALUES (17741,25,5,6,1000);   -- Accuracy+5 while TP 
 INSERT INTO `item_latents` VALUES (17741,287,6,6,1000);  -- DMG+6 while TP <100%
 
 -- Koggelmander
-INSERT INTO `item_latents` VALUES (17759,165,7,59,20);   -- Vs. vermin: Critical hit rate +7%
+INSERT INTO `item_latents` VALUES (17759,165,7,59,19);   -- Vs. vermin: Critical hit rate +7%
 
 -- Oberon's Rapier
 INSERT INTO `item_latents` VALUES (17761,287,6,40,0);    -- DMG+6 in Main hand
@@ -2326,7 +2417,7 @@ INSERT INTO `item_latents` VALUES (17793,141,6,47,0);    -- Crit Rate +6% (for t
 INSERT INTO `item_latents` VALUES (17793,287,13,47,0);   -- DMG+13 when broken (500 WS points)
 
 -- Ushikirimaru
-INSERT INTO `item_latents` VALUES (17804,25,7,59,6);     -- Vs. beasts: Accuracy+7
+INSERT INTO `item_latents` VALUES (17804,25,7,59,5);     -- Vs. beasts: Accuracy+7
 
 -- Futsuno Mitama
 INSERT INTO `item_latents` VALUES (17810,8,8,6,1);       -- Latent effect: STR+8
@@ -2400,7 +2491,7 @@ INSERT INTO `item_latents` VALUES (17952,287,2,16,6);    -- DMG: 43~51, increase
 INSERT INTO `item_latents` VALUES (17963,8,5,13,267); -- Allied Tags: STR +5
 
 -- Barkborer
-INSERT INTO `item_latents` VALUES (17964,165,7,59,17);   -- Vs. plantoid: Critical hit rate +7%
+INSERT INTO `item_latents` VALUES (17964,165,7,59,16);   -- Vs. plantoid: Critical hit rate +7%
 
 -- Erlking's Tabar
 INSERT INTO `item_latents` VALUES (17966,287,4,40,0);    -- DMG+4 in Main hand
@@ -2792,7 +2883,7 @@ INSERT INTO `item_latents` VALUES (18434,73,2,58,0);     -- Store TP +2 in Assau
 INSERT INTO `item_latents` VALUES (18434,287,3,58,0);    -- DMG+3 in Assault
 
 -- Kumokirimaru
-INSERT INTO `item_latents` VALUES (18438,165,8,59,20);   -- Vs. vermin: Critical hit rate +8%
+INSERT INTO `item_latents` VALUES (18438,165,8,59,19);   -- Vs. vermin: Critical hit rate +8%
 
 -- Amakura
 INSERT INTO `item_latents` VALUES (18445,73,10,0,50);    -- "Store TP"+10 when HP <50%
@@ -2815,7 +2906,7 @@ INSERT INTO `item_latents` VALUES (18498,978,2,13,267); -- Allied Tags: Occasion
 INSERT INTO `item_latents` VALUES (18502,128,1,24,49);   -- Woodworking +1 if skill level < 40
 
 -- Eventreuse
-INSERT INTO `item_latents` VALUES (18504,165,7,59,17);   -- Vs. plantoid: Critical hit rate +7%
+INSERT INTO `item_latents` VALUES (18504,165,7,59,16);   -- Vs. plantoid: Critical hit rate +7%
 
 -- Lyft Voulge
 INSERT INTO `item_latents` VALUES (18508,8,1,16,3);      -- STR +1~4,party size 3+. Effect strengthens with more members
@@ -2854,6 +2945,19 @@ INSERT INTO `item_latents` VALUES (18683,287,2,58,0);    -- DMG+2 in Assault
 INSERT INTO `item_latents` VALUES (18684,24,10,58,0);    -- Ranged Attack +10 in Assault
 INSERT INTO `item_latents` VALUES (18684,287,2,58,0);    -- DMG+2 in Assault
 
+-- Lamiabane
+INSERT INTO `item_latents` VALUES (18693, 28, 2, 23, 54); -- +2 Magic Attack Bonus in Arrapago Reef
+INSERT INTO `item_latents` VALUES (18693, 28, 2, 23, 62); -- +2 Magic Attack Bonus in Halvung
+INSERT INTO `item_latents` VALUES (18693, 28, 2, 23, 65); -- +2 Magic Attack Bonus in Mamook
+
+-- Snakeeye
+INSERT INTO `item_latents` VALUES (18708,8,5,13,3);    -- +5 STR while Poisoned
+INSERT INTO `item_latents` VALUES (18708,404,20,13,3); -- -20 HP/tick while Poisoned
+
+-- Snakeeye +1
+INSERT INTO `item_latents` VALUES (18709,8,6,13,3);    -- +6 STR while Poisoned
+INSERT INTO `item_latents` VALUES (18709,404,20,13,3); -- -20 HP/tick while Poisoned
+
 -- Perdu Bow
 INSERT INTO `item_latents` VALUES (18717,24,10,6,1000);  -- Ranged Attack+10 while TP <100%,changed to value on bg since it is different value than ffxicyclopedia
 INSERT INTO `item_latents` VALUES (18717,26,5,6,1000);   -- Ranged Accuracy+5 while TP <100%
@@ -2886,7 +2990,7 @@ INSERT INTO `item_latents` VALUES (18758,9,3,37,4);      -- Full moon DEX+3
 INSERT INTO `item_latents` VALUES (18763,131,1,24,52); -- Clothcraft +1 if skill level < 40
 
 -- Birdbanes
-INSERT INTO `item_latents` VALUES (18767,25,3,59,8);     -- Vs. birds: Accuracy+3
+INSERT INTO `item_latents` VALUES (18767,25,3,59,7);     -- Vs. birds: Accuracy+3
 
 -- Poppet Katars
 INSERT INTO `item_latents` VALUES (18768,23,12,9,4);     -- Latent: Attack +12 when automaton is active
@@ -2918,7 +3022,7 @@ INSERT INTO `item_latents` VALUES (18855,129,1,24,50); -- Smithing +1 if skill l
 -- Kerykeion
 INSERT INTO `item_latents` VALUES (18859,370,3,0,50);    -- Regen+3 when HP <51%
 
-INSERT INTO `item_latents` VALUES (18865,165,7,59,20);   -- Zonure - Vs. vermin: Critical hit rate +7%
+INSERT INTO `item_latents` VALUES (18865,165,7,59,19);   -- Zonure - Vs. vermin: Critical hit rate +7%
 INSERT INTO `item_latents` VALUES (18870,287,3,40,0);    -- Dweomer Maul DMG+3 in Main hand
 
 -- Hannibal's Sword
@@ -3002,7 +3106,7 @@ INSERT INTO `item_latents` VALUES (19108,287,5,0,75);    -- DNG:36 when HP <=75%
 INSERT INTO `item_latents` VALUES (19110,132,1,24,53); -- Leathercraft +1 if skill level < 40
 
 -- Ermine's Tail
-INSERT INTO `item_latents` VALUES (19113,165,7,59,14);   -- Vs. lizards: Critical hit rate +7%
+INSERT INTO `item_latents` VALUES (19113,165,7,59,13);   -- Vs. lizards: Critical hit rate +7%
 
 -- Fane Baselard
 INSERT INTO `item_latents` VALUES (19115,287,5,40,0);    -- Fane Baselard DMG+5 in Main hand
@@ -3034,7 +3138,7 @@ INSERT INTO `item_latents` VALUES (19155,165,15,13,267); -- Allied Tags: Critica
 INSERT INTO `item_latents` VALUES (19155,421,5,13,267);  -- TODO: Verification needed. Allied Tags: Critical Hit Damage +5
 
 -- Scheherazade
-INSERT INTO `item_latents` VALUES (19158,165,7,59,14);   -- Vs. lizards: Critical hit rate +7%
+INSERT INTO `item_latents` VALUES (19158,165,7,59,13);   -- Vs. lizards: Critical hit rate +7%
 
 -- Lyft Claymore
 INSERT INTO `item_latents` VALUES (19161,8,1,16,3);      -- STR +1~4,party size 3+. Effect strengthens with more members
@@ -3062,7 +3166,7 @@ INSERT INTO `item_latents` VALUES (19234,11,1,16,5);     -- AGI +1~4,party size 
 INSERT INTO `item_latents` VALUES (19234,11,1,16,6);     -- AGI +1~4,party size 3+. Effect strengthens with more members
 
 -- Onishibari
-INSERT INTO `item_latents` VALUES (19273,165,7,59,6);    -- Vs. beasts: Critical hit rate +7%
+INSERT INTO `item_latents` VALUES (19273,165,7,59,5);    -- Vs. beasts: Critical hit rate +7%
 
 -- Trainee Burin
 INSERT INTO `item_latents` VALUES (19274,130,1,24,51);   -- Goldsmithing +1 if skill level < 40
@@ -3504,7 +3608,7 @@ INSERT INTO `item_latents` VALUES (23171,27,-26,13,402); -- EFFECT_ADDENDUM_BLAC
 INSERT INTO `item_latents` VALUES (23197,518,10,13,57);  -- EFFECT_DEFENDER: SHIELDBLOCKRATE: 10
 
 -- Arbatel Bracers +2
-INSERT INTO `item_latents` VALUES (23238,175,12,13,470);  -- EFFECT_IMMANENCE: SKILLCHAINDMG: 12
+INSERT INTO `item_latents` VALUES (23238,175,1200,13,470);  -- EFFECT_IMMANENCE: SKILLCHAINDMG: 12%
 
 -- Kasuga Haidate +2
 INSERT INTO `item_latents` VALUES (23297,384,300,13,353); -- EFFECT_HASSO: HASTE_GEAR: 3%
@@ -3556,6 +3660,9 @@ INSERT INTO `item_latents` VALUES (23456,21,50,9,20); -- Cait Sith (Light)
 -- Agoge Mufflers +3
 INSERT INTO `item_latents` VALUES (23532,518,15,13,57); -- Defender Shield Rate +15
 
+-- Arbatel Bracers +3
+INSERT INTO `item_latents` VALUES (23573,175,1300,13,470);  -- EFFECT_IMMANENCE: SKILLCHAINDMG: 13%
+
 -- Hachiya Kyahan +3
 INSERT INTO `item_latents` VALUES (23655,76,24,26,2);   -- Dusk to dawn: MOVE_SPEED_GEAR_BONUS+25% (retail testing shows +24%)
 
@@ -3601,6 +3708,12 @@ INSERT INTO `item_latents` VALUES (23954,21,50,9,20); -- Cait Sith (Light)
 
 -- Carbie Cap +1
 INSERT INTO `item_latents` VALUES (25633,346,1,9,8);     -- Carbuncle perpetuation -1
+
+-- Arbatel Bracers
+INSERT INTO `item_latents` VALUES (27090,175,1000,13,470);  -- EFFECT_IMMANENCE: SKILLCHAINDMG: 10%
+
+-- Arbatel Bracers +1
+INSERT INTO `item_latents` VALUES (27091,175,1100,13,470);  -- EFFECT_IMMANENCE: SKILLCHAINDMG: 11%
 
 -- Fallen's Sollerets
 INSERT INTO `item_latents` VALUES (27342,63,10,13,64);   -- "Last Resort"+1

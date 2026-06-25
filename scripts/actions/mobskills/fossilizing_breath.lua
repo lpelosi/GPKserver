@@ -3,7 +3,7 @@
 -- Description: Petrifies targets within a fan-shaped area.
 -- Type: Breath
 -- Ignores Shadows
--- Range: Unknown cone
+-- Range: 15.0 yalms
 -----------------------------------
 ---@type TMobSkill
 local mobskillObject = {}
@@ -12,7 +12,7 @@ mobskillObject.onMobSkillCheck = function(target, mob, skill)
     return 0
 end
 
-mobskillObject.onMobWeaponSkill = function(target, mob, skill)
+mobskillObject.onMobWeaponSkill = function(mob, target, skill, action)
     skill:setMsg(xi.mobskills.mobStatusEffectMove(mob, target, xi.effect.PETRIFICATION, 1, 0, 60))
 
     return xi.effect.PETRIFICATION

@@ -20,7 +20,7 @@ entity.spawnPoints =
 
 entity.phList =
 {
-    [ID.mob.SWASHSTOX_BEADBLINKER[1] - 10] = ID.mob.SWASHSTOX_BEADBLINKER[1], -- 92.145, 15.500, 66.595
+    [ID.mob.SWASHSTOX_BEADBLINKER[1] - 3] = ID.mob.SWASHSTOX_BEADBLINKER[1], -- 92.145, 15.500, 66.595
     [ID.mob.SWASHSTOX_BEADBLINKER[2] + 4]  = ID.mob.SWASHSTOX_BEADBLINKER[2], -- 88.412, 15.421, -19.950
 }
 
@@ -34,6 +34,8 @@ entity.onMobSpawn = function(mob)
 
         SpawnMob(guardID)
         GetMobByID(guardID):setSpawn(pos.x + i, pos.y - 0.5, pos.z - i, pos.rot)
+
+        mob:setMobMod(xi.mobMod.BASE_DAMAGE_MULTIPLIER, 150)
     end
 end
 

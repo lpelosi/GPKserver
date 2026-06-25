@@ -22,13 +22,15 @@
 #pragma once
 
 #include "lua_test_entity_assertions.h"
-#include "map/lua/lua_baseentity.h"
+#include "map/lua/lua_base_entity.h"
+
+#include <common/scheduler.h>
 
 class CBaseEntity;
 class CLuaTestEntity : public CLuaBaseEntity
 {
 public:
-    CLuaTestEntity(CBaseEntity* entity);
+    CLuaTestEntity(Scheduler& scheduler, CBaseEntity* entity);
     virtual ~CLuaTestEntity();
 
     virtual void setEntity(CBaseEntity* entity);
@@ -37,4 +39,6 @@ public:
     auto         assert_() -> CLuaTestEntityAssertions;
 
     static void Register();
+
+    Scheduler& scheduler_;
 };

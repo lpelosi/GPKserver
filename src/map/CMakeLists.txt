@@ -1,8 +1,9 @@
+add_subdirectory(action)
 add_subdirectory(ai)
+add_subdirectory(data)
 add_subdirectory(entities)
 add_subdirectory(enums)
 add_subdirectory(items)
-add_subdirectory(los)
 add_subdirectory(lua)
 add_subdirectory(packets)
 add_subdirectory(utils)
@@ -11,16 +12,8 @@ set(APP_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
 )
 
-set(SOURCES
+set(MAP_CORE_SOURCES
     ${COMMON_SOURCES}
-    ${AI_SOURCES}
-    ${ENTITY_SOURCES}
-    ${ENUMS_SOURCES}
-    ${ITEM_SOURCES}
-    ${LOS_SOURCES}
-    ${LUA_SOURCES}
-    ${PACKET_SOURCES}
-    ${UTIL_SOURCES}
     ${CMAKE_CURRENT_SOURCE_DIR}/ability.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ability.h
     ${CMAKE_CURRENT_SOURCE_DIR}/alliance.cpp
@@ -62,6 +55,8 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/event_info.h
     ${CMAKE_CURRENT_SOURCE_DIR}/fishingcontest.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/fishingcontest.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/gmcall_container.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/gmcall_container.h
     ${CMAKE_CURRENT_SOURCE_DIR}/grades.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/grades.h
     ${CMAKE_CURRENT_SOURCE_DIR}/guild.cpp
@@ -72,6 +67,8 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/instance.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ipc_client.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ipc_client.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/inventory_sync_state.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/inventory_sync_state.h
     ${CMAKE_CURRENT_SOURCE_DIR}/item_container.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/item_container.h
     ${CMAKE_CURRENT_SOURCE_DIR}/items.h
@@ -83,6 +80,8 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/latent_effect.h
     ${CMAKE_CURRENT_SOURCE_DIR}/linkshell.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/linkshell.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/los_cache.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/los_cache.h
     ${CMAKE_CURRENT_SOURCE_DIR}/map_application.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/map_application.h
     ${CMAKE_CURRENT_SOURCE_DIR}/map_engine.cpp
@@ -97,6 +96,8 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/map_socket.h
     ${CMAKE_CURRENT_SOURCE_DIR}/map_statistics.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/map_statistics.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/maze.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/maze.h
     ${CMAKE_CURRENT_SOURCE_DIR}/merit.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/merit.h
     ${CMAKE_CURRENT_SOURCE_DIR}/mob_modifier.h
@@ -110,12 +111,16 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/modifier.h
     ${CMAKE_CURRENT_SOURCE_DIR}/monstrosity.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/monstrosity.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/navmesh.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/navmesh.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/navmesh/inavmesh.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/navmesh/navmesh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/navmesh/navmesh.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/navmesh/navmesh_builder.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/navmesh/navmesh_builder.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/navmesh/navmesh_config.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/nominate_manager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/nominate_manager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/notoriety_container.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/notoriety_container.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/packet_guard.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/packet_guard.h
     ${CMAKE_CURRENT_SOURCE_DIR}/packet_system.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/packet_system.h
     ${CMAKE_CURRENT_SOURCE_DIR}/party.cpp
@@ -126,14 +131,17 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/recast_container.h
     ${CMAKE_CURRENT_SOURCE_DIR}/roe.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/roe.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/socket.h
     ${CMAKE_CURRENT_SOURCE_DIR}/spell.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/spell.h
     ${CMAKE_CURRENT_SOURCE_DIR}/status_effect_container.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/status_effect_container.h
     ${CMAKE_CURRENT_SOURCE_DIR}/status_effect.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/status_effect.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/spawn_group.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/spawn_group.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/spawn_handler.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/spawn_handler.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/spawn_slot.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/spawn_slot.h
     ${CMAKE_CURRENT_SOURCE_DIR}/time_server.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/time_server.h
     ${CMAKE_CURRENT_SOURCE_DIR}/timetriggers.cpp
@@ -154,6 +162,13 @@ set(SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/universal_container.h
     ${CMAKE_CURRENT_SOURCE_DIR}/weapon_skill.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/weapon_skill.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/weather_container.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/weather_container.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ximesh/transformation_matrix.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ximesh/vector3.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ximesh/ximesh_structs.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/ximesh/ximesh.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/ximesh/ximesh.h
     ${CMAKE_CURRENT_SOURCE_DIR}/zone_entities.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/zone_entities.h
     ${CMAKE_CURRENT_SOURCE_DIR}/zone_instance.cpp
@@ -201,10 +216,88 @@ add_executable(xi_map
     ${APP_SOURCES}
     ${resource})
 
-set(MAP_LIB_SOURCES ${SOURCES})
-add_library(xi_map_lib
-    STATIC
-        ${MAP_LIB_SOURCES})
+add_library(xi_map_settings INTERFACE)
+target_include_directories(xi_map_settings INTERFACE
+    ${CMAKE_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_CURRENT_SOURCE_DIR}
+)
+
+target_link_libraries(xi_map_settings INTERFACE
+    ${SHARED_EXTERNAL_LIBS}
+    ${MAP_ONLY_EXTERNAL_LIBS}
+    project_options
+)
+
+if(TRACY_ENABLE)
+    target_link_libraries(xi_map_settings INTERFACE TracyClient)
+    target_compile_definitions(xi_map_settings INTERFACE TRACY_ENABLE)
+endif()
+
+function(configure_map_lib target)
+    add_dependencies(${target} data_codegen)
+    target_link_libraries(${target}
+        PUBLIC
+            xi_map_settings
+        PRIVATE
+            project_warnings
+    )
+endfunction()
+
+add_library(xi_map_lua STATIC ${LUA_SOURCES})
+configure_map_lib(xi_map_lua)
+
+add_library(xi_map_battle STATIC
+    ${UTIL_SOURCES}
+    ${ITEM_SOURCES}
+    ${ACTION_SOURCES}
+    ${AI_SOURCES}
+    ${DATA_SOURCES}
+    ${ENUMS_SOURCES}
+)
+configure_map_lib(xi_map_battle)
+
+add_library(xi_map_entities STATIC ${ENTITY_SOURCES})
+configure_map_lib(xi_map_entities)
+
+add_library(xi_map_packets_c2s STATIC ${PACKET_C2S_SOURCES})
+configure_map_lib(xi_map_packets_c2s)
+
+add_library(xi_map_packets_s2c STATIC ${PACKET_S2C_SOURCES})
+configure_map_lib(xi_map_packets_s2c)
+
+add_library(xi_map_core STATIC ${MAP_CORE_SOURCES})
+configure_map_lib(xi_map_core)
+
+set(MAP_GROUP_LIBS
+    xi_map_lua
+    xi_map_battle
+    xi_map_entities
+    xi_map_packets_c2s
+    xi_map_packets_s2c
+)
+target_link_libraries(xi_map_core PUBLIC ${MAP_GROUP_LIBS})
+foreach(group_lib ${MAP_GROUP_LIBS})
+    target_link_libraries(${group_lib} PUBLIC xi_map_core)
+endforeach()
+
+add_library(xi_map_lib INTERFACE)
+target_link_libraries(xi_map_lib INTERFACE
+    xi_map_settings
+    xi_map_core
+    ${MAP_GROUP_LIBS}
+)
+
+if(PCH_ENABLE)
+    set(MAP_PCH ${CMAKE_CURRENT_SOURCE_DIR}/pch.h)
+    target_precompile_headers(xi_map_core PRIVATE ${MAP_PCH})
+    target_precompile_headers(xi_map_lua         REUSE_FROM xi_map_core)
+    target_precompile_headers(xi_map_battle      REUSE_FROM xi_map_core)
+    target_precompile_headers(xi_map_entities    REUSE_FROM xi_map_core)
+    target_precompile_headers(xi_map_packets_c2s REUSE_FROM xi_map_core)
+    target_precompile_headers(xi_map_packets_s2c REUSE_FROM xi_map_core)
+    target_precompile_headers(xi_map_lib         INTERFACE ${MAP_PCH})
+endif()
 
 foreach(entry ${cmakelist_include_paths})
     if (${entry} STREQUAL "")
@@ -217,34 +310,14 @@ if(WIN32)
     set_target_properties(xi_map PROPERTIES OUTPUT_NAME xi_map)
 endif()
 
-target_link_libraries(xi_map_lib
-    PUBLIC
-        ${SHARED_EXTERNAL_LIBS}
-        ${MAP_ONLY_EXTERNAL_LIBS}
-        project_options
-    PRIVATE
-        project_warnings
-)
-
 target_include_directories(xi_map
     PUBLIC
         ${module_include_dirs}
 )
 
-target_include_directories(xi_map_lib
-    PUBLIC
-        ${CMAKE_SOURCE_DIR}
-        ${CMAKE_SOURCE_DIR}/src
-        ${CMAKE_CURRENT_SOURCE_DIR}
-)
-
 target_link_libraries(xi_map
     PUBLIC
         xi_map_lib)
-
-if(PCH_ENABLE)
-    target_precompile_headers(xi_map_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/pch.h)
-endif()
 
 if (APPLE)
     disable_lto(xi_map)
@@ -254,8 +327,7 @@ set_target_output_directory(xi_map)
 set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT xi_map)
 
 if(TRACY_ENABLE)
-    target_link_libraries(xi_map_lib PUBLIC TracyClient)
+    target_link_libraries(xi_map PRIVATE TracyClient)
     set_target_properties(xi_map PROPERTIES OUTPUT_NAME xi_map_tracy)
-    target_compile_definitions(xi_map_lib PUBLIC TRACY_ENABLE)
     message(STATUS "TRACY_ENABLE: xi_map will be output as xi_map_tracy")
 endif(TRACY_ENABLE)

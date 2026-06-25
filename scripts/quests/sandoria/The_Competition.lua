@@ -29,7 +29,7 @@ quest.sections =
         {
             ['Ufanne'] = quest:event(310),
 
-            ['Joulet'] = quest:progressEvent(304, xi.item.MOAT_CARP, xi.item.FOREST_CARP),
+            ['Joulet'] = quest:progressEvent(304, xi.item.MOAT_CARP_1, xi.item.FOREST_CARP),
 
             onEventFinish =
             {
@@ -57,7 +57,7 @@ quest.sections =
 
                 onTrade = function(player, npc, trade)
                     local count        = trade:getItemCount()
-                    local moatCarp     = trade:getItemQty(xi.item.MOAT_CARP)
+                    local moatCarp     = trade:getItemQty(xi.item.MOAT_CARP_1)
                     local forestCarp   = trade:getItemQty(xi.item.FOREST_CARP)
                     local fishCountVar = player:getCharVar('carpsTraded')
                     local totalFish    = moatCarp + forestCarp + fishCountVar
@@ -87,7 +87,7 @@ quest.sections =
                     -- NPC cycles dialogue
                     if cycle == 0 then
                         player:setLocalVar('Cycle', 1)
-                        return quest:event(309, 0, 0, fishCount)
+                        return quest:event(309, 1, 0, fishCount)
                     elseif cycle == 1 then
                         player:setLocalVar('Cycle', 0)
                         return quest:event(310)
@@ -132,7 +132,7 @@ quest.sections =
 
                 onTrade = function(player, npc, trade)
                     local count        = trade:getItemCount()
-                    local moatCarp     = trade:getItemQty(xi.item.MOAT_CARP)
+                    local moatCarp     = trade:getItemQty(xi.item.MOAT_CARP_1)
                     local forestCarp   = trade:getItemQty(xi.item.FOREST_CARP)
                     local fishCountVar = player:getCharVar('carpsTraded')
                     local totalFish    = moatCarp + forestCarp + fishCountVar
@@ -156,7 +156,7 @@ quest.sections =
                     -- NPC cycles dialogue
                     if cycle == 0 then
                         player:setLocalVar('Cycle', 1)
-                        return quest:event(309, 0, 0, fishCount)
+                        return quest:event(309, 1, 0, fishCount)
                     elseif cycle == 1 then
                         player:setLocalVar('Cycle', 0)
                         return quest:event(310)

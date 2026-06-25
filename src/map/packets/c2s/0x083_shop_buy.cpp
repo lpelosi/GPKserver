@@ -21,7 +21,7 @@
 
 #include "0x083_shop_buy.h"
 
-#include "entities/charentity.h"
+#include "entities/char_entity.h"
 #include "packets/s2c/0x01d_item_same.h"
 #include "packets/s2c/0x03f_shop_buy.h"
 #include "trade_container.h"
@@ -30,28 +30,54 @@
 
 auto GP_CLI_COMMAND_SHOP_BUY::validate(MapSession* PSession, const CCharEntity* PChar) const -> PacketValidationResult
 {
-    return PacketValidator()
-        .mustEqual(PropertyItemIndex, 0, "PropertyItemIndex not 0");
+    return PacketValidator(PChar)
+        .blockedBy({ BlockedState::InEvent })
+        .mustEqual(this->PropertyItemIndex, 0, "PropertyItemIndex not 0");
 }
 
 void GP_CLI_COMMAND_SHOP_BUY::process(MapSession* PSession, CCharEntity* PChar) const
 {
-    auto quantity = ItemNum;
+    auto quantity = this->ItemNum;
 
     // Prevent users from buying from invalid container slots
-    if (ShopItemIndex > PChar->Container->getExSize() - 1)
+    if (this->ShopItemIndex > PChar->Container->getExSize() - 1)
     {
         ShowError("User '%s' attempting to buy vendor item from an invalid slot!", PChar->getName());
         return;
     }
 
-    const uint16 itemId = PChar->Container->getItemID(ShopItemIndex);
-    const uint32 price  = PChar->Container->getQuantity(ShopItemIndex); // We used the "quantity" to store the item's sale price
+    const uint16 itemId = PChar->Container->getItemID(this->ShopItemIndex);
+    const uint32 price  = PChar->Container->getQuantity(this->ShopItemIndex); // We used the "quantity" to store the item's sale price
 
-    const CItem* PItem = itemutils::GetItemPointer(itemId);
+    const CItem* PItem = xi::items::lookup(itemId);
     if (!PItem)
     {
         ShowWarning("User '%s' attempting to buy an invalid item from vendor!", PChar->getName());
+        return;
+    }
+
+    // Ensure player meets the item purchase requirement, if any
+    const bool meetsRequirement = std::visit(
+        [&]<typename T>(T const& restriction) -> bool
+        {
+            if constexpr (std::is_same_v<T, JobRestriction>)
+            {
+                return PChar->jobs.job[restriction.jobId] >= restriction.level;
+            }
+            else if constexpr (std::is_same_v<T, GuildRestriction>)
+            {
+                return PChar->RealSkills.rank[restriction.guildId] >= restriction.rank;
+            }
+            else
+            {
+                return true;
+            }
+        },
+        PChar->Container->getRestriction(this->ShopItemIndex));
+
+    if (!meetsRequirement)
+    {
+        ShowWarningFmt("{} attempting to buy item {} without meeting shop requirement!", PChar->getName(), itemId);
         return;
     }
 
@@ -75,8 +101,8 @@ void GP_CLI_COMMAND_SHOP_BUY::process(MapSession* PSession, CCharEntity* PChar) 
         {
             charutils::UpdateItem(PChar, LOC_INVENTORY, 0, -static_cast<int32>(price * quantity));
             ShowInfo("User '%s' purchased %u of item of ID %u [from VENDOR] ", PChar->getName(), quantity, itemId);
-            PChar->pushPacket<GP_SERV_COMMAND_SHOP_BUY>(ShopItemIndex, quantity);
-            PChar->pushPacket<GP_SERV_COMMAND_ITEM_SAME>();
+            PChar->pushPacket<GP_SERV_COMMAND_SHOP_BUY>(this->ShopItemIndex, quantity);
+            PChar->pushPacket<GP_SERV_COMMAND_ITEM_SAME>(PChar);
         }
     }
 }

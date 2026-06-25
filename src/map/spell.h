@@ -1,4 +1,4 @@
-﻿/*
+/*
 ===========================================================================
 
   Copyright (c) 2010-2015 Darkstar Dev Teams
@@ -22,10 +22,13 @@
 #pragma once
 
 #include "common/cbasetypes.h"
-#include "entities/battleentity.h"
+#include "entities/battle_entity.h"
 
 #define CANNOT_USE_SPELL 0
 
+enum class ActionAnimation : uint16_t;
+enum class ActionModifier : uint32_t;
+enum class FourCC : uint32_t;
 enum SPELLGROUP
 {
     SPELLGROUP_NONE      = 0,
@@ -224,8 +227,8 @@ enum SPELLAOE
 
 enum SPELLFLAG
 {
-    SPELLFLAG_NONE           = 0x00,
-    SPELLFLAG_HIT_ALL        = 0x01, // Hit all targets in range regardless of party
+    SPELLFLAG_NONE = 0x00,
+    // 0x01 is available
     SPELLFLAG_WIPE_SHADOWS   = 0x02, // Wipe shadows even if single target and miss/resist (example: "Maiden's Virelai")
     SPELLFLAG_IGNORE_SHADOWS = 0x04, // Ignore shadows and hit player anyways (example: Mobs "Death" spell)
     SPELLFLAG_NO_START_MSG   = 0x08, // Doesn't emit "<caster> starts casting <spell>"
@@ -1033,6 +1036,128 @@ enum class SpellID : uint16
     Full_Cure             = 893,
     Refresh_III           = 894,
     Temper_II             = 895,
+    Shantotto             = 896,
+    Naji                  = 897,
+    Kupipi                = 898,
+    Excenmille            = 899,
+    Ayame                 = 900,
+    Nanaa_Mihgo           = 901,
+    Curilla               = 902,
+    Volker                = 903,
+    Ajido_Marujido        = 904,
+    Trion                 = 905,
+    Zeid                  = 906,
+    Lion                  = 907,
+    Tenzen                = 908,
+    Mihli_Aliapoh         = 909,
+    Valaineral            = 910,
+    Joachim               = 911,
+    Naja_Salaheem         = 912,
+    Prishe                = 913,
+    Ulmia                 = 914,
+    Shikaree_Z            = 915,
+    Cherukiki             = 916,
+    Iron_Eater            = 917,
+    Gessho                = 918,
+    Gadalar               = 919,
+    Rainemard             = 920,
+    Ingrid                = 921,
+    Lehko_Habhoka         = 922,
+    Nashmeira             = 923,
+    Zazarg                = 924,
+    Ovjang                = 925,
+    Mnejing               = 926,
+    Sakura                = 927,
+    Luzaf                 = 928,
+    Najelith              = 929,
+    Aldo                  = 930,
+    Moogle                = 931,
+    Fablinix              = 932,
+    Maat                  = 933,
+    Domina_Shantotto      = 934,
+    Star_Sibyl            = 935,
+    Karaha_Baruha         = 936,
+    Cid                   = 937,
+    Gilgamesh             = 938,
+    Areuhat               = 939,
+    Semih_Lafihna         = 940,
+    Elivira               = 941,
+    Noillurie             = 942,
+    Lhu_Mhakaracca        = 943,
+    Ferreous_Coffin       = 944,
+    Lilisette             = 945,
+    Mumor                 = 946,
+    Uka_Totlihn           = 947,
+    Klara                 = 948,
+    Romaa_Mihgo           = 949,
+    Kuyin_Hathdenna       = 950,
+    Rahal                 = 951,
+    Koru_Moru             = 952,
+    Pieuje_UC             = 953,
+    Invincible_Shield_UC  = 954,
+    Apururu_UC            = 955,
+    Jakoh_UC              = 956,
+    Flaviria_UC           = 957,
+    Babban                = 958,
+    Abenzio               = 959,
+    Rughadjeen            = 960,
+    Kukki_Chebukki        = 961,
+    Margret               = 962,
+    Chacharoon            = 963,
+    Lhe_Lhangavo          = 964,
+    Arciela               = 965,
+    Mayakov               = 966,
+    Qultada               = 967,
+    Adelheid              = 968,
+    Amchuchu              = 969,
+    Brygid                = 970,
+    Mildaurion            = 971,
+    Halver                = 972,
+    Rongelouts            = 973,
+    Leonoyne              = 974,
+    Maximilian            = 975,
+    Kayeel_Payeel         = 976,
+    Robel_Akbel           = 977,
+    Kupofried             = 978,
+    Selhteus              = 979,
+    Yoran_Oran_UC         = 980,
+    Sylvie_UC             = 981,
+    Abquhbah              = 982,
+    Balamor               = 983,
+    August                = 984,
+    Rosulatia             = 985,
+    Teodor                = 986,
+    Ullegore              = 987,
+    Makki_Chebukki        = 988,
+    King_Of_Hearts        = 989,
+    Morimar               = 990,
+    Darrcuiln             = 991,
+    Aahm                  = 992,
+    Aaev                  = 993,
+    Aamr                  = 994,
+    Aatt                  = 995,
+    Aagk                  = 996,
+    Iroha                 = 997,
+    Ygnas                 = 998,
+    Monberaux             = 999,
+
+    Cornelia              = 1002,
+    Matsui_P              = 1003,
+    Excenmille_S          = 1004,
+    Ayame_UC              = 1005,
+    Maat_UC               = 1006,
+    Aldo_UC               = 1008,
+    Lion_II               = 1009,
+    Zeid_II               = 1010,
+    Prishe_II             = 1011,
+    Nashmeira_II          = 1012,
+    Lilisette_II          = 1013,
+    Tenzen_II             = 1014,
+    Mumor_II              = 1015,
+    Ingrid_II             = 1016,
+    Arciela_II            = 1017,
+    Iroha_II              = 1018,
+    Shantotto_II          = 1019,
 };
 // clang-format on
 
@@ -1057,9 +1182,9 @@ public:
     timer::duration    getCastTime() const;
     timer::duration    getRecastTime() const;
     uint16             getValidTarget() const;
-    uint16             getAnimationID() const;
+    auto               getAnimationID() const -> ActionAnimation;
     timer::duration    getAnimationTime() const;
-    SPELLGROUP         getSpellGroup();
+    auto               getSpellGroup() const -> SPELLGROUP;
     SPELLFAMILY        getSpellFamily();
     uint8              getSkillType() const;
     uint16             getZoneMisc() const;
@@ -1067,20 +1192,19 @@ public:
     uint16             getBase() const;
     uint16             getElement() const;
     float              getMultiplier() const;
-    uint16             getMessage() const;
-    uint16             getDefaultMessage();
-    uint16             getMagicBurstMessage() const;
+    auto               getMessage() const -> MsgBasic;
+    auto               getMagicBurstMessage() const -> MsgBasic;
     int32              getCE() const;
     int32              getVE() const;
     timer::duration    getModifiedRecast() const;
     float              getRadius() const;
-    uint16             getAoEMessage() const; // returns the single target message for AoE moves
     uint8              getRequirements() const;
     uint16             getMeritId() const;
     uint8              getFlag() const;
     const std::string& getContentTag();
     float              getRange() const;
     uint32             getPrimaryTargetID() const;
+    auto               getFourCC(bool interrupt = false) const -> FourCC;
     bool               tookEffect() const; // returns true if the spell landed, not resisted or missed
     bool               hasMPCost();        // checks if spell costs mp to use
     bool               isHeal();           // is a heal spell
@@ -1108,10 +1232,12 @@ public:
     void setBase(uint16 base);
     void setElement(uint16 element);
     void setMultiplier(float multiplier);
-    void setMessage(uint16 message);
-    void setMagicBurstMessage(uint16 message);
-    auto getModifier() -> MODIFIER;
-    void setModifier(MODIFIER modifier); // set Spell modifier message, MUST reset the modifier on use otherwise it will be stale
+    void setMessage(MsgBasic message);
+    void setMagicBurstMessage(MsgBasic message);
+    auto getModifier() const -> ActionModifier;
+    void setModifier(ActionModifier modifier); // set Spell modifier message, MUST reset the modifier on use otherwise it will be stale
+    auto isCritical() const -> bool;
+    void setCritical(bool isCritical);
     void setPrimaryTargetID(uint32);
 
     void setCE(int32 ce);
@@ -1151,9 +1277,10 @@ private:
     uint16                         m_base{};                          // spell base damage
     float                          m_multiplier{};                    // multiplier for upper tier spells
     uint16                         m_element{};                       // element of spell
-    uint16                         m_message{};                       // message id
-    uint16                         m_MagicBurstMessage{};             // Message used for magic bursts.
-    MODIFIER                       m_MessageModifier{};               // Message modifier, "Cover!", "Resist!" or "Immunobreak!"
+    MsgBasic                       m_message{};                       // message id
+    MsgBasic                       m_MagicBurstMessage{};             // Message used for magic bursts.
+    ActionModifier                 m_MessageModifier{};               // Message modifier, "Cover!", "Resist!" or "Immunobreak!"
+    bool                           critical_{};                       // transient critical hit flag for action packets
     int32                          m_CE{};                            // cumulative enmity of spell
     int32                          m_VE{};                            // volatile enmity of spell
     std::string                    m_name;                            // spell name
@@ -1175,6 +1302,5 @@ CSpell* GetSpell(SpellID SpellID);
 bool    CanUseSpell(CBattleEntity* PCaster, SpellID SpellID);
 bool    CanUseSpell(CBattleEntity* PCaster, CSpell* PSpell);
 bool    CanUseSpellWith(SpellID spellId, JOBTYPE job, uint8 level);
-float   GetSpellRadius(CSpell* spellId, CBattleEntity* PCaster);
 
 }; // namespace spell

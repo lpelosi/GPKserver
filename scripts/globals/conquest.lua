@@ -784,7 +784,7 @@ local overseerInvNation =
         [32898] = { rank =  9, cp = 48000, lvl = 71, item = xi.item.RESERVE_CAPTAINS_MACE,          place = 2 },
         [32899] = { rank =  9, cp = 48000, lvl = 71, item = xi.item.RESERVE_CAPTAINS_LANCE,         place = 1 },
         [32912] = { rank = 10, cp = 56000, lvl =  1, item = xi.item.KINGDOM_AKETON,                 place = 1 },
-        [32932] = {            cp =  5000, lvl =  1, item = xi.item.KINGDOM_SIGNET_STAFF           },
+        [32932] = { rank = 10, cp =  5000, lvl =  1, item = xi.item.KINGDOM_SIGNET_STAFF           },
         [32940] = { rank = 10, cp = 10000, lvl =  1, item = xi.item.IMPERIAL_CHAIR_SET             },
     },
 
@@ -842,7 +842,7 @@ local overseerInvNation =
         [32898] = { rank =  9, cp = 48000, lvl = 71, item = xi.item.SENIOR_GOLD_MUSKETEERS_AXE,       place = 2 },
         [32899] = { rank =  9, cp = 48000, lvl = 71, item = xi.item.SENIOR_GOLD_MUSKETEERS_SCIMITAR,  place = 1 },
         [32912] = { rank = 10, cp = 56000, lvl =  1, item = xi.item.REPUBLIC_AKETON,                  place = 1 },
-        [32932] = {            cp =  5000, lvl =  1, item = xi.item.REPUBLIC_SIGNET_STAFF            },
+        [32932] = { rank = 10, cp =  5000, lvl =  1, item = xi.item.REPUBLIC_SIGNET_STAFF            },
         [32940] = { rank = 10, cp = 10000, lvl =  1, item = xi.item.DECORATIVE_CHAIR_SET             },
     },
 
@@ -904,7 +904,7 @@ local overseerInvNation =
         [32898] = { rank =  9, cp = 48000, lvl = 71, item = xi.item.MASTER_CASTERS_BAGHNAKHS,     place = 2 },
         [32899] = { rank =  9, cp = 48000, lvl = 71, item = xi.item.MASTER_CASTERS_KNIFE,         place = 1 },
         [32912] = { rank = 10, cp = 56000, lvl =  1, item = xi.item.FEDERATION_AKETON,            place = 1 },
-        [32932] = {            cp =  5000, lvl =  1, item = xi.item.FEDERATION_SIGNET_STAFF      },
+        [32932] = { rank = 10, cp =  5000, lvl =  1, item = xi.item.FEDERATION_SIGNET_STAFF      },
         [32940] = { rank = 10, cp = 10000, lvl =  1, item = xi.item.ORNATE_STOOL_SET             },
     },
 }
@@ -1353,7 +1353,7 @@ xi.conquest.overseerOnEventFinish = function(player, csid, option, guardNation, 
     if option == 1 then
         local duration = (pRank + GetNationRank(pNation) + 3) * 3600
         player:delStatusEffectsByFlag(xi.effectFlag.INFLUENCE, true)
-        player:addStatusEffect(xi.effect.SIGNET, 0, 0, duration)
+        player:addStatusEffect(xi.effect.SIGNET, { duration = duration, origin = player })
         player:messageSpecial(mOffset + 1) -- 'You've received your nation's Signet!'
 
         if player:getEminenceProgress(3367) then
@@ -1474,11 +1474,11 @@ xi.conquest.vendorOnEventFinish = function(player, option, vendorRegion)
         xi.shop.outpost(player)
     elseif option == 2 then
         if player:delGil(fee) then
-            player:addStatusEffectEx(xi.effect.TELEPORT, 0, xi.teleport.id.HOME_NATION, 0, 1, 0, vendorRegion)
+            player:addStatusEffect(xi.effect.TELEPORT, { power = xi.teleport.id.HOME_NATION, duration = 1, origin = player, icon = 0, subPower = vendorRegion })
         end
     elseif option == 6 then
         player:delCP(fee)
-        player:addStatusEffectEx(xi.effect.TELEPORT, 0, xi.teleport.id.HOME_NATION, 0, 1, 0, vendorRegion)
+        player:addStatusEffect(xi.effect.TELEPORT, { power = xi.teleport.id.HOME_NATION, duration = 1, origin = player, icon = 0, subPower = vendorRegion })
     end
 end
 
@@ -1517,7 +1517,7 @@ xi.conquest.teleporterOnEventFinish = function(player, csid, option, teleporterE
                 xi.conquest.canTeleportToOutpost(player, region) and
                 player:delGil(fee)
             then
-                player:addStatusEffectEx(xi.effect.TELEPORT, 0, xi.teleport.id.OUTPOST, 0, 1, 0, region)
+                player:addStatusEffect(xi.effect.TELEPORT, { power = xi.teleport.id.OUTPOST, duration = 1, origin = player, icon = 0, subPower = region })
             end
 
         -- TELEPORT WITH CP
@@ -1530,7 +1530,7 @@ xi.conquest.teleporterOnEventFinish = function(player, csid, option, teleporterE
                 player:getCP() >= cpFee
             then
                 player:delCP(cpFee)
-                player:addStatusEffectEx(xi.effect.TELEPORT, 0, xi.teleport.id.OUTPOST, 0, 1, 0, region)
+                player:addStatusEffect(xi.effect.TELEPORT, { power = xi.teleport.id.OUTPOST, duration = 1, origin = player, icon = 0, subPower = region })
             end
         end
     end

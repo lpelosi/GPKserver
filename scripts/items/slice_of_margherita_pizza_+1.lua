@@ -10,28 +10,23 @@
 ---@type TItemFood
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     return xi.itemUtils.foodOnItemCheck(target, xi.foodType.BASIC)
 end
 
 itemObject.onItemUse = function(target, user, item, action)
-    target:addStatusEffect(xi.effect.FOOD, 0, 0, 3600, 0, 0, 0, xi.effectSourceType.FOOD, item:getID(), user:getID())
+    target:addStatusEffect(xi.effect.FOOD, { duration = 3600, origin = user, sourceType = xi.effectSourceType.FOOD, sourceTypeParam = item:getID() })
 end
 
 itemObject.onEffectGain = function(target, effect)
-    target:addMod(xi.mod.FOOD_HP, 35)
-    target:addMod(xi.mod.FOOD_ACCP, 10)
-    target:addMod(xi.mod.FOOD_ACC_CAP, 9)
-    target:addMod(xi.mod.FOOD_ATTP, 10)
-    target:addMod(xi.mod.FOOD_ATT_CAP, 11)
+    effect:addMod(xi.mod.FOOD_HP, 35)
+    effect:addMod(xi.mod.FOOD_ACCP, 10)
+    effect:addMod(xi.mod.FOOD_ACC_CAP, 9)
+    effect:addMod(xi.mod.FOOD_ATTP, 10)
+    effect:addMod(xi.mod.FOOD_ATT_CAP, 11)
 end
 
 itemObject.onEffectLose = function(target, effect)
-    target:delMod(xi.mod.FOOD_HP, 35)
-    target:delMod(xi.mod.FOOD_ACCP, 10)
-    target:delMod(xi.mod.FOOD_ACC_CAP, 9)
-    target:delMod(xi.mod.FOOD_ATTP, 10)
-    target:delMod(xi.mod.FOOD_ATT_CAP, 11)
 end
 
 return itemObject

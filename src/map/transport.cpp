@@ -27,7 +27,7 @@
 
 #include <cstdlib>
 
-#include "entities/charentity.h"
+#include "entities/char_entity.h"
 #include "packets/entity_update.h"
 #include "utils/zoneutils.h"
 #include "zone.h"
@@ -168,6 +168,8 @@ void CTransportHandler::InitializeTransport(IPP mapIPP)
             ShowErrorFmt("Transport {}: transport not found", zoneTown.ship.transportId);
             continue;
         }
+
+        static_cast<CNpcEntity*>(zoneTown.ship.npc)->setAlwaysRelevant(true);
 
         zoneTown.ship.animationArrive = rset->get<uint8>("anim_arrive");
         zoneTown.ship.animationDepart = rset->get<uint8>("anim_depart");
@@ -446,6 +448,15 @@ Elevator_t* CTransportHandler::getElevator(uint8 elevatorID)
 
 void CTransportHandler::insertElevator(Elevator_t elevator)
 {
+    // Double check that the NPC entities all exist
+    if (!elevator.LowerDoor || !elevator.UpperDoor || !elevator.Elevator)
+    {
+        ShowError("Elevator could not load NPC entity. Ignoring this elevator.");
+        return;
+    }
+
+    elevator.Elevator->setAlwaysRelevant(true);
+
     // check to see if this elevator already exists
     for (auto& i : ElevatorList)
     {
@@ -456,13 +467,6 @@ void CTransportHandler::insertElevator(Elevator_t elevator)
             ShowError("Elevator already exists.");
             return;
         }
-    }
-
-    // Double check that the NPC entities all exist
-    if (elevator.LowerDoor == nullptr || elevator.UpperDoor == nullptr || elevator.Elevator == nullptr)
-    {
-        ShowError("Elevator %d could not load NPC entity. Ignoring this elevator.", elevator.Elevator->id);
-        return;
     }
 
     // Have permanent elevators wait until their next cycle to begin moving

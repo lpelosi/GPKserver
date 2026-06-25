@@ -6,7 +6,7 @@
 ---@type TItem
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     local result = 0
     if not target:hasKeyItem(xi.ki.MERIPHATAUD_GATE_CRYSTAL) then
         result = 445
@@ -15,8 +15,8 @@ itemObject.onItemCheck = function(target, item, param, caster)
     return result
 end
 
-itemObject.onItemUse = function(target)
-    target:addStatusEffectEx(xi.effect.TELEPORT, 0, xi.teleport.id.MERIPH, 0, 4)
+itemObject.onItemUse = function(target, user)
+    target:addStatusEffect(xi.effect.TELEPORT, { power = xi.teleport.id.MERIPH, duration = 4, origin = user, icon = 0 })
 end
 
 return itemObject

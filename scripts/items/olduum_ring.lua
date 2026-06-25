@@ -6,12 +6,12 @@
 ---@type TItem
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     return 0
 end
 
-itemObject.onItemUse = function(target)
-    target:setPos(-199, -10, 80, 94, 51)
+itemObject.onItemUse = function(target, user)
+    target:addStatusEffect(xi.effect.TELEPORT, { power = xi.teleport.id.WAJAOM_LEYPOINT, duration = 3, origin = user, icon = 0 })
 end
 
 return itemObject

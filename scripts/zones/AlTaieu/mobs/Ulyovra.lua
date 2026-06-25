@@ -12,7 +12,7 @@ end
 
 entity.onMobSpawn = function(mob)
     mob:setMod(xi.mod.REGEN, 50)
-    mob:setMobMod(xi.mobMod.WEAPON_BONUS, mob:getMainLvl() - 2) -- Base damage is level * 2
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MODIFIER, mob:getMainLvl() - 2) -- Base damage is level * 2
     -- Yovra have a +50% bonus to defense.
     mob:addMod(xi.mod.DEF, mob:getStat(xi.mod.DEF) * 0.5)
     mob:hideName(true)
@@ -22,7 +22,15 @@ entity.onMobSpawn = function(mob)
 end
 
 entity.onAdditionalEffect = function(mob, target, damage)
-    return xi.mob.onAddEffect(mob, target, damage, xi.mob.ae.PARALYZE, { duration = math.random(5, 10) })
+    local pTable =
+    {
+        chance   = 25,
+        effectId = xi.effect.PARALYSIS,
+        power    = 20,
+        duration = 30,
+    }
+
+    return xi.combat.action.executeAddEffectEnfeeblement(mob, target, pTable)
 end
 
 entity.onMobEngage = function(mob, target)
@@ -47,9 +55,6 @@ entity.onMobDisengage = function(mob)
             mobArg:setAnimationSub(5)
         end
     end)
-end
-
-entity.onMobDeath = function(mob, player, optParams)
 end
 
 return entity

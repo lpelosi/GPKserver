@@ -27,7 +27,7 @@ entity.onMobInitialize = function(mob)
     mob:addImmunity(xi.immunity.PLAGUE)
     mob:setMobMod(xi.mobMod.ASTRAL_PET_OFFSET, 5)
     mob:setMobMod(xi.mobMod.IDLE_DESPAWN, 180)
-    mob:setMobMod(xi.mobMod.WEAPON_BONUS, 30)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MODIFIER, 30)
     mob:setMod(xi.mod.DEFP, 30)
     mob:setMod(xi.mod.REGEN, 50)
     mob:setMod(xi.mod.REGAIN, 1000) -- Kirin never stops using TP moves unless casting
@@ -85,8 +85,10 @@ entity.onMobFight = function(mob, target)
 end
 
 entity.onMobDeath = function(mob, player, optParams)
-    player:addTitle(xi.title.KIRIN_CAPTIVATOR)
-    player:showText(mob, ID.text.KIRIN_OFFSET + 1)
+    if player then
+        player:addTitle(xi.title.KIRIN_CAPTIVATOR)
+        player:showText(mob, ID.text.KIRIN_OFFSET + 1)
+    end
 end
 
 return entity

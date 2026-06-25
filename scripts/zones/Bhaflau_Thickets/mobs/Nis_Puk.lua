@@ -10,14 +10,7 @@ local entity = {}
 
 entity.phList =
 {
-    [ID.mob.NIS_PUK - 20] = ID.mob.NIS_PUK, -- -135 -18 -648
-    [ID.mob.NIS_PUK - 19] = ID.mob.NIS_PUK, -- -104 -18 -636
-    [ID.mob.NIS_PUK - 18] = ID.mob.NIS_PUK, -- -123 -16 -638
-    [ID.mob.NIS_PUK - 12] = ID.mob.NIS_PUK, -- -106 -16 -613
-    [ID.mob.NIS_PUK - 11] = ID.mob.NIS_PUK, -- -109 -15 -600
-    [ID.mob.NIS_PUK - 10] = ID.mob.NIS_PUK, -- -128 -15 -602
-    [ID.mob.NIS_PUK - 9]  = ID.mob.NIS_PUK, -- -132 -16 -612
-    [ID.mob.NIS_PUK - 5]  = ID.mob.NIS_PUK, -- -119 -15 -651
+    [ID.mob.NIS_PUK - 5]  = ID.mob.NIS_PUK, -- Confirmed on retail
 }
 
 entity.spawnPoints =
@@ -79,7 +72,16 @@ entity.onMobInitialize = function(mob)
 end
 
 entity.onAdditionalEffect = function(mob, target, damage)
-    return xi.mob.onAddEffect(mob, target, damage, xi.mob.ae.ENAERO)
+    local pTable =
+    {
+        chance         = 100,
+        attackType     = xi.attackType.MAGICAL,
+        magicalElement = xi.element.WIND,
+        basePower      = math.floor(damage / 2),
+        actorStat      = xi.mod.INT,
+    }
+
+    return xi.combat.action.executeAddEffectDamage(mob, target, pTable)
 end
 
 entity.onMobDeath = function(mob, player, optParams)

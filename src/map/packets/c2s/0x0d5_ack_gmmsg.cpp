@@ -21,15 +21,16 @@
 
 #include "0x0d5_ack_gmmsg.h"
 
-#include "entities/charentity.h"
+#include "entities/char_entity.h"
+#include "gmcall_container.h"
 
 auto GP_CLI_COMMAND_ACK_GMMSG::validate(MapSession* PSession, const CCharEntity* PChar) const -> PacketValidationResult
 {
-    // Not implemented.
-    return PacketValidator();
+    return PacketValidator(PChar)
+        .blockedBy({ BlockedState::InEvent });
 }
 
 void GP_CLI_COMMAND_ACK_GMMSG::process(MapSession* PSession, CCharEntity* PChar) const
 {
-    ShowDebugFmt("GP_CLI_COMMAND_ACK_GMMSG: Not implemented. msgId: {}, seqId: {}, seqNum: {}", msgId, seqId, seqNum);
+    PChar->gmCallContainer().acknowledgeOldestResponse(PChar);
 }

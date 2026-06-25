@@ -154,7 +154,7 @@ local setupTrainFollowing = function(mob)
         local currentSlave = GetMobByID(slaveGlobeID)
         if currentSlave and currentSlave:isAlive() then
             local action = currentSlave:getCurrentAction()
-            if action ~= xi.action.NONE and action ~= xi.action.DEATH then
+            if action ~= xi.action.category.NONE and action ~= xi.action.category.DEATH then
                 currentSlave:follow(followTarget, xi.followType.ROAM)
                 followTarget = currentSlave
             end
@@ -193,7 +193,7 @@ end
 
 entity.onMobSpawn = function(mob)
     mob:setLocalVar('nextSlaveSpawnTime', GetSystemTime() + 30) -- spawn first 30s from now
-    mob:addStatusEffectEx(xi.effect.SHOCK_SPIKES, xi.effect.SHOCK_SPIKES, 60, 0, 3600, true)
+    mob:addStatusEffect(xi.effect.SHOCK_SPIKES, { power = 60, duration = 3600, origin = mob, silent = true })
 
     -- Silently reapply shock spikes immediately
     mob:addListener('EFFECT_LOSE', 'MG_SPIKES', function(mobArg, effect)
@@ -201,7 +201,7 @@ entity.onMobSpawn = function(mob)
             mobArg:isAlive() and
             effect:getEffectType() == xi.effect.SHOCK_SPIKES
         then
-            mobArg:addStatusEffectEx(xi.effect.SHOCK_SPIKES, xi.effect.SHOCK_SPIKES, 60, 0, 3600, true)
+            mobArg:addStatusEffect(xi.effect.SHOCK_SPIKES, { power = 60, duration = 3600, origin = mob, silent = true })
         end
     end)
 end
@@ -236,14 +236,23 @@ entity.onMobRoam = function(mob)
 end
 
 entity.onAdditionalEffect = function(mob, target, damage)
-    return xi.mob.onAddEffect(mob, target, damage, xi.mob.ae.ENTHUNDER, { damage = 110 })
+    local pTable =
+    {
+        chance         = 100,
+        attackType     = xi.attackType.MAGICAL,
+        magicalElement = xi.element.THUNDER,
+        basePower      = math.floor(damage / 2),
+        actorStat      = xi.mod.INT,
+    }
+
+    return xi.combat.action.executeAddEffectDamage(mob, target, pTable)
 end
 
 entity.onMobFight = function(mob, target)
     -- Keep pets linked
     for _, slaveGlobeID in ipairs(slaveGlobes) do
         local pet = GetMobByID(slaveGlobeID)
-        if pet and pet:getCurrentAction() == xi.action.ROAMING then
+        if pet and pet:getCurrentAction() == xi.action.category.ROAMING then
             pet:updateEnmity(target)
         end
     end

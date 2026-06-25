@@ -16,10 +16,10 @@ entity.onMobSpawn = function(mob)
     mob:addImmunity(xi.immunity.DARK_SLEEP)
     mob:addImmunity(xi.immunity.BIND)
 
-    xi.mix.jobSpecial.config(mob, { specials = { { id = xi.jsa.SOUL_VOICE, hpp = math.random(10, 75) } } })
+    xi.mix.jobSpecial.config(mob, { specials = { { id = xi.mobSkill.SOUL_VOICE_1, hpp = math.random(10, 75) } } })
 end
 
-entity.onMobMagicPrepare = function(mob, target, spellId)
+entity.onMobSpellChoose = function(mob, target, spellId)
     local spellList =
     {
         xi.magic.spell.ARMYS_PAEON_V,
@@ -31,15 +31,13 @@ entity.onMobMagicPrepare = function(mob, target, spellId)
         xi.magic.spell.CARNAGE_ELEGY,
         xi.magic.spell.MAGIC_FINALE,
     }
+
     if mob:hasStatusEffect(xi.effect.SOUL_VOICE) then
         -- Virelai possible.
         table.insert(spellList, xi.magic.spell.MAIDENS_VIRELAI)
     end
 
     return utils.randomEntry(spellList)
-end
-
-entity.onMobDeath = function(mob, player, optParams)
 end
 
 entity.onMobDespawn = function(mob)

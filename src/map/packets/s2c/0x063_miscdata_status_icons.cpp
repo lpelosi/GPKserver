@@ -23,7 +23,7 @@
 
 #include "common/earth_time.h"
 #include "common/timer.h"
-#include "entities/charentity.h"
+#include "entities/char_entity.h"
 #include "status_effect_container.h"
 
 GP_SERV_COMMAND_MISCDATA::STATUS_ICONS::STATUS_ICONS(const CCharEntity* PChar)
@@ -36,24 +36,25 @@ GP_SERV_COMMAND_MISCDATA::STATUS_ICONS::STATUS_ICONS(const CCharEntity* PChar)
     // Initialize all icons to 0xFF (no icon)
     std::ranges::fill(packet.icons, 0x00FF);
 
+    constexpr uint32 NO_TIMER = 0x7FFFFFFF;
+
     int i = 0;
-    // clang-format off
-    PChar->StatusEffectContainer->ForEachEffect([&packet, &i](CStatusEffect* PEffect)
-    {
-        if (PEffect->GetIcon() != 0)
+    PChar->StatusEffectContainer->ForEachEffect(
+        [&packet, &i](CStatusEffect& PEffect)
         {
-            auto durationRemaining = 0x7FFFFFFF;
-            if (PEffect->GetDuration() > 0s && !PEffect->HasEffectFlag(EFFECTFLAG_HIDE_TIMER))
+            if (PEffect.GetIcon() != 0)
             {
-                // this value overflows, but the client expects the overflowed timestamp and corrects it
-                durationRemaining = timer::count_seconds(PEffect->GetStartTime() - timer::now() + PEffect->GetDuration());
-                durationRemaining += earth_time::vanadiel_timestamp();
-                durationRemaining *= 60;
+                uint32 timestamp = NO_TIMER;
+                if (PEffect.GetDuration() > 0s && !PEffect.HasEffectFlag(xi::StatusEffectFlag::HideTimer))
+                {
+                    // this value overflows, but the client expects the overflowed timestamp and corrects it
+                    uint32 seconds = timer::count_seconds(PEffect.GetStartTime() - timer::now() + PEffect.GetDuration());
+                    seconds += earth_time::vanadiel_timestamp();
+                    timestamp = seconds * 60;
+                }
+                packet.icons[i]      = PEffect.GetIcon();
+                packet.timestamps[i] = timestamp;
+                ++i;
             }
-            packet.icons[i]      = PEffect->GetIcon();
-            packet.timestamps[i] = durationRemaining;
-            ++i;
-        }
-    });
-    // clang-format on
+        });
 }

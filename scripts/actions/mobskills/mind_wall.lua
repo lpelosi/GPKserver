@@ -1,6 +1,6 @@
 -----------------------------------
 -- Mind Wall
--- Description: Activates a shield to absorb all incoming magical damage.
+-- Description: Activates a magical shield that converts damage taken to HP. Absorbs 100% of magic damage.
 -- Type: Magical
 -----------------------------------
 ---@type TMobSkill
@@ -14,9 +14,8 @@ mobskillObject.onMobSkillCheck = function(target, mob, skill)
     return 1
 end
 
-mobskillObject.onMobWeaponSkill = function(target, mob, skill)
-    xi.mobskills.mobBuffMove(mob, xi.effect.MAGIC_SHIELD, 3, 0, 30)
-    skill:setMsg(xi.msg.basic.NONE)
+mobskillObject.onMobWeaponSkill = function(mob, target, skill, action)
+    skill:setMsg(xi.mobskills.mobBuffMove(mob, xi.effect.MAGIC_SHIELD, 3, 0, 30))
 
     return 0
 end

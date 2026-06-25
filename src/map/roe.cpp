@@ -42,6 +42,7 @@ RoeSystemData                         roeutils::RoeSystem;
 void SaveEminenceDataNice(CCharEntity* PChar)
 {
     TracyZoneScoped;
+
     if (PChar->m_eminenceCache.lastWriteout < timer::now() - ROE_CACHETIME)
     {
         charutils::SaveEminenceData(PChar);
@@ -51,6 +52,7 @@ void SaveEminenceDataNice(CCharEntity* PChar)
 void call_onRecordTrigger(CCharEntity* PChar, uint16 recordID, const RoeDatagramList& payload)
 {
     TracyZoneScoped;
+
     // TODO: Move this Lua interaction into luautils
     auto onRecordTrigger = lua["xi"]["roe"]["onRecordTrigger"];
     if (!onRecordTrigger.valid())
@@ -99,6 +101,7 @@ namespace roeutils
 void ParseRecords(const sol::table& records_table)
 {
     TracyZoneScoped;
+
     RoeHandlers.fill(RoeCheckHandler());
     roeutils::RoeSystem.ImplementedRecords.reset();
     roeutils::RoeSystem.RepeatableRecords.reset();
@@ -189,6 +192,7 @@ void ParseRecords(const sol::table& records_table)
 void ParseTimedSchedule(const sol::table& schedule_table)
 {
     TracyZoneScoped;
+
     roeutils::RoeSystem.TimedRecords.reset();
     roeutils::RoeSystem.TimedRecordTable.fill(RecordTimetable_D{});
 
@@ -206,9 +210,10 @@ void ParseTimedSchedule(const sol::table& schedule_table)
     }
 }
 
-bool event(ROE_EVENT eventID, CCharEntity* PChar, const RoeDatagramList& payload)
+auto event(const ROE_EVENT eventID, CCharEntity* PChar, const RoeDatagramList& payload) -> bool
 {
     TracyZoneScoped;
+
     if (!settings::get<bool>("main.ENABLE_ROE") || !PChar || PChar->objtype != TYPE_PC)
     {
         return false;
@@ -235,15 +240,17 @@ bool event(ROE_EVENT eventID, CCharEntity* PChar, const RoeDatagramList& payload
     return true;
 }
 
-bool event(ROE_EVENT eventID, CCharEntity* PChar, const RoeDatagram& data) // shorthand for single-datagram calls.
+auto event(const ROE_EVENT eventID, CCharEntity* PChar, const RoeDatagram& payload) -> bool // shorthand for single-datagram calls.
 {
     TracyZoneScoped;
-    return event(eventID, PChar, RoeDatagramList{ data });
+
+    return event(eventID, PChar, RoeDatagramList{ payload });
 }
 
-void SetEminenceRecordCompletion(CCharEntity* PChar, uint16 recordID, bool newStatus)
+void SetEminenceRecordCompletion(CCharEntity* PChar, const uint16 recordID, const bool newStatus)
 {
     TracyZoneScoped;
+
     uint16 page = recordID / 8;
     uint8  bit  = recordID % 8;
     if (newStatus)
@@ -263,17 +270,19 @@ void SetEminenceRecordCompletion(CCharEntity* PChar, uint16 recordID, bool newSt
     charutils::SaveEminenceData(PChar);
 }
 
-bool GetEminenceRecordCompletion(const CCharEntity* PChar, uint16 recordID)
+auto GetEminenceRecordCompletion(const CCharEntity* PChar, const uint16 recordID) -> bool
 {
     TracyZoneScoped;
+
     const uint16 page = recordID / 8;
     const uint8  bit  = recordID % 8;
     return PChar->m_eminenceLog.complete[page] & (1 << bit);
 }
 
-uint16 GetNumEminenceCompleted(CCharEntity* PChar)
+auto GetNumEminenceCompleted(const CCharEntity* PChar) -> uint16
 {
     TracyZoneScoped;
+
     uint16 completedCount{ 0 };
 
     for (uint16 page = 0; page < 512; page++)
@@ -296,18 +305,29 @@ uint16 GetNumEminenceCompleted(CCharEntity* PChar)
     return completedCount;
 }
 
-bool AddEminenceRecord(CCharEntity* PChar, uint16 recordID)
+auto AddEminenceRecord(CCharEntity* PChar, uint16 recordID) -> bool
 {
     TracyZoneScoped;
-    // We deny taking records which aren't implemented in the Lua
-    if (!roeutils::RoeSystem.ImplementedRecords.test(recordID))
+
+    // Deny taking records which aren't implemented in the Lua
+    if (!RoeSystem.ImplementedRecords.test(recordID))
     {
         std::string message = "The record #" + std::to_string(recordID) + " is not implemented at this time.";
         PChar->pushPacket<GP_SERV_COMMAND_CHAT_STD>(PChar, MESSAGE_NS_SAY, message, "RoE System");
         return false;
     }
 
-    // There used to be packet injection prevention code here, but it is now part of the packet handler
+    // Validate Unity Shared record matches current day rotation
+    if (!IsUnitySharedRecordAvailable(recordID))
+    {
+        return false;
+    }
+
+    // Validate Unity Leader record matches player's leader and current week
+    if (!IsUnityLeaderRecordAvailable(recordID, PChar->profile.unity_leader))
+    {
+        return false;
+    }
 
     for (int i = 0; i < 30; i++)
     {
@@ -317,7 +337,7 @@ bool AddEminenceRecord(CCharEntity* PChar, uint16 recordID)
             PChar->m_eminenceCache.activemap.set(recordID);
 
             PChar->pushPacket<GP_SERV_COMMAND_ROE_ACTIVELOG>(PChar);
-            PChar->pushPacket<GP_SERV_COMMAND_BATTLE_MESSAGE>(PChar, PChar, recordID, 0, MSGBASIC_ROE_START);
+            PChar->pushPacket<GP_SERV_COMMAND_BATTLE_MESSAGE>(PChar, PChar, recordID, 0, MsgBasic::ROEStart);
             charutils::SaveEminenceData(PChar);
             return true;
         }
@@ -326,12 +346,14 @@ bool AddEminenceRecord(CCharEntity* PChar, uint16 recordID)
             return false;
         }
     }
+
     return false;
 }
 
-bool DelEminenceRecord(CCharEntity* PChar, uint16 recordID)
+auto DelEminenceRecord(CCharEntity* PChar, const uint16 recordID) -> bool
 {
     TracyZoneScoped;
+
     for (int i = 0; i < 30; i++)
     {
         if (PChar->m_eminenceLog.active[i] == recordID)
@@ -353,15 +375,17 @@ bool DelEminenceRecord(CCharEntity* PChar, uint16 recordID)
     return false;
 }
 
-bool HasEminenceRecord(CCharEntity* PChar, uint16 recordID)
+auto HasEminenceRecord(const CCharEntity* PChar, const uint16 recordID) -> bool
 {
     TracyZoneScoped;
+
     return PChar->m_eminenceCache.activemap.test(recordID);
 }
 
-uint32 GetEminenceRecordProgress(CCharEntity* PChar, uint16 recordID)
+auto GetEminenceRecordProgress(const CCharEntity* PChar, const uint16 recordID) -> uint32
 {
     TracyZoneScoped;
+
     for (int i = 0; i < 31; i++)
     {
         if (PChar->m_eminenceLog.active[i] == recordID)
@@ -372,9 +396,10 @@ uint32 GetEminenceRecordProgress(CCharEntity* PChar, uint16 recordID)
     return 0;
 }
 
-bool SetEminenceRecordProgress(CCharEntity* PChar, uint16 recordID, uint32 progress)
+auto SetEminenceRecordProgress(CCharEntity* PChar, const uint16 recordID, const uint32 progress) -> bool
 {
     TracyZoneScoped;
+
     for (int i = 0; i < 31; i++)
     {
         if (PChar->m_eminenceLog.active[i] == recordID)
@@ -393,9 +418,10 @@ bool SetEminenceRecordProgress(CCharEntity* PChar, uint16 recordID, uint32 progr
     return false;
 }
 
-void UpdateUnityTrust(CCharEntity* PChar, bool sendUpdate)
+void UpdateUnityTrust(CCharEntity* PChar, const bool sendUpdate)
 {
     TracyZoneScoped;
+
     int32  curPoints        = charutils::GetPoints(PChar, "prev_accolades") / 1000;
     int32  prevPoints       = charutils::GetPoints(PChar, "current_accolades") / 1000;
     uint16 unityLeaderTrust = (PChar->profile.unity_leader > 0) ? ROE_TRUST_ID[PChar->profile.unity_leader - 1] : 0;
@@ -423,6 +449,7 @@ void UpdateUnityTrust(CCharEntity* PChar, bool sendUpdate)
 void onCharLoad(CCharEntity* PChar)
 {
     TracyZoneScoped;
+
     if (!settings::get<bool>("main.ENABLE_ROE"))
     {
         return;
@@ -477,9 +504,10 @@ void onCharLoad(CCharEntity* PChar)
     }
 }
 
-void onRecordTake(CCharEntity* PChar, uint16 recordID)
+void onRecordTake(CCharEntity* PChar, const uint16 recordID)
 {
     TracyZoneScoped;
+
     if (RoeSystem.RetroactiveRecords.test(recordID))
     {
         call_onRecordTrigger(PChar, recordID, RoeDatagramList{});
@@ -487,9 +515,10 @@ void onRecordTake(CCharEntity* PChar, uint16 recordID)
     return;
 }
 
-bool onRecordClaim(CCharEntity* PChar, uint16 recordID)
+auto onRecordClaim(CCharEntity* PChar, const uint16 recordID) -> bool
 {
     TracyZoneScoped;
+
     if (roeutils::HasEminenceRecord(PChar, recordID))
     {
         call_onRecordTrigger(PChar, recordID, RoeDatagramList{ RoeDatagram("claim", 1) });
@@ -498,18 +527,20 @@ bool onRecordClaim(CCharEntity* PChar, uint16 recordID)
     return false;
 }
 
-uint16 GetActiveTimedRecord()
+auto GetActiveTimedRecord() -> uint16
 {
     TracyZoneScoped;
-    auto  currentTime = earth_time::now();
-    uint8 day         = static_cast<uint8>(earth_time::jst::get_weekday(currentTime));
-    uint8 block       = static_cast<uint8>(earth_time::jst::get_hour(currentTime) / 4);
+
+    const auto  currentTime = earth_time::now();
+    const uint8 day         = static_cast<uint8>(earth_time::jst::get_weekday(currentTime));
+    const uint8 block       = static_cast<uint8>(earth_time::jst::get_hour(currentTime) / 4);
     return RoeSystem.TimedRecordTable[day][block];
 }
 
 void AddActiveTimedRecord(CCharEntity* PChar)
 {
     TracyZoneScoped;
+
     // Clear old timed entries from log
     PChar->m_eminenceLog.progress[30] = 0;
     PChar->m_eminenceCache.activemap &= ~RoeSystem.TimedRecords;
@@ -522,7 +553,7 @@ void AddActiveTimedRecord(CCharEntity* PChar)
 
     if (timedRecordID)
     {
-        PChar->pushPacket<GP_SERV_COMMAND_BATTLE_MESSAGE>(PChar, PChar, timedRecordID, 0, MSGBASIC_ROE_TIMED);
+        PChar->pushPacket<GP_SERV_COMMAND_BATTLE_MESSAGE>(PChar, PChar, timedRecordID, 0, MsgBasic::ROETimed);
         SetEminenceRecordCompletion(PChar, timedRecordID, false);
     }
 }
@@ -530,6 +561,7 @@ void AddActiveTimedRecord(CCharEntity* PChar)
 void ClearDailyRecords(CCharEntity* PChar)
 {
     TracyZoneScoped;
+
     // Set daily record progress to 0
     for (int i = 0; i < 30; i++)
     {
@@ -567,6 +599,7 @@ void ClearDailyRecords(CCharEntity* PChar)
 void CycleTimedRecords()
 {
     TracyZoneScoped;
+
     if (!settings::get<bool>("main.ENABLE_ROE"))
     {
         return;
@@ -589,6 +622,7 @@ void CycleTimedRecords()
 void CycleDailyRecords()
 {
     TracyZoneScoped;
+
     if (!settings::get<bool>("main.ENABLE_ROE"))
     {
         return;
@@ -608,6 +642,7 @@ void CycleDailyRecords()
 void ClearWeeklyRecords(CCharEntity* PChar)
 {
     TracyZoneScoped;
+
     // Set daily record progress to 0
     for (int i = 0; i < 30; i++)
     {
@@ -646,6 +681,7 @@ void ClearWeeklyRecords(CCharEntity* PChar)
 void CycleWeeklyRecords()
 {
     TracyZoneScoped;
+
     if (!settings::get<bool>("main.ENABLE_ROE"))
     {
         return;
@@ -717,6 +753,60 @@ void UpdateUnityRankings()
 
         roeutils::RoeSystem.unityLeaderRank[rset->get<int>("leader") - 1] = currentRank;
     }
+}
+
+auto GetCurrentUnitySharedDay() -> uint8
+{
+    TracyZoneScoped;
+
+    const earth_time::duration vanaTime       = std::chrono::seconds(earth_time::vanadiel_timestamp());
+    const uint32               daysSinceEpoch = std::chrono::floor<std::chrono::days>(vanaTime).count();
+    return daysSinceEpoch % 6;
+}
+
+auto IsUnitySharedRecordAvailable(const uint16 recordID) -> bool
+{
+    TracyZoneScoped;
+
+    // Unity Shared records: 3000-3053, organized as 6 daily blocks (A-F) of 9 IDs each
+    if (recordID < 3000 || recordID > 3053)
+    {
+        return true; // Outside Unity Shared range, no restriction
+    }
+
+    const uint8 recordDay = (recordID - 3000) / 9;
+    return recordDay == GetCurrentUnitySharedDay();
+}
+
+auto GetCurrentUnityLeaderWeek() -> uint8
+{
+    TracyZoneScoped;
+
+    const earth_time::duration vanaTime        = std::chrono::seconds(earth_time::vanadiel_timestamp());
+    const uint32               weeksSinceEpoch = std::chrono::floor<std::chrono::weeks>(vanaTime).count();
+    return weeksSinceEpoch % 4;
+}
+
+auto IsUnityLeaderRecordAvailable(const uint16 recordID, const uint8 playerUnityLeader) -> bool
+{
+    TracyZoneScoped;
+
+    // Unity Leader records: 3488+, organized as 11 leaders x 20 IDs each, with 4 weeks of 5 IDs
+    if (recordID < 3488 || recordID > 3707)
+    {
+        return true; // Outside Unity Leader range, no restriction
+    }
+
+    // Calculate which leader this record belongs to (1-11)
+    const uint8 recordLeader = (recordID - 3488) / 20 + 1;
+    if (recordLeader != playerUnityLeader)
+    {
+        return false; // Record is for a different Unity leader
+    }
+
+    // Calculate which week this record belongs to (0-3)
+    const uint8 recordWeek = (recordID - 3488) % 20 / 5;
+    return recordWeek == GetCurrentUnityLeaderWeek();
 }
 
 } // namespace roeutils

@@ -35,7 +35,7 @@
 #include "status_effect_container.h"
 #include "unitychat.h"
 
-#include "entities/charentity.h"
+#include "entities/char_entity.h"
 
 #include "lua/luautils.h"
 
@@ -45,6 +45,7 @@
 #include "packets/s2c/0x0cc_linkshell_message.h"
 #include "packets/s2c/0x0dc_group_solicit_req.h"
 
+#include "gmcall_container.h"
 #include "items/item_linkshell.h"
 #include "packets/c2s/0x0b7_assist_channel.h"
 
@@ -53,33 +54,44 @@
 #include "utils/serverutils.h"
 #include "utils/zoneutils.h"
 
-// TODO: Don't do this
-std::unique_ptr<IPCClient> ipcClient_;
-
-void message::init(MapNetworking& networking)
+namespace
 {
-    TracyZoneScoped;
 
-    ipcClient_ = std::make_unique<IPCClient>(networking);
+IPCClient* sClient = nullptr;
+
+} // namespace
+
+void message::init(IPCClient& client)
+{
+    sClient = &client;
+}
+
+auto message::detail::client() -> IPCClient&
+{
+    return *sClient;
 }
 
 void message::handle_incoming()
 {
     TracyZoneScoped;
 
-    ipcClient_->handleIncomingMessages();
+    sClient->handleIncomingMessages();
 }
 
-IPCClient::IPCClient(MapNetworking& networking)
+IPCClient::IPCClient(MapNetworking& networking, ZMQService& zmqService)
 : networking_(networking)
-, zmqDealerWrapper_(getZMQEndpointString(), getZMQRoutingId())
+, channel_(zmqService.registerDealer(getZMQEndpointString(), getZMQRoutingId()))
 {
     TracyZoneScoped;
 }
 
 auto IPCClient::getZMQEndpointString() -> std::string
 {
-    return fmt::format("tcp://{}:{}", settings::get<std::string>("network.ZMQ_IP"), settings::get<uint16>("network.ZMQ_PORT"));
+    return fmt::format(
+        "{}://{}:{}",
+        settings::get<std::string>("network.ZMQ_TRANSPORT"),
+        settings::get<std::string>("network.ZMQ_IP"),
+        settings::get<uint16>("network.ZMQ_PORT"));
 }
 
 auto IPCClient::getZMQRoutingId() -> uint64
@@ -114,10 +126,12 @@ void IPCClient::handleIncomingMessages()
 
     // TODO: Can we stop more messages appearing on the queue while we're processing?
     zmq::message_t out;
-    while (zmqDealerWrapper_.incomingQueue_.try_dequeue(out))
+    while (channel_.tryReceive(out))
     {
         const auto firstByte = out.data<uint8>()[0];
         const auto msgType   = ipc::toString(static_cast<ipc::MessageType>(firstByte));
+
+        LogWith({ "ipc_msg", msgType });
 
         // TODO: Make an IPP for the world server, so we can use it here
         DebugIPCFmt("Incoming {} message", msgType);
@@ -200,7 +214,8 @@ void IPCClient::handleMessage_CharZone(const IPP& ipp, const ipc::CharZone& mess
     }
     else
     {
-        networking_.sessions().createPendingSession(message.charId); // Create a pending session that the character might use ahead of time
+        // Create a pending session that the character might use ahead of time
+        networking_.sessions().createPendingSession(message.charId);
     }
 }
 
@@ -299,7 +314,7 @@ void IPCClient::handleMessage_ChatMessageAlliance(const IPP& ipp, const ipc::Cha
     {
         PZone->ForEachChar([allianceid, &PAlliance](CCharEntity* PChar)
         {
-            if (PChar->PParty && PChar->PParty && PChar->PParty->m_PAlliance && PChar->PParty->m_PAlliance->m_AllianceID == allianceid)
+            if (PChar->PParty && PChar->PParty->m_PAlliance && PChar->PParty->m_PAlliance->m_AllianceID == allianceid)
             {
                 PAlliance = PChar->PParty->m_PAlliance;
                 return;
@@ -460,7 +475,7 @@ void IPCClient::handleMessage_PartyInvite(const IPP& ipp, const ipc::PartyInvite
             return;
         }
 
-        if (PInvitee->StatusEffectContainer->HasStatusEffect(EFFECT_LEVEL_SYNC))
+        if (PInvitee->StatusEffectContainer->HasStatusEffect(xi::StatusEffect::LevelSync))
         {
             message::send(ipc::MessageStandard{
                 .recipientId = message.inviterId,
@@ -966,6 +981,21 @@ void IPCClient::handleMessage_AssistChannelEvent(const IPP& ipp, const ipc::Assi
         case GP_CLI_COMMAND_ASSIST_CHANNEL_KIND::IssueWarning:
             PChar->aman().addThumbsDown(message.senderId);
             break;
+    }
+}
+
+void IPCClient::handleMessage_GMCallRequest(const IPP& ipp, const ipc::GMCallRequest& message)
+{
+    TracyZoneScoped;
+}
+
+void IPCClient::handleMessage_GMCallResponse(const IPP& ipp, const ipc::GMCallResponse& message)
+{
+    TracyZoneScoped;
+
+    if (CCharEntity* PChar = zoneutils::GetChar(message.charId))
+    {
+        PChar->gmCallContainer().sendPendingResponse(PChar);
     }
 }
 

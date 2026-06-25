@@ -10,22 +10,20 @@
 ---@type TItemFood
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     return xi.itemUtils.foodOnItemCheck(target, xi.foodType.BASIC)
 end
 
 itemObject.onItemUse = function(target, user, item, action)
-    target:addStatusEffect(xi.effect.FOOD, 0, 0, 14400, 0, 0, 0, xi.effectSourceType.FOOD, item:getID(), user:getID())
+    target:addStatusEffect(xi.effect.FOOD, { duration = 14400, origin = user, sourceType = xi.effectSourceType.FOOD, sourceTypeParam = item:getID() })
 end
 
 itemObject.onEffectGain = function(target, effect)
-    target:addMod(xi.mod.HPHEAL, 3)
-    target:addMod(xi.mod.MPHEAL, 6)
+    effect:addMod(xi.mod.HPHEAL, 3)
+    effect:addMod(xi.mod.MPHEAL, 6)
 end
 
 itemObject.onEffectLose = function(target, effect)
-    target:delMod(xi.mod.HPHEAL, 3)
-    target:delMod(xi.mod.MPHEAL, 6)
 end
 
 return itemObject

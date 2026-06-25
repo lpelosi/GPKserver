@@ -32,15 +32,15 @@ public:
     explicit TestSuite(const std::string& name, const std::string& fullPath = "", TestSuite* parent = nullptr);
 
     auto addChildSuite(const std::string& name) -> TestSuite&;
-    auto addTestCase(const std::string& name, std::optional<sol::protected_function> func) -> TestCase&;
+    auto addTestCase(const std::string& name, Maybe<sol::protected_function> func) -> TestCase&;
 
     void setSetupFunc(sol::protected_function func);
     void setTeardownFunc(sol::protected_function func);
     void setBeforeEachFunc(sol::protected_function func);
     void setAfterEachFunc(sol::protected_function func);
 
-    auto fullName() const -> std::string;
-    auto name() const -> std::string;
+    auto fullName() const -> const std::string&;
+    auto name() const -> const std::string&;
     auto childSuites() const -> const std::vector<TestSuite>&;
     auto testCases() const -> const std::vector<TestCase>&;
 

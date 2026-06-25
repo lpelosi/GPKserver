@@ -8,13 +8,13 @@
 ---@type TItem
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     return 0
 end
 
-itemObject.onItemUse = function(target)
+itemObject.onItemUse = function(target, user)
     if not target:hasStatusEffect(xi.effect.INVISIBLE) then
-        target:addStatusEffect(xi.effect.INVISIBLE, 0, 10, math.floor(200 * xi.settings.main.SNEAK_INVIS_DURATION_MULTIPLIER))
+        target:addStatusEffect(xi.effect.INVISIBLE, { duration = math.floor(200 * xi.settings.main.SNEAK_INVIS_DURATION_MULTIPLIER), origin = user, tick = 10 })
     end
 end
 

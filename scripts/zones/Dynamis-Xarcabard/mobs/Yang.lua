@@ -7,10 +7,8 @@ local ID = zones[xi.zone.DYNAMIS_XARCABARD]
 ---@type TMobEntity
 local entity = {}
 
-entity.onMobInitialize = function(mob)
-end
-
 entity.onMobSpawn = function(mob)
+    xi.dynamis.mobInfo(mob)
     local dynaLord = GetMobByID(ID.mob.DYNAMIS_LORD)
 
     if
@@ -34,16 +32,13 @@ entity.onMobFight = function(mob, target)
 
     if
         ying and
-        ying:getCurrentAction() == xi.action.NONE and
+        ying:getCurrentAction() == xi.action.category.NONE and
         GetSystemTime() > yingToD + 30
     then
         ying:setSpawn(mob:getXPos(), mob:getYPos(), mob:getZPos())
         ying:spawn()
         ying:updateEnmity(target)
     end
-end
-
-entity.onMobDeath = function(mob, player, optParams)
 end
 
 entity.onMobDespawn = function(mob)

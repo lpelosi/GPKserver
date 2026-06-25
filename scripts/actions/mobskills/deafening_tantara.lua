@@ -11,14 +11,14 @@
 local mobskillObject = {}
 
 mobskillObject.onMobSkillCheck = function(target, mob, skill)
-    if mob:getAnimationSub() == 5 and mob:getFamily() == 165 then -- Imps without horn
+    if mob:getAnimationSub() == 5 and mob:getSpecies() == xi.mobSpecies.IMP then -- Imps without horn
         return 1
     else
         return 0
     end
 end
 
-mobskillObject.onMobWeaponSkill = function(target, mob, skill)
+mobskillObject.onMobWeaponSkill = function(mob, target, skill, action)
     skill:setMsg(xi.mobskills.mobStatusEffectMove(mob, target, xi.effect.SILENCE, 1, 0, 30))
 
     return xi.effect.SILENCE

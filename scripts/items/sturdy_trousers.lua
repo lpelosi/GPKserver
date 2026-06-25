@@ -7,7 +7,7 @@
 ---@type TItem
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     if target:getStatusEffectBySource(xi.effect.MAX_HP_BOOST, xi.effectSourceType.EQUIPPED_ITEM, xi.item.STURDY_TROUSERS) ~= nil then
         target:delStatusEffect(xi.effect.MAX_HP_BOOST, nil, xi.effectSourceType.EQUIPPED_ITEM, xi.item.STURDY_TROUSERS)
     end
@@ -15,9 +15,9 @@ itemObject.onItemCheck = function(target, item, param, caster)
     return 0
 end
 
-itemObject.onItemUse = function(target)
+itemObject.onItemUse = function(target, user)
     if target:hasEquipped(xi.item.STURDY_TROUSERS) then
-        target:addStatusEffect(xi.effect.MAX_HP_BOOST, 10, 0, 1800, 0, 0, 0, xi.effectSourceType.EQUIPPED_ITEM, xi.item.STURDY_TROUSERS)
+        target:addStatusEffect(xi.effect.MAX_HP_BOOST, { power = 10, duration = 1800, origin = user, sourceType = xi.effectSourceType.EQUIPPED_ITEM, sourceTypeParam = xi.item.STURDY_TROUSERS })
     end
 end
 

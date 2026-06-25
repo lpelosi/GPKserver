@@ -16,8 +16,8 @@
 
 #include <string.h>
 
-#include "entities/battleentity.h"
-#include "entities/charentity.h"
+#include "entities/battle_entity.h"
+#include "entities/char_entity.h"
 #include "job_points.h"
 
 #include "map_engine.h"
@@ -101,6 +101,11 @@ void CJobPoints::RaiseJobPoint(JOBPOINT_TYPE jpType)
 {
     JobPoints_t*    job      = GetJobPointsByType(jpType);
     JobPointType_t* jobPoint = GetJobPointType(jpType);
+
+    if (!job || !jobPoint)
+    {
+        return;
+    }
 
     uint8 cost = JobPointCost(jobPoint->value);
 

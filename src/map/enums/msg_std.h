@@ -64,6 +64,9 @@ enum class MsgStd : uint16_t
     CurrentPollResultsSystem     = 140, // Player Name's proposal - Current poll results:
     FinalPollResultsSystem       = 141, // Player Name's proposal - Final poll results:
     CannotUseCommandAtTheMoment  = 142, // You cannot use that command at the moment. Please try again later.
+    NotProposedAnything          = 143, // <name> has not proposed anything.
+    OnlyChooseFromGivenChoices   = 144, // You can only choose from the <number> choices given.
+    AlreadyVotedOnProposal       = 145, // You have already voted on <name>'s proposal.
     PollProposalSay              = 146, // Player Name's proposal to all (cast vote with command: "/vote ?"):
     CurrentPollResultsSay        = 147, // Player Name's proposal - Current poll results:
     FinalPollResultsSay          = 148, // Player Name's proposal - Final poll results:
@@ -83,6 +86,7 @@ enum class MsgStd : uint16_t
     UnableToProcessRequest       = 183, // Unable to process request.
     ExpansionPackNotRegistered   = 184, // Unable to enter next area. Expansion pack not registered.
     ExpansionPackNotInstalled    = 185, // Unable to enter next area. Expansion pack not installed.
+    NoLongerAfflicted            = 204, // <Entity> is no longer <effect>.
     GainsEffect                  = 205, // Player Name gains the effect of <effect>.
     EffectWearsOff               = 206, // Player Name's <effect> wears off.
     CannotPerformPetra           = 209, // You cannot perform that action while holding a Petra.

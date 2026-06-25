@@ -9,7 +9,7 @@ local entity = {}
 
 local bracerMode = function(mob, qnAern1, qnAern2)
     -- Hundred Fists
-    mob:useMobAbility(xi.jsa.HUNDRED_FISTS)
+    mob:useMobAbility(xi.mobSkill.HUNDRED_FISTS_1)
     mob:addMod(xi.mod.ATT, 200)
     -- captures show delay reduction from 280 -> 120
     -- note this is actual delay reduction with change in tp gained and imparted
@@ -100,7 +100,7 @@ entity.onMobEngage = function(mob, target)
         if
             qnAern and
             qnAern:isAlive() and
-            qnAern:getCurrentAction() == xi.action.ROAMING
+            qnAern:getCurrentAction() == xi.action.category.ROAMING
         then
             qnAern:updateEnmity(target)
         end

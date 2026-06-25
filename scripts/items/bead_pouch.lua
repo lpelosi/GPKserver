@@ -6,13 +6,13 @@
 ---@type TItem
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     return 0
 end
 
 itemObject.onItemUse = function(target)
     local amount = math.random(5, 10)
-    target:messageCombat(target, xi.item.BEAD_POUCH, amount, xi.msg.combat.USE_OBTAIN_ESCHA_BEAD)
+    target:messageCombat(target, xi.item.BEAD_POUCH, amount, xi.msg.basic.USE_OBTAIN_ESCHA_BEAD)
     target:addCurrency('escha_beads', amount)
 end
 

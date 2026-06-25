@@ -11,7 +11,7 @@
 ---@type TItem
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     local result = 0
     if target:hasStatusEffect(xi.effect.FOOD) then
         result = xi.msg.basic.IS_FULL
@@ -25,23 +25,19 @@ itemObject.onItemCheck = function(target, item, param, caster)
 end
 
 itemObject.onItemUse = function(target, user, item, action)
-    target:addStatusEffect(xi.effect.FOOD, 0, 0, 10800, 0, 0, 0, xi.effectSourceType.FOOD, item:getID(), user:getID())
+    target:addStatusEffect(xi.effect.FOOD, { duration = 10800, origin = user, sourceType = xi.effectSourceType.FOOD, sourceTypeParam = item:getID() })
     local rand = math.random(784, 815)
     npcUtil.giveItem(target, { { rand, 1 } })
 end
 
 itemObject.onEffectGain = function(target, effect)
-    target:addMod(xi.mod.FOOD_HP, 8)
-    target:addMod(xi.mod.FOOD_MPP, 3)
-    target:addMod(xi.mod.FOOD_MP_CAP, 13)
-    target:addMod(xi.mod.INT, 2)
+    effect:addMod(xi.mod.FOOD_HP, 8)
+    effect:addMod(xi.mod.FOOD_MPP, 3)
+    effect:addMod(xi.mod.FOOD_MP_CAP, 13)
+    effect:addMod(xi.mod.INT, 2)
 end
 
 itemObject.onEffectLose = function(target, effect)
-    target:delMod(xi.mod.FOOD_HP, 8)
-    target:delMod(xi.mod.FOOD_MPP, 3)
-    target:delMod(xi.mod.FOOD_MP_CAP, 13)
-    target:delMod(xi.mod.INT, 2)
 end
 
 return itemObject

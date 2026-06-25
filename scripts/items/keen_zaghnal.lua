@@ -8,7 +8,7 @@
 ---@type TItem
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     if target:getStatusEffectBySource(xi.effect.ACCURACY_BOOST, xi.effectSourceType.EQUIPPED_ITEM, xi.item.KEEN_ZAGHNAL) ~= nil then
         target:delStatusEffect(xi.effect.ACCURACY_BOOST, nil, xi.effectSourceType.EQUIPPED_ITEM, xi.item.KEEN_ZAGHNAL)
     end
@@ -16,10 +16,17 @@ itemObject.onItemCheck = function(target, item, param, caster)
     return 0
 end
 
-itemObject.onItemUse = function(target)
+itemObject.onItemUse = function(target, user)
     if target:hasEquipped(xi.item.KEEN_ZAGHNAL) then
-        target:addStatusEffect(xi.effect.ACCURACY_BOOST, 3, 0, 1800, 0, 0, 0, xi.effectSourceType.EQUIPPED_ITEM, xi.item.KEEN_ZAGHNAL)
+        target:addStatusEffect(xi.effect.ACCURACY_BOOST, { duration = 1800, origin = user, sourceType = xi.effectSourceType.EQUIPPED_ITEM, sourceTypeParam = xi.item.KEEN_ZAGHNAL })
     end
+end
+
+itemObject.onEffectGain = function(target, effect)
+    effect:addMod(xi.mod.ACC, 3)
+end
+
+itemObject.onEffectLose = function(target, effect)
 end
 
 return itemObject

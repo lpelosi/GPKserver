@@ -17,15 +17,20 @@ entity.spawnPoints =
 
 entity.phList =
 {
-    [ID.mob.HOAR_KNUCKLED_RIMBERRY - 2] = ID.mob.HOAR_KNUCKLED_RIMBERRY,
-    [ID.mob.HOAR_KNUCKLED_RIMBERRY - 1] = ID.mob.HOAR_KNUCKLED_RIMBERRY,
+    [ID.mob.HOAR_KNUCKLED_RIMBERRY - 5] = ID.mob.HOAR_KNUCKLED_RIMBERRY, -- Confirmed on retail
+    [ID.mob.HOAR_KNUCKLED_RIMBERRY - 1] = ID.mob.HOAR_KNUCKLED_RIMBERRY, -- Confirmed on retail
 }
 
-entity.onMobSpawn = function(mob)
+entity.onMobInitialize = function(mob)
     mob:addImmunity(xi.immunity.LIGHT_SLEEP)
     mob:addImmunity(xi.immunity.DARK_SLEEP)
     mob:addImmunity(xi.immunity.GRAVITY)
     mob:addImmunity(xi.immunity.BIND)
+    mob:addImmunity(xi.immunity.TERROR)
+end
+
+entity.onMobSpawn = function(mob)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MULTIPLIER, 150)
 end
 
 entity.onMobDeath = function(mob, player, optParams)

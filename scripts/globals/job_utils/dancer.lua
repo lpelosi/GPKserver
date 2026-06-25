@@ -131,7 +131,7 @@ local function setFinishingMoves(player, numMoves)
             finishingEffect:setDuration(2 * 60 * 60 * 1000)
         end
     else
-        player:addStatusEffectEx(xi.effect.FINISHING_MOVE_1, getFinishingMoveIcon(numMoves), numMoves, 0, 7200)
+        player:addStatusEffect(xi.effect.FINISHING_MOVE_1, { power = numMoves, duration = 7200, origin = player, icon = getFinishingMoveIcon(numMoves) })
     end
 end
 
@@ -257,7 +257,7 @@ end
 -----------------------------------
 xi.job_utils.dancer.useStepAbility = function(player, target, ability, action, stepEffect)
     local stepInfoData     = actionInfo[ability:getID()]
-    local infoValue        = stepInfoData[0]
+    local infoValue        = stepInfoData[1]
     local stepDurationGift = player:getJobPointLevel(xi.jp.STEP_DURATION)
     local debuffStacks     = 1
     local debuffDuration   = 60 + stepDurationGift
@@ -271,7 +271,7 @@ xi.job_utils.dancer.useStepAbility = function(player, target, ability, action, s
         local maxSteps         = player:getMainJob() == xi.job.DNC and 10 or 5
         local debuffEffect     = target:getStatusEffect(stepEffect)
         local origDebuffStacks = 0
-        infoValue              = stepInfoData[1]
+        infoValue              = stepInfoData[2]
 
         -- Apply Finishing Moves
         local fmEffect   = player:getStatusEffect(xi.effect.FINISHING_MOVE_1)
@@ -303,7 +303,7 @@ xi.job_utils.dancer.useStepAbility = function(player, target, ability, action, s
         end
 
         if maxSteps >= origDebuffStacks then
-            target:addStatusEffect(stepEffect, debuffStacks, 0, debuffDuration)
+            target:addStatusEffect(stepEffect, { power = debuffStacks, duration = debuffDuration, origin = player })
         else
             ability:setMsg(xi.msg.basic.JA_NO_EFFECT)
         end
@@ -326,13 +326,13 @@ xi.job_utils.dancer.useStepAbility = function(player, target, ability, action, s
         end
     end
 
-    action:speceffect(target:getID(), infoValue)
+    action:info(target:getID(), infoValue)
 
     return debuffStacks
 end
 
 xi.job_utils.dancer.usePrestoAbility = function(player, target, ability, action)
-    target:addStatusEffect(xi.effect.PRESTO, 19, 3, 30)
+    target:addStatusEffect(xi.effect.PRESTO, { power = 19, duration = 30, origin = player, tick = 3 })
 
     return xi.effect.PRESTO
 end
@@ -379,23 +379,23 @@ end
 
 xi.job_utils.dancer.useDesperateFlourishAbility = function(player, target, ability, action)
     local numMoves  = player:getStatusEffect(xi.effect.FINISHING_MOVE_1):getPower()
-    local infoValue = actionInfo[ability:getID()][0]
+    local infoValue = actionInfo[ability:getID()][1]
 
     setFinishingMoves(player, numMoves - 1)
 
     if
-        math.random() <= xi.weaponskills.getHitRate(player, target, player:getJobPointLevel(xi.jp.FLOURISH_I_EFFECT)) or
+        math.random() <= xi.weaponskills.getHitRate(player, target, player:getJobPointLevel(xi.jp.FLOURISH_I_EFFECT), xi.attackAnimation.LEFT_ATTACK) or
         (player:hasStatusEffect(xi.effect.SNEAK_ATTACK) and player:isBehind(target))
     then
-        infoValue = actionInfo[ability:getID()][1]
+        infoValue = actionInfo[ability:getID()][2]
         local resistRate = xi.combat.magicHitRate.calculateResistRate(player, target, 0, 0, xi.skillRank.A_PLUS, xi.element.WIND, xi.mod.INT, xi.effect.WEIGHT, 0)
 
         if
             not xi.data.statusEffect.isTargetImmune(target, xi.effect.WEIGHT, xi.element.WIND) and -- Check immunity.
             not xi.data.statusEffect.isTargetResistant(player, target, xi.effect.WEIGHT) and       -- Check resistance trigger.
-            not xi.data.statusEffect.isEffectNullified(target, xi.effect.WEIGHT) and               -- Check conflicting effect.
+            not xi.data.statusEffect.isEffectNullified(target, xi.effect.WEIGHT, 0) and               -- Check conflicting effect.
             resistRate > 0.25 and                                                                  -- Check actual resistance.
-            target:addStatusEffect(xi.effect.WEIGHT, 50, 0, 60 * resistRate)                       -- Check effect power.
+            target:addStatusEffect(xi.effect.WEIGHT, { power = 50, duration = 60 * resistRate, origin = player })                       -- Check effect power.
         then
             ability:setMsg(xi.msg.basic.JA_ENFEEB_IS)
         else
@@ -403,11 +403,12 @@ xi.job_utils.dancer.useDesperateFlourishAbility = function(player, target, abili
         end
 
         action:setAnimation(target:getID(), getFlourishAnimation(player:getWeaponSkillType(xi.slot.MAIN)))
-        action:speceffect(target:getID(), infoValue)
+        action:info(target:getID(), infoValue)
 
         return xi.effect.WEIGHT
     else
         ability:setMsg(xi.msg.basic.JA_MISS)
+        action:info(target:getID(), infoValue)
 
         return 0
     end
@@ -417,14 +418,14 @@ end
 xi.job_utils.dancer.useViolentFlourishAbility = function(player, target, ability, action)
     local numMoves  = player:getStatusEffect(xi.effect.FINISHING_MOVE_1):getPower()
     local hitRate   = xi.combat.physicalHitRate.getPhysicalHitRate(player, target, 100, xi.attackAnimation.RIGHT_ATTACK, false)
-    local infoValue = actionInfo[ability:getID()][0]
+    local infoValue = actionInfo[ability:getID()][1]
     setFinishingMoves(player, numMoves - 1)
 
     if
         math.random() <= hitRate or
         (player:hasStatusEffect(xi.effect.SNEAK_ATTACK) and player:isBehind(target))
     then
-        infoValue          = actionInfo[ability:getID()][1]
+        infoValue          = actionInfo[ability:getID()][2]
         local weaponDamage = player:getWeaponDmg()
         local weaponType   = player:getWeaponSkillType(xi.slot.MAIN)
         if player:getWeaponSkillType(xi.slot.MAIN) == xi.skill.HAND_TO_HAND then
@@ -438,31 +439,34 @@ xi.job_utils.dancer.useViolentFlourishAbility = function(player, target, ability
         local pdif                 = xi.combat.physical.calculateMeleePDIF(player, target, weaponType, 1.0, false, applyLevelCorrection, false, 0.0, false, xi.slot.MAIN, false)
         local dmg                  = baseDmg * pdif
 
-        dmg = utils.stoneskin(target, dmg)
+        dmg = utils.handleStoneskin(target, dmg)
         target:takeDamage(dmg, player, xi.attackType.PHYSICAL, player:getWeaponDamageType(xi.slot.MAIN))
         target:updateEnmityFromDamage(player, dmg)
+        action:recordDamage(target, xi.attackType.PHYSICAL, dmg)
 
         -- Effect
-        local resistRate = xi.combat.magicHitRate.calculateResistRate(player, target, 0, 0, xi.skillRank.A_PLUS, xi.element.THUNDER, xi.mod.INT, xi.effect.STUN, 0)
+        local bonusMacc  = player:getMod(xi.mod.VFLOURISH_MACC)
+        local resistRate = xi.combat.magicHitRate.calculateResistRate(player, target, 0, 0, xi.skillRank.A_PLUS, xi.element.THUNDER, xi.mod.INT, xi.effect.STUN, bonusMacc)
 
         if
             not xi.data.statusEffect.isTargetImmune(target, xi.effect.STUN, xi.element.THUNDER) and -- Check immunity.
             not xi.data.statusEffect.isTargetResistant(player, target, xi.effect.STUN) and          -- check resistance trigger.
-            not xi.data.statusEffect.isEffectNullified(target, xi.effect.STUN) and                  -- check conflicting effect.
-            resistRate > 0.25                                                                       -- Check actual resistance.
+            not xi.data.statusEffect.isEffectNullified(target, xi.effect.STUN, 0) and               -- check conflicting effect.
+            xi.data.statusEffect.isResistRateSuccessfull(xi.effect.STUN, resistRate, 0)             -- Check actual resistance.
         then
-            target:addStatusEffect(xi.effect.STUN, 1, 0, 2)
+            target:addStatusEffect(xi.effect.STUN, { power = 1, duration = 2, origin = player })
         else
             ability:setMsg(xi.msg.basic.JA_DAMAGE)
         end
 
         -- Animations.
         action:setAnimation(target:getID(), getFlourishAnimation(player:getWeaponSkillType(xi.slot.MAIN)))
-        action:speceffect(target:getID(), infoValue)
+        action:info(target:getID(), infoValue)
 
         return dmg
     else
         ability:setMsg(xi.msg.basic.JA_MISS)
+        action:info(target:getID(), infoValue)
 
         return 0
     end
@@ -473,34 +477,34 @@ xi.job_utils.dancer.useBuildingFlourishAbility = function(player, target, abilit
     local availableMoves = player:getStatusEffect(xi.effect.FINISHING_MOVE_1):getPower()
     local power          = utils.clamp(availableMoves, 0, 3)
 
-    player:addStatusEffect(xi.effect.BUILDING_FLOURISH, power, 0, 60, 0, flourishMerits)
+    player:addStatusEffect(xi.effect.BUILDING_FLOURISH, { power = power, duration = 60, origin = player, subPower = flourishMerits })
     setFinishingMoves(player, availableMoves - power)
 end
 
 xi.job_utils.dancer.useWildFlourishAbility = function(player, target, ability, action)
     local numMoves  = player:getStatusEffect(xi.effect.FINISHING_MOVE_1):getPower()
-    local infoValue = actionInfo[ability:getID()][0]
+    local infoValue = actionInfo[ability:getID()][1]
 
     -- TODO: Wild Flourish can miss
     if
         not target:hasStatusEffect(xi.effect.CHAINBOUND, 0) and
         not target:hasStatusEffect(xi.effect.SKILLCHAIN, 0)
     then
-        infoValue = actionInfo[ability:getID()][1]
-        target:addStatusEffectEx(xi.effect.CHAINBOUND, 0, 1, 0, 10, 0, 1)
+        infoValue = actionInfo[ability:getID()][2]
+        target:addStatusEffect(xi.effect.CHAINBOUND, { power = 1, duration = 10, origin = player, icon = 0, subPower = 1 })
     else
         ability:setMsg(xi.msg.basic.JA_NO_EFFECT)
     end
 
     action:setAnimation(target:getID(), getFlourishAnimation(player:getWeaponSkillType(xi.slot.MAIN)))
-    action:speceffect(target:getID(), infoValue)
+    action:info(target:getID(), infoValue)
     setFinishingMoves(player, numMoves - 2)
 
     return 0
 end
 
 xi.job_utils.dancer.useContradanceAbility = function(player, target, ability)
-    player:addStatusEffect(xi.effect.CONTRADANCE, 0, 0, 60)
+    player:addStatusEffect(xi.effect.CONTRADANCE, { duration = 60, origin = player })
 
     return xi.effect.CONTRADANCE
 end

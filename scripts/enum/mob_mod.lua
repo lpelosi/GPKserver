@@ -28,7 +28,7 @@ xi.mobMod =
     NO_DESPAWN             = 17, -- do not despawn when too far from spawn. Gob Diggers have this.
     VAR                    = 18, -- temp var for whatever. Gets cleared on spawn
     CAN_SHIELD_BLOCK       = 19, -- toggle shield use for mobs without physical shields (trusts)
-    TP_USE_CHANCE          = 20, -- % chance to use tp
+    NO_H2H_PENALTY         = 20, -- Disables H2H penalty in base damage calculation when set to non-zero
     PET_SPELL_LIST         = 21, -- set pet spell list
     NA_CHANCE              = 22, -- % chance to cast -na
     IMMUNITY               = 23, -- immune to set status effects. This only works from the db, not scripts
@@ -42,8 +42,8 @@ xi.mobMod =
     ROAM_DISTANCE          = 31, -- distance allowed to roam from spawn
     DONT_ROAM_HOME         = 32, -- Allow mobs to roam any distance from spawn. Useful for mobs with scripted roaming behavior.
     SPECIAL_COOL           = 33, -- cool down for special (example: Time between Gigas boulder ranged attacks)
-    MAGIC_COOL             = 34, -- cool down for magic
-    STANDBACK_COOL         = 35, -- cool down time for standing back (casting spell while not in attack range)
+    MAGIC_COOL             = 34, -- Spell cooldown (time between casting spells) This value is over-ridden if mob is in standback mode, use STANDBACK_COOL for standback cooldown.
+    STANDBACK_COOL         = 35, -- Cooldown time between RANGED ATTACKS and MAGIC SPELLS while in standback mode.
     ROAM_COOL              = 36, -- cool down time in seconds after roaming
     ALWAYS_AGGRO           = 37, -- aggro regardless of level. Spheroids
     NO_DROPS               = 38, -- If set monster cannot drop any items, not even seals.
@@ -67,7 +67,7 @@ xi.mobMod =
     HP_STANDBACK           = 56, -- mob will always standback with hp % higher to value
     MAGIC_DELAY            = 57, -- Amount of seconds mob waits before casting first spell
     SPECIAL_DELAY          = 58, -- Amount of seconds mob waits before using first special
-    WEAPON_BONUS           = 59, -- Add a flat modifer mob weapon damage ( damage + bonus )
+    BASE_DAMAGE_MODIFIER   = 59, -- Add a flat modifer mob a mob's base damage. This is subject to multiplication by MOBMOD_BASE_DAMAGE_MULTIPLIER.
     SPAWN_ANIMATIONSUB     = 60, -- reset animationsub to this on spawn
     HP_SCALE               = 61, -- Scale the mobs max HP. ( hp_scale / 100 ) * maxhp
     NO_STANDBACK           = 62, -- Mob will never standback
@@ -94,10 +94,15 @@ xi.mobMod =
     CLAIM_TYPE             = 83, -- Changes the claim behavior of the mob. See xi.claimType enum.
     NO_SPELL_COST          = 84, -- Mob does not use MP when casting spells
     ASTRAL_PET_OFFSET      = 85, -- If non-zero, defines the offset from main mob's ID for astral flow (if zero, will assume offset of 2)
-    BASE_DAMAGE_MULTIPLIER = 86, -- Multiplies the mob's base damage. Example: 150 = x1.5
+    BASE_DAMAGE_MULTIPLIER = 86, -- Multiplies the mob's base damage. Example: 150 = x1.5. MOBMOD_DAMAGE_OFFSET/MOBMOD_RANGED_DAMAGE_OFFSET are not subject to multiplication.
     DAMAGE_OFFSET          = 87, -- Adds or subtracts the mob's base damage offset.
     RANGED_DAMAGE_OFFSET   = 88, -- Adds or subtracts the mob's ranged base damage offset.
     AVATAR_PETID           = 89, -- A value from xi.petId to select model/ability from when owner uses astral flow
     AVATAR_ASTRAL_DELAY    = 90, -- Number of milliseconds to delay AF after avatar spawn
     H2H_SINGLE_SWING       = 91, -- Mob will have only one swing per attack even as MNK with H2H skill
+    AOE_HIT_ALL            = 92, -- Mob AoE can hit any player regardless of enmity
+    RANGED_ATTACK_RANGE    = 93, -- Max range for ranged auto attacks. Mob will move closer if target is beyond this range.
+    FOLLOW_LEASH_RANGE     = 94, -- Distance the leader can walk before their followers start moving. Applied to followers.
+    FOLLOW_STOP_RANGE      = 95, -- Distance the followers attempt to stop at once their leader stops moving. Applied to followers.
+    TRUST_SHIELD_SIZE      = 96, -- TRUSTS ONLY: Set the size of the mob's shield. 3 = Default size, only used for trusts that use shields.
 }

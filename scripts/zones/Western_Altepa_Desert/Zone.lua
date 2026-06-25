@@ -9,6 +9,14 @@ local zoneObject = {}
 
 zoneObject.onInitialize = function(zone)
     xi.beastmenTreasure.updatePeddlestox(xi.zone.YUHTUNGA_JUNGLE, ID.npc.PEDDLESTOX)
+
+    -- loop through Altepa Gate, Ruby/Topaz/Emerald/Sapphire pillar/column, set them all always relevant
+    for i = 0, 8, 1 do
+        local npc = GetNPCByID(ID.npc.ALTEPA_GATE + i)
+        if npc then
+            npc:setNpcAlwaysRelevant(true)
+        end
+    end
 end
 
 zoneObject.onGameDay = function()
@@ -53,18 +61,16 @@ zoneObject.onZoneWeatherChange = function(weather)
 
     if kvMob then
         if weather == xi.weather.DUST_STORM or weather == xi.weather.SAND_STORM then
-            DisallowRespawn(ID.mob.KING_VINEGARROON, false) -- Allow respawn.
-
             -- Check for respawn.
             if
                 not kvMob:isSpawned() and
                 kvMob:getRespawnTime() == 0
             then
                 if
-                    (weather == xi.weather.DUST_STORM and math.random(1, 100) <= 10) or
+                    (weather == xi.weather.DUST_STORM and math.random(1, 100) <= 50) or
                     weather == xi.weather.SAND_STORM
                 then
-                    SpawnMob(ID.mob.KING_VINEGARROON)
+                    DisallowRespawn(ID.mob.KING_VINEGARROON, false) -- Allow respawn.
                 end
             end
 
@@ -86,14 +92,12 @@ zoneObject.onZoneWeatherChange = function(weather)
         }
 
         if dahuValidWeather[weather] then
-            DisallowRespawn(ID.mob.DAHU, false) -- Allow respawn.
-
             -- Spawn if respawn is up
             if
                 not dahu:isSpawned() and
                 dahu:getRespawnTime() == 0
             then
-                SpawnMob(ID.mob.DAHU)
+                DisallowRespawn(ID.mob.DAHU, false) -- Allow respawn.
             end
         else
             DisallowRespawn(ID.mob.DAHU, true) -- Disallow respawn.

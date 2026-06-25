@@ -46,7 +46,7 @@ end
 zoneObject.afterZoneIn = function(player)
     -- ZONE WIDE LEVEL RESTRICTION
     if xi.settings.main.ENABLE_COP_ZONE_CAP == 1 then
-        player:addStatusEffect(xi.effect.LEVEL_RESTRICTION, 30, 0, 0)
+        player:addStatusEffect(xi.effect.LEVEL_RESTRICTION, { power = 30, origin = player })
     end
 end
 
@@ -55,25 +55,25 @@ zoneObject.onTriggerAreaEnter = function(player, triggerArea)
 
     switch (triggerAreaID) : caseof {
         [1] = function() -- Floor 1: Exit Promyvion
-            player:startOptionalCutscene(46)
+            player:startOptionalCutscene(46, { cs_option = 0, canSkip = true })
         end,
 
         [2] = function() -- Floor 2: Return to floor 1
-            player:startOptionalCutscene(41)
+            player:startOptionalCutscene(41, { cs_option = 0, canSkip = true })
         end,
 
         [3] = function() -- Floor 3 (North): Return to floor 2
-            player:startOptionalCutscene(43)
+            player:startOptionalCutscene(43, { cs_option = 0, canSkip = true })
         end,
 
         [4] = function() -- Floor 3 (South): Return to floor 2
-            player:startOptionalCutscene(42)
+            player:startOptionalCutscene(42, { cs_option = 0, canSkip = true })
         end,
 
         [5] = function() -- Floor 4: Return to floor 3
             -- Event 44 -> Return to floor 3 South
             -- Event 45 -> Return to floor 3 North
-            player:startOptionalCutscene(44 + player:getCharVar('[Dem]ReturnNorth'))
+            player:startOptionalCutscene(44 + player:getCharVar('[Dem]ReturnNorth'), { cs_option = 0, canSkip = true })
         end,
 
         [6] = function() -- Floor 1: Portal

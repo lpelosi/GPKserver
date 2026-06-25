@@ -51,6 +51,11 @@ auto appConfig() -> ApplicationConfig
             .description = "Load zones on demand. For development only.",
             .type        = ArgumentType::Flag,
         },
+        ArgumentDefinition{
+            .name        = "--rebuild-navmeshes",
+            .description = "Force rebuild all navmeshes from ximesh on startup.",
+            .type        = ArgumentType::Flag,
+        },
     };
 
     return ApplicationConfig{
@@ -77,9 +82,10 @@ MapApplication::MapApplication(const int argc, char** argv)
         port = std::stoi(*maybePort);
     }
 
-    engineConfig_.lazyZones = args().get<bool>("--lazy");
-    engineConfig_.inCI      = Application::isRunningInCI();
-    engineConfig_.ipp       = IPP(ip, port);
+    engineConfig_.ipp              = IPP(ip, port);
+    engineConfig_.inCI             = Application::isRunningInCI();
+    engineConfig_.lazyZones        = args().get<bool>("--lazy");
+    engineConfig_.rebuildNavmeshes = args().get<bool>("--rebuild-navmeshes");
 }
 
 MapApplication::~MapApplication()
@@ -88,7 +94,7 @@ MapApplication::~MapApplication()
 
 auto MapApplication::createEngine() -> std::unique_ptr<Engine>
 {
-    return std::make_unique<MapEngine>(ioContext(), engineConfig_);
+    return std::make_unique<MapEngine>(*this, engineConfig_);
 }
 
 void MapApplication::registerCommands(ConsoleService& console)
@@ -104,29 +110,22 @@ void MapApplication::registerCommands(ConsoleService& console)
 void MapApplication::run()
 {
     engine_ = createEngine();
-
-    if (engine_)
+    if (!engine_)
     {
-        engine_->onInitialize();
-
-        registerCommands(console());
+        std::terminate();
     }
 
-    markLoaded();
-    auto* mapEngine = dynamic_cast<MapEngine*>(engine_.get());
+    engine_->onInitialize();
+    registerCommands(console());
 
-    while (Application::isRunning())
+    scheduler_.postToMainThread(static_cast<MapEngine*>(engine_.get())->init());
+
+    try
     {
-        mapEngine->gameLoop();
+        scheduler_.run(); // blocks
     }
-
-    // MapEngine destructor must occur before Application destructor
-    engine_.reset();
-    io_context_.stop();
-
-    const auto taskManager = CTaskManager::getInstance();
-    while (!taskManager->getTaskList().empty())
+    catch (const std::exception& e)
     {
-        taskManager->getTaskList().pop();
+        ShowCriticalFmt("Fatal Exception: {}", e.what());
     }
 }

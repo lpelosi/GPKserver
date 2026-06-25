@@ -6,12 +6,12 @@
 ---@type TItem
 local itemObject = {}
 
-itemObject.onItemCheck = function(target, item, param, caster)
+itemObject.onItemCheck = function(target, item, caster)
     return 0
 end
 
-itemObject.onItemUse = function(target)
-    target:addStatusEffect(xi.effect.BLAZE_SPIKES, 20, 0, 210)
+itemObject.onItemUse = function(target, user)
+    target:addStatusEffect(xi.effect.BLAZE_SPIKES, { power = 20, duration = 210, origin = user })
 end
 
 return itemObject

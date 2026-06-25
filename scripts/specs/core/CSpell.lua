@@ -14,6 +14,11 @@ end
 function CSpell:setModifier(modifier)
 end
 
+---@param isCritical boolean
+---@return nil
+function CSpell:setCritical(isCritical)
+end
+
 ---@param aoe integer
 ---@return nil
 function CSpell:setAoE(aoe)
@@ -50,8 +55,13 @@ function CSpell:canTargetEnemy()
 end
 
 ---@nodiscard
----@return boolean
+---@return xi.magic.aoe
 function CSpell:isAoE()
+end
+
+---@nodiscard
+---@return number
+function CSpell:getRadius()
 end
 
 ---@nodiscard
@@ -105,6 +115,12 @@ function CSpell:getFlag()
 end
 
 ---@nodiscard
+---@param jobId xi.job
+---@return integer
+function CSpell:getLevel(jobId)
+end
+
+---@nodiscard
 ---@return integer
 function CSpell:getCastTime()
 end
@@ -112,4 +128,14 @@ end
 ---@nodiscard
 ---@return integer
 function CSpell:getPrimaryTargetID()
+end
+
+---@nodiscard
+---@return xi.action.knockback
+function CSpell:getKnockback()
+end
+
+---@nodiscard
+---@return boolean
+function CSpell:isCritical()
 end

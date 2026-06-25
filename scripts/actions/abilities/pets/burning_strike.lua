@@ -1,6 +1,7 @@
 -----------------------------------
 -- Burning Strike
--- Hybrid
+-- Family: Avatar (Ifrit)
+-- Description: Deals hybrid Physical/Magical(Fire) damage to a single target.
 -----------------------------------
 ---@type TAbilityPet
 local abilityObject = {}
@@ -12,18 +13,41 @@ end
 abilityObject.onPetAbility = function(target, pet, petskill, summoner, action)
     xi.job_utils.summoner.onUseBloodPact(target, petskill, summoner, action)
 
-    local baseDamage = xi.summon.avatarPhysicalMove(pet, target, petskill, 1, 1, 6, 0, xi.mobskills.magicalTpBonus.NO_EFFECT, 1, 2, 3)
-    local damage     = math.floor(baseDamage.dmg + pet:getStat(xi.mod.INT) - target:getStat(xi.mod.INT))
+    local params = {}
 
-    -- Add on bonuses (staff/day/weather/jas/mab/etc all go in this function)
-    damage = xi.mobskills.mobMagicalMove(pet, target, petskill, damage, xi.element.FIRE, 1, xi.mobskills.magicalTpBonus.NO_EFFECT, 0)
-    damage = xi.mobskills.mobAddBonuses(pet, target, damage, xi.element.FIRE, petskill)
-    damage = xi.summon.avatarFinalAdjustments(damage, pet, petskill, target, xi.attackType.PHYSICAL, xi.damageType.BLUNT, 1)
+    params.baseDamage         = pet:getWeaponDmg()
+    params.numHits            = 1
+    params.fTP                = { 2.75, 2.75, 2.75 }
+    params.fTPSubsequentHits  = { 2.75, 2.75, 2.75 }
+    params.str_wSC            = 0.20
+    params.int_wSC            = 0.20
+    params.attackType         = xi.attackType.PHYSICAL
+    params.damageType         = xi.damageType.BLUNT
+    params.hybridSkill        = true
+    params.hybridSkillElement = xi.element.FIRE
+    params.hybridAttackType   = xi.attackType.MAGICAL
+    params.hybridDamageType   = xi.damageType.FIRE
+    params.shadowBehavior     = xi.mobskills.shadowBehavior.NUMSHADOWS_1
+    -- params.accuracyModifier   = { 0, 0, 0 } TODO: Capture accuracy
+    params.primaryMessage    = xi.msg.basic.USES_JA_TAKE_DAMAGE
 
-    target:takeDamage(damage, pet, xi.attackType.PHYSICAL, xi.damageType.BLUNT)
-    target:updateEnmityFromDamage(pet, damage)
+    local info = xi.mobskills.mobPhysicalMove(pet, target, petskill, action, params)
 
-    return damage
+    local totalDamage = 0
+
+    if xi.mobskills.processDamage(pet, target, petskill, action, info) then
+        if info.damage > 0 then
+            target:takeDamage(info.damage, pet, info.attackType, info.damageType)
+            totalDamage = totalDamage + info.damage
+        end
+
+        if info.hybridDamage > 0 and target:getHP() > 0 then
+            target:takeDamage(info.hybridDamage, pet, info.hybridAttackType, info.hybridDamageType)
+            totalDamage = totalDamage + info.hybridDamage
+        end
+    end
+
+    return totalDamage
 end
 
 return abilityObject

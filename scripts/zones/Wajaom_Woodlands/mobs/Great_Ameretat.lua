@@ -9,11 +9,8 @@ local ID = zones[xi.zone.WAJAOM_WOODLANDS]
 ---@type TMobEntity
 local entity = {}
 
-entity.onMobWeaponSkillPrepare = function(mob, target)
+entity.onMobMobskillChoose = function(mob, target, skillId)
     return target:countEffectWithFlag(xi.effectFlag.DISPELABLE) > 0 and xi.mobSkill.VAMPIRIC_ROOT or 0
-end
-
-entity.onMobDeath = function(mob, player, optParams)
 end
 
 entity.onMobDespawn = function(mob)

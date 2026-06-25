@@ -128,7 +128,7 @@ INSERT INTO `item_mods_pet` VALUES (11297,5,24,7); -- Stormwaker - MP: 24
 INSERT INTO `item_mods_pet` VALUES (11298,25,10,3); -- Automaton - ACC: 10
 
 -- Pantin Tobe +1
-INSERT INTO `item_mods_pet` VALUES (11299,25,10,3); -- Automaton - ACC: 10
+INSERT INTO `item_mods_pet` VALUES (11299,25,12,3); -- Automaton - ACC: 12
 
 -- Aegas Doublet
 INSERT INTO `item_mods_pet` VALUES (11338,25,3,0);  -- All Pets - ACC: 3
@@ -477,8 +477,8 @@ INSERT INTO `item_mods_pet` VALUES (20831,288,2,0); -- All Pets - DOUBLE_ATTACK:
 INSERT INTO `item_mods_pet` VALUES (20832,288,3,0); -- All Pets - DOUBLE_ATTACK: 3
 
 -- Pelagos Lance
-INSERT INTO `item_mods_pet` VALUES (20944,161,300,2); -- Wyvern - DMGPHYS: 300
-INSERT INTO `item_mods_pet` VALUES (20944,370,2,2);   -- Wyvern - REGEN: 2
+INSERT INTO `item_mods_pet` VALUES (20944,161,-300,2); -- Wyvern - DMGPHYS: -300
+INSERT INTO `item_mods_pet` VALUES (20944,370,2,2);    -- Wyvern - REGEN: 2
 
 -- Nirvana
 INSERT INTO `item_mods_pet` VALUES (21141,126,40,1); -- Avatar - BP_DAMAGE: 40

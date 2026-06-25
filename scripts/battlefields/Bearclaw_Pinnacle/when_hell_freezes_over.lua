@@ -16,6 +16,12 @@ local content = Battlefield:new({
     exitNpc          = 'Wind_Pillar_Exit',
     requiredKeyItems = { xi.ki.ZEPHYR_FAN, message = bearclawID.text.ZEPHYR_RIPS },
     grantXP          = 3000,
+    armouryCrates    =
+    {
+        bearclawID.mob.SNOW_DEVIL + 6,
+        bearclawID.mob.SNOW_DEVIL + 14,
+        bearclawID.mob.SNOW_DEVIL + 22,
+    },
 })
 
 -- Spawning function for this battlefield. Spawns a wave of 1-3 Snow Devils of either all BLM or all WAR
@@ -59,7 +65,36 @@ end
 content.groups =
 {
     {
-        mobs = { 'Snow_Devil_war', 'Snow_Devil_blm' },
+        mobIds =
+        {
+            {
+                bearclawID.mob.SNOW_DEVIL,
+                bearclawID.mob.SNOW_DEVIL + 1,
+                bearclawID.mob.SNOW_DEVIL + 2,
+                bearclawID.mob.SNOW_DEVIL + 3,
+                bearclawID.mob.SNOW_DEVIL + 4,
+                bearclawID.mob.SNOW_DEVIL + 5,
+            },
+
+            {
+                bearclawID.mob.SNOW_DEVIL + 8,
+                bearclawID.mob.SNOW_DEVIL + 9,
+                bearclawID.mob.SNOW_DEVIL + 10,
+                bearclawID.mob.SNOW_DEVIL + 11,
+                bearclawID.mob.SNOW_DEVIL + 12,
+                bearclawID.mob.SNOW_DEVIL + 13,
+            },
+
+            {
+                bearclawID.mob.SNOW_DEVIL + 16,
+                bearclawID.mob.SNOW_DEVIL + 17,
+                bearclawID.mob.SNOW_DEVIL + 18,
+                bearclawID.mob.SNOW_DEVIL + 19,
+                bearclawID.mob.SNOW_DEVIL + 20,
+                bearclawID.mob.SNOW_DEVIL + 21,
+            },
+        },
+        superlink = true,
         spawned = false,
 
         allDeath = function(battlefield, mob)
@@ -95,26 +130,26 @@ end
 content.loot =
 {
     {
-        { itemId = xi.item.NONE,                   weight = 950 },
-        { itemId = xi.item.CLOUD_EVOKER,           weight =  50 },
+        { itemId = xi.item.NONE,                   weight = 9500 },
+        { itemId = xi.item.CLOUD_EVOKER,           weight =  500 },
     },
 
     {
-        { itemId = xi.item.NONE,                   weight = 250 },
-        { itemId = xi.item.SQUARE_OF_GALATEIA,     weight = 350 },
-        { itemId = xi.item.SQUARE_OF_KEJUSU_SATIN, weight = 200 },
-        { itemId = xi.item.POT_OF_VIRIDIAN_URUSHI, weight = 200 },
+        { itemId = xi.item.NONE,                   weight = 2500 },
+        { itemId = xi.item.SQUARE_OF_GALATEIA,     weight = 2500 },
+        { itemId = xi.item.SQUARE_OF_KEJUSU_SATIN, weight = 2500 },
+        { itemId = xi.item.POT_OF_VIRIDIAN_URUSHI, weight = 2500 },
     },
 
     {
         quantity = 2,
-        { itemId = xi.item.NONE,                   weight = 250 },
-        { itemId = xi.item.MARTIAL_GUN,            weight = 125 },
-        { itemId = xi.item.MARTIAL_BHUJ,           weight = 125 },
-        { itemId = xi.item.MARTIAL_STAFF,          weight = 125 },
-        { itemId = xi.item.HEXEREI_CAPE,           weight = 125 },
-        { itemId = xi.item.SETTLERS_CAPE,          weight = 125 },
-        { itemId = xi.item.SCROLL_OF_RAISE_III,    weight = 125 },
+        { itemId = xi.item.NONE,                   weight = 5500 },
+        { itemId = xi.item.MARTIAL_GUN,            weight =  700 },
+        { itemId = xi.item.MARTIAL_BHUJ,           weight =  800 },
+        { itemId = xi.item.MARTIAL_STAFF,          weight =  800 },
+        { itemId = xi.item.HEXEREI_CAPE,           weight =  800 },
+        { itemId = xi.item.SETTLERS_CAPE,          weight =  800 },
+        { itemId = xi.item.SCROLL_OF_RAISE_III,    weight =  800 },
     },
 }
 

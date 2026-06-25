@@ -306,6 +306,7 @@ entity.onMobInitialize = function(mob)
     mob:addImmunity(xi.immunity.LIGHT_SLEEP)
     mob:addImmunity(xi.immunity.TERROR)
     mob:addImmunity(xi.immunity.PLAGUE)
+    mob:setMobMod(xi.mobMod.BASE_DAMAGE_MULTIPLIER, 150)
 end
 
 entity.onMobSpawn = function(mob)
@@ -328,14 +329,14 @@ entity.onMobSpawn = function(mob)
     end
 end
 
-entity.onMobWeaponSkillPrepare = function(mob, target)
+entity.onMobMobskillChoose = function(mob, target, skillId)
     -- Zipacna heavily prefers using Crystal Rain and Crystal Weapon
     local roll = math.random(1, 100)
 
     if roll <= 30 then
-        return xi.mobSkill.CRYSTAL_RAIN
+        return xi.mobSkill.CRYSTAL_RAIN_1
     elseif roll <= 60 then
-        local weaponEle = math.random(xi.mobSkill.CRYSTAL_WEAPON_FIRE, xi.mobSkill.CRYSTAL_WEAPON_WATER)
+        local weaponEle = math.random(xi.mobSkill.CRYSTAL_WEAPON_FIRE_1, xi.mobSkill.CRYSTAL_WEAPON_WATER_1)
         return weaponEle
     end
 end
@@ -364,6 +365,28 @@ entity.onMobRoam = function(mob)
         setZipPath(mob, middleYellowDoor, 3)
     elseif mob:checkDistance(firstYellowDoor:getPos()) <= 7 then
         setZipPath(mob, firstYellowDoor, 4)
+    end
+end
+
+entity.onMobDisengage = function(mob)
+    -- Resume pathing based on current direction and nearest checkpoint
+    local mobPos = mob:getPos()
+
+    -- Determine if we're closer to blue or yellow side
+    if mobPos.x < 0 then
+        -- Blue (west) side
+        if currentDirection == pathingDirection.TO_EAST then
+            mob:pathThrough(pathNodes[paths.BLUE_TO_BLUE], xi.path.flag.COORDS)
+        else
+            mob:pathThrough(pathNodes[paths.BLUE_TO_BASEMENT], bit.bor(xi.path.flag.COORDS, xi.path.flag.REVERSE))
+        end
+    else
+        -- Yellow (east) side
+        if currentDirection == pathingDirection.TO_EAST then
+            mob:pathThrough(pathNodes[paths.YELLOW_TO_BASEMENT], xi.path.flag.COORDS)
+        else
+            mob:pathThrough(pathNodes[paths.YELLOW_TO_YELLOW], bit.bor(xi.path.flag.COORDS, xi.path.flag.REVERSE))
+        end
     end
 end
 

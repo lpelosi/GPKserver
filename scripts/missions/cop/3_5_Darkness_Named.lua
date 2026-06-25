@@ -1,4 +1,4 @@
------------------------------------
+﻿-----------------------------------
 -- Darkness Named
 -- Promathia 3-5
 -----------------------------------
@@ -46,7 +46,8 @@ mission.sections =
                             npcUtil.tradeHasExactly(trade, xi.item.GRAY_CHIP)
                         )
                     then
-                        return mission:progressEvent(52, 500 * xi.settings.main.GIL_RATE)
+                        -- ToDo Uncaptured CS 51 seems to imply you traded the wrong item
+                        return mission:progressEvent(52, xi.settings.main.GIL_RATE * 500)
                     end
                 end,
 
@@ -87,7 +88,7 @@ mission.sections =
                 [52] = function(player, csid, option, npc)
                     player:confirmTrade()
 
-                    npcUtil.giveCurrency(player, 'gil', 500)
+                    player:addGil(xi.settings.main.GIL_RATE * 500) -- Silent since the gil reward is baked into the CS.
                     npcUtil.giveKeyItem(player, xi.ki.PSOXJA_PASS)
                     mission:setVar(player, 'Status', 3)
                 end,

@@ -1,4 +1,4 @@
-﻿/*
+/*
 ===========================================================================
 
   Copyright (c) 2010-2015 Darkstar Dev Teams
@@ -22,6 +22,7 @@
 #include "ability.h"
 
 #include "common/database.h"
+#include "enums/recast.h"
 
 #include "lua/luautils.h"
 
@@ -36,9 +37,9 @@ CAbility::CAbility(uint16 id)
 , m_aoe(0)
 , m_validTarget(0)
 , m_addType(0)
-, m_message(0)
+, m_message(MsgBasic::None)
 , m_recastTime(0s)
-, m_recastId(0)
+, m_recastId(Recast::Special)
 , m_CE(0)
 , m_VE(0)
 , m_meritModID(0)
@@ -81,12 +82,12 @@ void CAbility::setMeritModID(uint16 value)
     m_meritModID = value;
 }
 
-void CAbility::setActionType(ACTIONTYPE type)
+void CAbility::setActionType(const ActionCategory type)
 {
     m_actionType = type;
 }
 
-void CAbility::setPostActionEffectCleanup(EFFECT effectToCleanup)
+void CAbility::setPostActionEffectCleanup(xi::StatusEffect effectToCleanup)
 {
     m_cleanupEffect = effectToCleanup;
 }
@@ -126,6 +127,16 @@ uint8 CAbility::getAOE() const
     return m_aoe;
 }
 
+void CAbility::setRadius(uint8 radius)
+{
+    m_radius = radius;
+}
+
+uint8 CAbility::getRadius() const
+{
+    return m_radius;
+}
+
 void CAbility::setAnimationID(uint16 animationID)
 {
     m_animationID = animationID;
@@ -141,9 +152,9 @@ void CAbility::setCastTime(timer::duration time)
     m_castTime = time;
 }
 
-uint16 CAbility::getAnimationID() const
+auto CAbility::getAnimationID() const -> ActionAnimation
 {
-    return m_animationID;
+    return static_cast<ActionAnimation>(m_animationID);
 }
 
 timer::duration CAbility::getAnimationTime()
@@ -171,12 +182,12 @@ uint16 CAbility::getMeritModID() const
     return m_meritModID;
 }
 
-ACTIONTYPE CAbility::getActionType()
+auto CAbility::getActionType() const -> ActionCategory
 {
     return m_actionType;
 }
 
-EFFECT CAbility::getPostActionEffectCleanup()
+auto CAbility::getPostActionEffectCleanup() -> xi::StatusEffect
 {
     return m_cleanupEffect;
 }
@@ -211,12 +222,12 @@ void CAbility::setName(const std::string& name)
     m_name = name;
 }
 
-uint16 CAbility::getRecastId() const
+auto CAbility::getRecastId() const -> Recast
 {
     return m_recastId;
 }
 
-void CAbility::setRecastId(uint16 recastId)
+void CAbility::setRecastId(const Recast recastId)
 {
     m_recastId = recastId;
 }
@@ -247,74 +258,14 @@ int32 CAbility::getVE() const
  *                                                                       *
  ************************************************************************/
 
-uint16 CAbility::getMessage() const
+auto CAbility::getMessage() const -> MsgBasic
 {
     return m_message;
 }
 
-void CAbility::setMessage(uint16 message)
+void CAbility::setMessage(MsgBasic message)
 {
     m_message = message;
-}
-
-uint16 CAbility::getAoEMsg() const
-{
-    switch (m_message)
-    {
-        case 150: // Ancient Circle
-            return m_message + 1;
-        case 185:
-            return 264;
-        case 186:
-            return 266;
-        case 187:
-            return 281;
-        case 188:
-            return 282;
-        case 189:
-            return 283;
-        case 225:
-            return 366;
-        case 226:
-            return 226; // no message for this... I guess there is no aoe TP drain move
-        case 103:       // recover hp
-        case 102:       // recover hp
-        case 238:       // recover hp
-        case 306:       // recover hp
-        case 318:       // recover hp
-            return 24;
-        case 242:
-            return 277;
-        case 243:
-            return 278;
-        case 284:
-            return 284; // already the aoe message
-        case 370:
-            return 404;
-        case 362:
-            return 363;
-        case 378:
-            return 343;
-        case 224: // recovers mp
-            return 276;
-        case 420:
-        case 424:
-            return 421;
-        case 422:
-        case 425:
-            return 423;
-        case 426:
-            return 427;
-        case 435:
-        case 437:
-        case 439:
-            return m_message + 1;
-        case 668: // Valiance has a seperate message for party member who gain the effect.
-            return m_message + 1;
-
-        default:
-            return m_message;
-    }
 }
 
 /************************************************************************
@@ -355,6 +306,7 @@ void LoadAbilitiesList()
                                        "actionType, "
                                        "`range`, "
                                        "isAOE, "
+                                       "radius, "
                                        "recastId, "
                                        "CE, "
                                        "VE, "
@@ -386,15 +338,16 @@ void LoadAbilitiesList()
             PAbility->setLevel(rset->get<uint8>("level"));
             PAbility->setValidTarget(rset->get<uint16>("validTarget"));
             PAbility->setRecastTime(std::chrono::seconds(rset->get<uint16>("recastTime")));
-            PAbility->setMessage(rset->get<uint16>("message1"));
+            PAbility->setMessage(rset->get<MsgBasic>("message1"));
             // Unused - message2
             PAbility->setAnimationID(rset->get<uint16>("animation"));
             PAbility->setAnimationTime(std::chrono::milliseconds(rset->get<uint16>("animationTime")));
             PAbility->setCastTime(std::chrono::milliseconds(rset->get<uint16>("castTime")));
-            PAbility->setActionType(rset->get<ACTIONTYPE>("actionType"));
+            PAbility->setActionType(rset->get<ActionCategory>("actionType"));
             PAbility->setRange(rset->get<float>("range"));
             PAbility->setAOE(rset->get<uint8>("isAOE"));
-            PAbility->setRecastId(rset->get<uint16>("recastId"));
+            PAbility->setRadius(rset->get<uint8>("radius"));
+            PAbility->setRecastId(rset->get<Recast>("recastId"));
             PAbility->setCE(rset->get<int32>("CE"));
             PAbility->setVE(rset->get<int32>("VE"));
             PAbility->setMeritModID(rset->get<uint16>("meritModID"));
@@ -407,7 +360,7 @@ void LoadAbilitiesList()
             {
                 filename = fmt::format("./scripts/actions/abilities/pets/{}.lua", PAbility->getName());
             }
-            luautils::CacheLuaObjectFromFile(filename);
+            luautils::LoadLuaObjectFromFile(filename);
         }
     }
 
@@ -588,19 +541,6 @@ Charge_t* GetCharge(CBattleEntity* PUser, uint16 chargeID)
         }
     }
     return charge;
-}
-
-uint32 GetAbsorbMessage(uint32 msg)
-{
-    if (msg == 110)
-    {
-        return 102;
-    }
-    else if (msg == 264)
-    {
-        return 263;
-    }
-    return msg;
 }
 
 }; // namespace ability

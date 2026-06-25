@@ -49,6 +49,16 @@ elseif ("${CMAKE_BUILD_TYPE_UPPER}" STREQUAL "RELEASE")
     message(STATUS "CMAKE_CXX_FLAGS_RELEASE: ${CMAKE_CXX_FLAGS_RELEASE}")
 elseif ("${CMAKE_BUILD_TYPE_UPPER}" STREQUAL "RELWITHDEBINFO")
     message(STATUS "CMAKE_CXX_FLAGS_RELWITHDEBINFO: ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+elseif ("${CMAKE_BUILD_TYPE_UPPER}" STREQUAL "ASAN")
+    message(STATUS "CMAKE_CXX_FLAGS_ASAN: ${CMAKE_CXX_FLAGS_ASAN}")
+elseif ("${CMAKE_BUILD_TYPE_UPPER}" STREQUAL "UBSAN")
+    message(STATUS "CMAKE_CXX_FLAGS_UBSAN: ${CMAKE_CXX_FLAGS_UBSAN}")
+elseif ("${CMAKE_BUILD_TYPE_UPPER}" STREQUAL "TSAN")
+    message(STATUS "CMAKE_CXX_FLAGS_TSAN: ${CMAKE_CXX_FLAGS_TSAN}")
+elseif ("${CMAKE_BUILD_TYPE_UPPER}" STREQUAL "MSAN")
+    message(STATUS "CMAKE_CXX_FLAGS_MSAN: ${CMAKE_CXX_FLAGS_MSAN}")
+elseif ("${CMAKE_BUILD_TYPE_UPPER}" STREQUAL "LSAN")
+    message(STATUS "CMAKE_CXX_FLAGS_LSAN: ${CMAKE_CXX_FLAGS_LSAN}")
 else()
     message(FATAL_ERROR "Did not recognise CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} to print out compiler flags.")
 endif()
@@ -61,6 +71,22 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 link_libraries(${CMAKE_THREAD_LIBS_INIT})
+
+CPMAddPackage(
+    NAME ZLIB
+    GITHUB_REPOSITORY madler/zlib
+    GIT_TAG v1.3.1
+    OPTIONS "ZLIB_BUILD_EXAMPLES OFF"
+)
+if(ZLIB_ADDED)
+    add_library(ZLIB::ZLIB ALIAS zlibstatic)
+endif()
+
+CPMAddPackage(
+    NAME utfcpp
+    GITHUB_REPOSITORY nemtrif/utfcpp
+    GIT_TAG v4.0.8
+)
 
 # Find Python (defines ${Python_EXECUTABLE})
 find_package(Python REQUIRED)
@@ -87,6 +113,8 @@ find_package(OpenSSLlibcrypto REQUIRED)
 find_package(OpenSSLlibssl REQUIRED)
 
 if(UNIX AND NOT APPLE)
+# zstd is sometimes a prereq for binutils
+    find_package(Zstd REQUIRED)
     find_package(Binutils REQUIRED)
 endif()
 
@@ -101,14 +129,12 @@ set_project_warnings(project_warnings)
 # Globally define SOL_ALL_SAFETIES_ON so sol can be included anywhere
 # If SOL_NO_CHECK_NUMBER_PRECISION is defined, turns off number precision and integer
 # precision fitting when pushing numbers into sol
-# RC_FAST_MATH informs recastnavigation to not try to use infinity because we use -ffast-math
 # add_compile_definitions() comes with CMake 3.12
 add_definitions(
     -DSOL_ALL_SAFETIES_ON=1
     -DSOL_NO_CHECK_NUMBER_PRECISION=1
     -DSOL_DEFAULT_PASS_ON_ERROR=1
     -DSOL_PRINT_ERRORS=0
-    -DRC_FAST_MATH=1
     -DSPDLOG_ACTIVE_LEVEL=SPDLOG_LEVEL_DEBUG
 )
 
@@ -149,6 +175,45 @@ execute_process(
 )
 if (NOT IPC_EXIT_CODE EQUAL 0)
     message(FATAL_ERROR "Failed to generate IPC stubs")
+endif()
+
+execute_process(
+    COMMAND ${Python_EXECUTABLE} -c "import jinja2, jsonschema, yaml"
+    RESULT_VARIABLE CODEGEN_DEPS_EXIT_CODE
+    OUTPUT_QUIET
+    ERROR_QUIET
+)
+if(NOT CODEGEN_DEPS_EXIT_CODE EQUAL 0)
+    message(FATAL_ERROR
+        "Codegen requires the Python packages jinja2, jsonschema, and pyyaml, "
+        "but they are not installed for the interpreter CMake selected:\n"
+        "    ${Python_EXECUTABLE}\n"
+        "Install them by running this command exactly as shown (the interpreter path "
+        "matters, so the packages land in the environment this build uses):\n"
+        "    ${Python_EXECUTABLE} -m pip install -r ${CMAKE_SOURCE_DIR}/tools/requirements.txt"
+    )
+endif()
+
+add_custom_target(data_codegen
+    COMMAND ${Python_EXECUTABLE} -m tools.codegen ${CMAKE_BINARY_DIR}
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    BYPRODUCTS
+        ${CMAKE_BINARY_DIR}/generated/.codegen.stamp
+        ${CMAKE_BINARY_DIR}/generated/data/all.h
+    USES_TERMINAL
+    VERBATIM
+)
+
+if(NOT EXISTS ${CMAKE_BINARY_DIR}/generated/.codegen.stamp)
+    message(STATUS "Bootstrapping data codegen")
+    execute_process(
+        COMMAND ${Python_EXECUTABLE} -m tools.codegen ${CMAKE_BINARY_DIR}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        RESULT_VARIABLE CODEGEN_EXIT_CODE
+    )
+    if(NOT CODEGEN_EXIT_CODE EQUAL 0)
+        message(FATAL_ERROR "Bootstrap codegen failed")
+    endif()
 endif()
 
 include_directories(${CMAKE_BINARY_DIR}/generated) # Globally include the build/generated directory

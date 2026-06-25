@@ -21,10 +21,15 @@ local checkIfShouldClone = function(hpp, skillId)
     end
 end
 
+entity.onMobInitialize = function(mob)
+    mob:addImmunity(xi.immunity.LIGHT_SLEEP)
+    mob:addImmunity(xi.immunity.TERROR)
+    mob:addImmunity(xi.immunity.PLAGUE)
+end
+
 entity.onMobSpawn = function(mob)
     mob:setMobMod(xi.mobMod.IDLE_DESPAWN, 180) -- 3 minutes
     mob:setMod(xi.mod.UDMGMAGIC, -4000)
-    mob:addImmunity(xi.immunity.LIGHT_SLEEP)
 
     local para = GetMobByID(ID.mob.PARA)
 
@@ -37,16 +42,14 @@ entity.onMobSpawn = function(mob)
     end
 end
 
-entity.onMobFight = function(mob, target)
-end
-
 -- If Para uses TP specific TP moves move under 50% HP then it will spawn a clone.
 -- Will only spawn 4 adds total.
 -- Adds will spawn ontop of the player.
 -- TP moves that spawned a clone in the capture: 310 - Queezyshroom, 311- Numbshroom, 312 - Shakeshroom
 -- No reports or captures if the clones can respawn.
 -- Reports from players saying only the original needs to be killed.
-entity.onMobWeaponSkill = function(target, mob, skill)
+-- To do: Per retail captures, a clone is only made when the appropriate TP move LANDS. It will NOT clone when it misses and fails to do damage to the player.
+entity.onMobWeaponSkill = function(mob, target, skill, action)
     local hpp   = mob:getHPP()
     local skillId = skill:getID()
     local para = GetMobByID(ID.mob.PARA)
@@ -76,7 +79,4 @@ entity.onMobWeaponSkill = function(target, mob, skill)
 end
 
 -- Clones do not despawn when original is killed. Consistent with capture.
-entity.onMobDeath = function(mob, player, optParams)
-end
-
 return entity

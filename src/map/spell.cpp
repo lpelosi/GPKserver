@@ -1,4 +1,4 @@
-﻿/*
+/*
 ===========================================================================
 
   Copyright (c) 2010-2015 Darkstar Dev Teams
@@ -29,6 +29,7 @@
 #include "mob_spell_list.h"
 #include "spell.h"
 
+#include "enums/four_cc.h"
 #include "map_engine.h"
 #include "status_effect_container.h"
 #include "utils/blueutils.h"
@@ -104,7 +105,7 @@ void CSpell::setName(const std::string& name)
     m_name = name;
 }
 
-SPELLGROUP CSpell::getSpellGroup()
+auto CSpell::getSpellGroup() const -> SPELLGROUP
 {
     return m_spellGroup;
 }
@@ -141,7 +142,7 @@ bool CSpell::isBuff() const
 
 bool CSpell::tookEffect() const
 {
-    return !(m_message == 75 || m_message == 284 || m_message == 283 || m_message == 85);
+    return !(m_message == MsgBasic::MagicNoEffect || m_message == MsgBasic::MagicResistedTarget || m_message == MsgBasic::TargetNoEffect || m_message == MsgBasic::MagicResisted || m_message == MsgBasic::MagicCompleteResist || m_message == MsgBasic::MagicFail);
 }
 
 bool CSpell::hasMPCost()
@@ -190,7 +191,7 @@ bool CSpell::canHitShadow()
 bool CSpell::dealsDamage() const
 {
     // damage or drain hp
-    return m_message == 2 || m_message == 227 || m_message == 252 || m_message == 274;
+    return m_message == MsgBasic::MagicDamage || m_message == MsgBasic::MagicDrainsHP || m_message == MsgBasic::MagicBurstDamage || m_message == MsgBasic::MagicBurstDrainsHP;
 }
 
 float CSpell::getRadius() const
@@ -208,9 +209,9 @@ void CSpell::setZoneMisc(uint16 Misc)
     m_zoneMisc = Misc;
 }
 
-uint16 CSpell::getAnimationID() const
+auto CSpell::getAnimationID() const -> ActionAnimation
 {
-    return m_animation;
+    return static_cast<ActionAnimation>(m_animation);
 }
 
 void CSpell::setAnimationID(uint16 AnimationID)
@@ -283,59 +284,44 @@ void CSpell::setMultiplier(float multiplier)
     m_multiplier = multiplier;
 }
 
-uint16 CSpell::getMessage() const
+auto CSpell::getMessage() const -> MsgBasic
 {
     return m_message;
 }
 
-uint16 CSpell::getAoEMessage() const
-{
-    switch (m_message)
-    {
-        case 7: // recovers HP
-            return 367;
-        case 93: // vanishes
-            return 273;
-        case 85: // resists
-            return 284;
-        case 230:       // casts gain the effect of
-            return 266; // gains the effect of
-        case 236:       // is blind
-            // return 203;
-            return 277;
-            // 279
-        case 237: // if its a damage spell msg and is hitting the 2nd+ target
-            return 278;
-        case 2: // if its a damage spell msg and is hitting the 2nd+ target
-            return 264;
-        default:
-            return m_message;
-    }
-}
-
-void CSpell::setMessage(uint16 message)
+void CSpell::setMessage(const MsgBasic message)
 {
     m_message = message;
 }
 
-uint16 CSpell::getMagicBurstMessage() const
+auto CSpell::getMagicBurstMessage() const -> MsgBasic
 {
     return m_MagicBurstMessage;
 }
 
-void CSpell::setMagicBurstMessage(uint16 message)
+void CSpell::setMagicBurstMessage(const MsgBasic message)
 {
     m_MagicBurstMessage = message;
 }
 
-MODIFIER CSpell::getModifier()
+auto CSpell::getModifier() const -> ActionModifier
 {
     return m_MessageModifier;
 }
 
-void CSpell::setModifier(MODIFIER modifier)
+void CSpell::setModifier(const ActionModifier modifier)
 {
     m_MessageModifier = modifier;
+}
+
+auto CSpell::isCritical() const -> bool
+{
+    return critical_;
+}
+
+void CSpell::setCritical(const bool isCritical)
+{
+    critical_ = isCritical;
 }
 
 void CSpell::setPrimaryTargetID(uint32 targid)
@@ -433,6 +419,33 @@ uint32 CSpell::getPrimaryTargetID() const
     return m_primaryTargetID;
 }
 
+auto CSpell::getFourCC(const bool interrupt) const -> FourCC
+{
+    switch (this->getSpellGroup())
+    {
+        case SPELLGROUP_WHITE:
+            return interrupt ? FourCC::WhiteMagicInterrupt : FourCC::WhiteMagicCast;
+        case SPELLGROUP_BLACK:
+            return interrupt ? FourCC::BlackMagicInterrupt : FourCC::BlackMagicCast;
+        case SPELLGROUP_BLUE:
+            return interrupt ? FourCC::BlueMagicInterrupt : FourCC::BlueMagicCast;
+        case SPELLGROUP_SONG:
+            return interrupt ? FourCC::SongMagicInterrupt : FourCC::SongMagicCast;
+        case SPELLGROUP_NINJUTSU:
+            return interrupt ? FourCC::NinjutsuMagicInterrupt : FourCC::NinjutsuMagicCast;
+        case SPELLGROUP_SUMMONING:
+            return interrupt ? FourCC::SummonMagicInterrupt : FourCC::SummonMagicCast;
+        case SPELLGROUP_GEOMANCY:
+            return interrupt ? FourCC::GeomancyMagicInterrupt : FourCC::GeomancyMagicCast;
+        case SPELLGROUP_TRUST:
+            return interrupt ? FourCC::TrustMagicInterrupt : FourCC::TrustMagicCast;
+        case SPELLGROUP_NONE:
+        default:
+            // Uh...
+            return FourCC::WhiteMagicInterrupt;
+    }
+}
+
 void CSpell::setContentTag(const std::string& contentTag)
 {
     m_contentTag = contentTag;
@@ -454,7 +467,7 @@ std::map<uint16, uint16>          PMobSkillToBlueSpell; // maps the skill id (ke
 void LoadSpellList()
 {
     auto rset = db::preparedStmt("SELECT spellid, name, jobs, `group`, family, validTargets, skill, castTime, recastTime, animation, animationTime, mpCost, "
-                                 "AOE, base, element, zonemisc, multiplier, message, magicBurstMessage, CE, VE, requirements, content_tag, spell_range "
+                                 "AOE, base, element, zonemisc, multiplier, message, magicBurstMessage, CE, VE, requirements, content_tag, spell_range, radius "
                                  "FROM spell_list");
     FOR_DB_MULTIPLE_RESULTS(rset)
     {
@@ -494,20 +507,15 @@ void LoadSpellList()
         PSpell->setElement(rset->get<uint16>("element"));
         PSpell->setZoneMisc(rset->get<uint16>("zonemisc"));
         PSpell->setMultiplier(rset->get<float>("multiplier"));
-        PSpell->setMessage(rset->get<uint16>("message"));
-        PSpell->setMagicBurstMessage(rset->get<uint16>("magicBurstMessage"));
+        PSpell->setMessage(rset->get<MsgBasic>("message"));
+        PSpell->setMagicBurstMessage(rset->get<MsgBasic>("magicBurstMessage"));
         PSpell->setCE(rset->get<int32>("CE"));
         PSpell->setVE(rset->get<int32>("VE"));
         PSpell->setRequirements(rset->get<uint8>("requirements"));
         PSpell->setContentTag(rset->getOrDefault<std::string>("content_tag", ""));
 
         PSpell->setRange(rset->get<float>("spell_range") / 10);
-
-        if (PSpell->getAOE())
-        {
-            // default radius
-            PSpell->setRadius(10);
-        }
+        PSpell->setRadius(rset->get<float>("radius") / 10);
 
         PSpellList[static_cast<uint16>(PSpell->getID())] = PSpell;
 
@@ -564,12 +572,12 @@ void LoadSpellList()
         }
 
         filename = fmt::format("./scripts/actions/spells/{}/{}.lua", switchKey, PSpell->getName());
-        luautils::CacheLuaObjectFromFile(filename);
+        luautils::LoadLuaObjectFromFile(filename);
     }
 
     rset = db::preparedStmt("SELECT blue_spell_list.spellid, blue_spell_list.mob_skill_id, blue_spell_list.set_points, "
                             "blue_spell_list.trait_category, blue_spell_list.trait_category_weight, blue_spell_list.primary_sc, "
-                            "blue_spell_list.secondary_sc, blue_spell_list.tertiary_sc, spell_list.content_tag "
+                            "blue_spell_list.secondary_sc, blue_spell_list.tertiary_sc, blue_spell_list.knockback, spell_list.content_tag "
                             "FROM blue_spell_list JOIN spell_list on blue_spell_list.spellid = spell_list.spellid");
     FOR_DB_MULTIPLE_RESULTS(rset)
     {
@@ -586,13 +594,16 @@ void LoadSpellList()
             continue;
         }
 
-        static_cast<CBlueSpell*>(PSpellList[spellId])->setMonsterSkillId(rset->get<uint16>("mob_skill_id"));
-        static_cast<CBlueSpell*>(PSpellList[spellId])->setSetPoints(rset->get<uint16>("set_points"));
-        static_cast<CBlueSpell*>(PSpellList[spellId])->setTraitCategory(rset->get<uint16>("trait_category"));
-        static_cast<CBlueSpell*>(PSpellList[spellId])->setTraitWeight(rset->get<uint16>("trait_category_weight"));
-        static_cast<CBlueSpell*>(PSpellList[spellId])->setPrimarySkillchain(rset->get<uint16>("primary_sc"));
-        static_cast<CBlueSpell*>(PSpellList[spellId])->setSecondarySkillchain(rset->get<uint16>("secondary_sc"));
-        static_cast<CBlueSpell*>(PSpellList[spellId])->setTertiarySkillchain(rset->get<uint16>("tertiary_sc"));
+        auto* PBlueSpell = static_cast<CBlueSpell*>(PSpellList[spellId]);
+
+        PBlueSpell->setMonsterSkillId(rset->get<uint16>("mob_skill_id"));
+        PBlueSpell->setSetPoints(rset->get<uint16>("set_points"));
+        PBlueSpell->setTraitCategory(rset->get<uint16>("trait_category"));
+        PBlueSpell->setTraitWeight(rset->get<uint16>("trait_category_weight"));
+        PBlueSpell->setPrimarySkillchain(rset->get<uint16>("primary_sc"));
+        PBlueSpell->setSecondarySkillchain(rset->get<uint16>("secondary_sc"));
+        PBlueSpell->setTertiarySkillchain(rset->get<uint16>("tertiary_sc"));
+        PBlueSpell->setKnockback(rset->getOrDefault<Knockback>("knockback", Knockback::None));
         PMobSkillToBlueSpell.insert(std::make_pair(rset->get<uint16>("mob_skill_id"), spellId));
     }
 
@@ -708,7 +719,7 @@ bool CanUseSpell(CBattleEntity* PCaster, CSpell* spell)
                 usable = true;
                 if (requirements & SPELLREQ_TABULA_RASA)
                 {
-                    if (!PCaster->StatusEffectContainer->HasStatusEffect(EFFECT_TABULA_RASA))
+                    if (!PCaster->StatusEffectContainer->HasStatusEffect(xi::StatusEffect::TabulaRasa))
                     {
                         usable = false;
                     }
@@ -717,14 +728,14 @@ bool CanUseSpell(CBattleEntity* PCaster, CSpell* spell)
                 {
                     if (requirements & SPELLREQ_ADDENDUM_BLACK)
                     {
-                        if (!PCaster->StatusEffectContainer->HasStatusEffect({ EFFECT_ADDENDUM_BLACK, EFFECT_ENLIGHTENMENT }))
+                        if (!PCaster->StatusEffectContainer->HasStatusEffect({ xi::StatusEffect::AddendumBlack, xi::StatusEffect::Enlightenment }))
                         {
                             usable = false;
                         }
                     }
                     else if (requirements & SPELLREQ_ADDENDUM_WHITE)
                     {
-                        if (!PCaster->StatusEffectContainer->HasStatusEffect({ EFFECT_ADDENDUM_WHITE, EFFECT_ENLIGHTENMENT }))
+                        if (!PCaster->StatusEffectContainer->HasStatusEffect({ xi::StatusEffect::AddendumWhite, xi::StatusEffect::Enlightenment }))
                         {
                             usable = false;
                         }
@@ -734,7 +745,7 @@ bool CanUseSpell(CBattleEntity* PCaster, CSpell* spell)
                 {
                     if (requirements & SPELLREQ_UNBRIDLED_LEARNING)
                     {
-                        if (!PCaster->StatusEffectContainer->HasStatusEffect({ EFFECT_UNBRIDLED_LEARNING, EFFECT_UNBRIDLED_WISDOM }))
+                        if (!PCaster->StatusEffectContainer->HasStatusEffect({ xi::StatusEffect::UnbridledLearning, xi::StatusEffect::UnbridledWisdom }))
                         {
                             usable = false;
                         }
@@ -756,7 +767,7 @@ bool CanUseSpell(CBattleEntity* PCaster, CSpell* spell)
                 usable = true;
                 if (requirements & SPELLREQ_TABULA_RASA)
                 {
-                    if (!PCaster->StatusEffectContainer->HasStatusEffect(EFFECT_TABULA_RASA))
+                    if (!PCaster->StatusEffectContainer->HasStatusEffect(xi::StatusEffect::TabulaRasa))
                     {
                         usable = false;
                     }
@@ -765,14 +776,14 @@ bool CanUseSpell(CBattleEntity* PCaster, CSpell* spell)
                 {
                     if (requirements & SPELLREQ_ADDENDUM_BLACK)
                     {
-                        if (!PCaster->StatusEffectContainer->HasStatusEffect({ EFFECT_ADDENDUM_BLACK, EFFECT_ENLIGHTENMENT }))
+                        if (!PCaster->StatusEffectContainer->HasStatusEffect({ xi::StatusEffect::AddendumBlack, xi::StatusEffect::Enlightenment }))
                         {
                             usable = false;
                         }
                     }
                     else if (requirements & SPELLREQ_ADDENDUM_WHITE)
                     {
-                        if (!PCaster->StatusEffectContainer->HasStatusEffect({ EFFECT_ADDENDUM_WHITE, EFFECT_ENLIGHTENMENT }))
+                        if (!PCaster->StatusEffectContainer->HasStatusEffect({ xi::StatusEffect::AddendumWhite, xi::StatusEffect::Enlightenment }))
                         {
                             usable = false;
                         }
@@ -782,7 +793,7 @@ bool CanUseSpell(CBattleEntity* PCaster, CSpell* spell)
                 {
                     if (requirements & SPELLREQ_UNBRIDLED_LEARNING)
                     {
-                        if (!PCaster->StatusEffectContainer->HasStatusEffect({ EFFECT_UNBRIDLED_LEARNING, EFFECT_UNBRIDLED_WISDOM }))
+                        if (!PCaster->StatusEffectContainer->HasStatusEffect({ xi::StatusEffect::UnbridledLearning, xi::StatusEffect::UnbridledWisdom }))
                         {
                             usable = false;
                         }
@@ -837,28 +848,6 @@ bool CanUseSpellWith(SpellID spellId, JOBTYPE job, uint8 level)
         return level > jobMLevel;
     }
     return false;
-}
-
-float GetSpellRadius(CSpell* spell, CBattleEntity* entity)
-{
-    float total = spell->getRadius();
-
-    // brd gets bonus radius from string skill
-    if (spell->getSpellGroup() == SPELLGROUP_SONG && (spell->getValidTarget() & TARGET_SELF))
-    {
-        if (entity->objtype == TYPE_MOB || (entity->GetMJob() == JOB_BRD && entity->objtype == TYPE_PC && ((CCharEntity*)entity)->getEquip(SLOT_RANGED) &&
-                                            ((CItemWeapon*)((CCharEntity*)entity)->getEquip(SLOT_RANGED))->getSkillType() == SKILL_STRING_INSTRUMENT))
-        {
-            total += ((float)entity->GetSkill(SKILL_STRING_INSTRUMENT) / 276) * 10;
-        }
-
-        if (total > 20)
-        {
-            total = 20;
-        }
-    }
-
-    return total;
 }
 
 }; // namespace spell

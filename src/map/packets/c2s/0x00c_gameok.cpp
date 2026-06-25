@@ -21,7 +21,8 @@
 
 #include "0x00c_gameok.h"
 
-#include "entities/charentity.h"
+#include "entities/char_entity.h"
+#include "gmcall_container.h"
 #include "packets/char_status.h"
 #include "packets/char_sync.h"
 #include "packets/s2c/0x008_enterzone.h"
@@ -32,8 +33,10 @@
 #include "packets/s2c/0x063_miscdata_monstrosity.h"
 #include "packets/s2c/0x063_miscdata_status_icons.h"
 #include "packets/s2c/0x08c_merit.h"
+#include "packets/s2c/0x08e_alter_ego_points.h"
 #include "packets/s2c/0x0aa_magic_data.h"
 #include "packets/s2c/0x0ac_command_data.h"
+#include "packets/s2c/0x0ad_dungeon.h"
 #include "packets/s2c/0x0ae_mount_data.h"
 #include "packets/s2c/0x0b4_config.h"
 #include "packets/s2c/0x0ca_inspect_message.h"
@@ -44,7 +47,7 @@
 
 auto GP_CLI_COMMAND_GAMEOK::validate(MapSession* PSession, const CCharEntity* PChar) const -> PacketValidationResult
 {
-    return PacketValidator()
+    return PacketValidator(PChar)
         .mustEqual(ClientState, 0, "ClientState not 0")
         .mustEqual(DebugClientFlg, 0, "DebugClientFlg not 0");
 }
@@ -64,6 +67,7 @@ void GP_CLI_COMMAND_GAMEOK::process(MapSession* PSession, CCharEntity* PChar) co
     PChar->pushPacket<GP_SERV_COMMAND_CONFIG>(PChar);
     PChar->pushPacket<GP_SERV_COMMAND_GRAP_LIST>(PChar); // Already sent during LOGIN but retail sends it again
     PChar->pushPacket<GP_SERV_COMMAND_JOB_INFO>(PChar);
+    PChar->pushPacket<GP_SERV_PACKET_ALTER_EGO_POINTS>(PChar);
     PChar->pushPacket<CCharStatusPacket>(PChar);
     PChar->pushPacket<GP_SERV_COMMAND_MISCDATA::MONSTROSITY2>(PChar);
     PChar->pushPacket<GP_SERV_COMMAND_MISCDATA::HOMEPOINTS>(PChar);
@@ -75,12 +79,14 @@ void GP_CLI_COMMAND_GAMEOK::process(MapSession* PSession, CCharEntity* PChar) co
     charutils::SendRecordsOfEminenceLog(PChar);
     PChar->pushPacket<GP_SERV_COMMAND_MAGIC_DATA>(PChar);
     PChar->pushPacket<GP_SERV_COMMAND_MOUNT_DATA>(PChar);
+    PChar->pushPacket<GP_SERV_COMMAND_DUNGEON>(PChar);
     PChar->pushPacket<GP_SERV_COMMAND_COMMAND_DATA>(PChar);
     PChar->pushPacket<CCharSyncPacket>(PChar);
     PChar->pushPacket<GP_SERV_COMMAND_INSPECT_MESSAGE>(PChar);
     PChar->pushPacket<GP_SERV_COMMAND_MERIT>(PChar);
     charutils::SendInventory(PChar);
     blacklistutils::SendBlacklist(PChar);
+    PChar->gmCallContainer().sendPendingResponse(PChar);
 
     // TODO: While in mog house; treasure pool is not created.
     if (PChar->PTreasurePool != nullptr)
@@ -90,7 +96,7 @@ void GP_CLI_COMMAND_GAMEOK::process(MapSession* PSession, CCharEntity* PChar) co
     PChar->loc.zone->SpawnTransport(PChar);
 
     // respawn any pets from last zone
-    if (PChar->loc.zone->CanUseMisc(MISC_PET) && !PChar->m_moghouseID)
+    if (PChar->loc.zone->CanUseMisc(MISC_PET) && !PChar->inMogHouse())
     {
         if (PChar->shouldPetPersistThroughZoning())
         {

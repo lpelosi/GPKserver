@@ -24,7 +24,7 @@
 #include "common/database.h"
 #include "common/utils.h"
 
-#include "entities/charentity.h"
+#include "entities/char_entity.h"
 
 #include "packets/s2c/0x041_black_list.h"
 
@@ -67,7 +67,11 @@ void SendBlacklist(CCharEntity* PChar)
     const auto rset = db::preparedStmt("SELECT c.charid, c.charname FROM char_blacklist AS b INNER JOIN chars AS c ON b.charid_target = c.charid WHERE charid_owner = ?", PChar->id);
     if (!rset || !rset->rowsCount())
     {
-        PChar->pushPacket<GP_SERV_COMMAND_BLACK_LIST>(blacklist, true, true);
+        PChar->pushPacket<GP_SERV_COMMAND_BLACK_LIST>(
+            blacklist,
+            GP_SERV_COMMAND_BLACK_LIST::ResetClientBlacklist::Yes,
+            GP_SERV_COMMAND_BLACK_LIST::LastBlacklistPacket::Yes);
+
         return;
     }
 
@@ -76,29 +80,44 @@ void SendBlacklist(CCharEntity* PChar)
     int       totalCount   = 0;
     const int rowCount     = rset->rowsCount();
 
+    auto isNameCharactersOnly = [](const std::string& name) -> bool
+    {
+        // null terminator added for paranoia, the docs say `find_first_not_of` _will_ check those.
+        // https://en.cppreference.com/w/cpp/string/basic_string/find_first_not_of
+        return to_lower(name).find_first_not_of("abcdefghijklmnopqrstuvwxyz\0") == std::string::npos;
+    };
+
     while (rset->next())
     {
         auto accid_target = rset->get<uint32>(0);
         auto targetName   = rset->get<std::string>(1);
 
-        blacklist.emplace_back(accid_target, targetName);
-        currentCount++;
-        totalCount++;
-
-        if (currentCount == 12)
+        if (isNameCharactersOnly(targetName))
         {
-            // reset the client blist if it's the first 12 (or less)
-            // this is the last blist packet if total count equals row count
-            PChar->pushPacket<GP_SERV_COMMAND_BLACK_LIST>(blacklist, totalCount <= 12, totalCount == rowCount);
-            blacklist.clear();
-            currentCount = 0;
+            blacklist.emplace_back(accid_target, targetName);
+            currentCount++;
+            totalCount++;
+
+            if (currentCount == 12)
+            {
+                PChar->pushPacket<GP_SERV_COMMAND_BLACK_LIST>(
+                    blacklist,
+                    GP_SERV_COMMAND_BLACK_LIST::ResetClientBlacklist{ totalCount <= 12 },
+                    GP_SERV_COMMAND_BLACK_LIST::LastBlacklistPacket{ totalCount == rowCount });
+
+                blacklist.clear();
+                currentCount = 0;
+            }
         }
     }
 
     // Push remaining entries..
     if (!blacklist.empty())
     {
-        PChar->pushPacket<GP_SERV_COMMAND_BLACK_LIST>(blacklist, false, true);
+        PChar->pushPacket<GP_SERV_COMMAND_BLACK_LIST>(
+            blacklist,
+            GP_SERV_COMMAND_BLACK_LIST::ResetClientBlacklist::No,
+            GP_SERV_COMMAND_BLACK_LIST::LastBlacklistPacket::Yes);
     }
 }
 
