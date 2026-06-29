@@ -2365,9 +2365,8 @@ bool EquipArmor(CCharEntity* PChar, uint8 slotID, uint8 equipSlotID, uint8 conta
         return false;
     }
 
+    // GPK custom: no level or Superior-level requirement to equip — only job and race matter.
     if ((PChar->m_EquipBlock & (1 << equipSlotID)) || !(PItem->getJobs() & (1 << (PChar->GetMJob() - 1))) ||
-        (PItem->getSuperiorLevel() > PChar->getMod(Mod::SUPERIOR_LEVEL)) ||
-        (PItem->getReqLvl() > (settings::get<bool>("map.DISABLE_GEAR_SCALING") ? PChar->GetMLevel() : PChar->jobs.job[PChar->GetMJob()])) ||
         !PItem->isEquippableByRace(PChar->look.race))
     {
         return false;
@@ -3455,11 +3454,7 @@ void CheckValidEquipment(CCharEntity* PChar)
             continue;
         }
 
-        if (PItem->getReqLvl() > (settings::get<bool>("map.DISABLE_GEAR_SCALING") ? PChar->GetMLevel() : PChar->jobs.job[PChar->GetMJob()]))
-        {
-            UnequipItem(PChar, slotID);
-            continue;
-        }
+        // GPK custom: gear has no level requirement, so do not unequip above-level gear here.
 
         if (slotID == SLOT_SUB && !PItem->IsShield())
         {
@@ -7016,11 +7011,9 @@ void RemoveAllEquipMods(CCharEntity* PChar)
         if (PItem)
         {
             PChar->delEquipModifiers(&PItem->modList, PItem->getReqLvl(), slotID);
-            if (PItem->getReqLvl() <= PChar->GetMLevel())
-            {
-                PChar->PLatentEffectContainer->DelLatentEffects(PItem->getReqLvl(), slotID);
-                PChar->PLatentEffectContainer->CheckLatentsEquip(slotID);
-            }
+            // GPK custom: gear has no level requirement, apply latents regardless of level.
+            PChar->PLatentEffectContainer->DelLatentEffects(PItem->getReqLvl(), slotID);
+            PChar->PLatentEffectContainer->CheckLatentsEquip(slotID);
         }
     }
 }
@@ -7033,11 +7026,9 @@ void ApplyAllEquipMods(CCharEntity* PChar)
         if (PItem)
         {
             PChar->addEquipModifiers(&PItem->modList, PItem->getReqLvl(), slotID);
-            if (PItem->getReqLvl() <= PChar->GetMLevel())
-            {
-                PChar->PLatentEffectContainer->AddLatentEffects(PItem->latentList, PItem->getReqLvl(), slotID);
-                PChar->PLatentEffectContainer->CheckLatentsEquip(slotID);
-            }
+            // GPK custom: gear has no level requirement, apply latents regardless of level.
+            PChar->PLatentEffectContainer->AddLatentEffects(PItem->latentList, PItem->getReqLvl(), slotID);
+            PChar->PLatentEffectContainer->CheckLatentsEquip(slotID);
         }
     }
 }

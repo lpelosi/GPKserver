@@ -1793,7 +1793,8 @@ void CBattleEntity::addEquipModifiers(std::vector<CModifier>* modList, uint8 ite
 {
     TracyZoneScoped;
 
-    if (GetMLevel() >= itemLevel)
+    // GPK custom: gear has no level requirement — always apply full, unscaled stats.
+    if (true || GetMLevel() >= itemLevel)
     {
         for (auto& i : *modList)
         {
@@ -1989,7 +1990,8 @@ void CBattleEntity::delEquipModifiers(std::vector<CModifier>* modList, uint8 ite
 {
     TracyZoneScoped;
 
-    if (GetMLevel() >= itemLevel)
+    // GPK custom: gear has no level requirement — always remove full, unscaled stats (mirrors addEquipModifiers).
+    if (true || GetMLevel() >= itemLevel)
     {
         for (auto& i : *modList)
         {

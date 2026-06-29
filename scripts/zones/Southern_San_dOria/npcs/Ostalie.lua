@@ -8,22 +8,23 @@ local ID = zones[xi.zone.SOUTHERN_SAN_DORIA]
 local entity = {}
 
 entity.onTrigger = function(player, npc)
+    -- GPK custom: convenience-goods shop (replaced useless low-level starter armor/belts with consumables).
     local stock =
     {
-        { xi.item.LEATHER_BELT,          442, 3 },
-        { xi.item.LIZARD_BELT,          2808, 3 },
-        { xi.item.SILVER_BELT,         11618, 1 },
-        { xi.item.CIRCLET,               166, 3 },
-        { xi.item.ROBE,                  249, 3 },
-        { xi.item.CUFFS,                 137, 3 },
-        { xi.item.SLOPS,                 199, 3 },
-        { xi.item.FLASK_OF_EYE_DROPS,   2698, 3 },
-        { xi.item.ANTIDOTE,              328, 3 },
-        { xi.item.FLASK_OF_ECHO_DROPS,   832, 2 },
-        { xi.item.POTION,                946, 1 },
-        { xi.item.ETHER,                5025, 1 },
-        { xi.item.PICKAXE,               208, 3 },
-        { xi.item.HATCHET,               520, 3 },
+        { xi.item.POTION,                 900, 3 },
+        { xi.item.HI_POTION,             1500, 3 },
+        { xi.item.ETHER,                 5000, 3 },
+        { xi.item.ANTIDOTE,               330, 3 },
+        { xi.item.FLASK_OF_EYE_DROPS,    2700, 3 },
+        { xi.item.FLASK_OF_ECHO_DROPS,    830, 3 },
+        { xi.item.REMEDY,                3000, 3 },
+        { xi.item.RERAISER,              2000, 3 },
+        { xi.item.HI_RERAISER,           8000, 3 },
+        { xi.item.POT_OF_SILENT_OIL,      100, 3 },
+        { xi.item.PINCH_OF_PRISM_POWDER,  100, 3 },
+        { xi.item.SCROLL_OF_INSTANT_WARP, 500, 3 },
+        { xi.item.PICKAXE,                208, 3 },
+        { xi.item.HATCHET,                520, 3 },
     }
 
     -- Thief's tools.

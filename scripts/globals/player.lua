@@ -96,6 +96,27 @@ local STARTER_ITEMS =
     xi.item.GUIDE_BERET
 }
 
+-- GPK custom: QoL "welcome package" granted to every new character.
+-- These are EXISTING FFXI item IDs (the client only renders items in its DAT, so we can't invent
+-- brand-new items — but we can hand out convenience items and tweak their behavior server-side).
+-- Format: { itemID, quantity }.
+local GPK_WELCOME_PACKAGE =
+{
+    -- travel / convenience
+    { xi.item.WARP_RING,              1 }, -- warp to home point
+    { xi.item.HOMING_RING,            1 }, -- return to home point
+    { xi.item.DIMENSIONAL_RING_HOLLA, 1 }, -- teleport: Holla
+    { xi.item.DIMENSIONAL_RING_DEM,   1 }, -- teleport: Dem
+    { xi.item.DIMENSIONAL_RING_MEA,   1 }, -- teleport: Mea
+    -- progression
+    { xi.item.EMPEROR_BAND,           1 }, -- EXP bonus ring
+    -- solo survival / utility (stackable consumables)
+    { xi.item.HI_RERAISER,           12 }, -- reraise on death
+    { xi.item.SCROLL_OF_INSTANT_WARP, 12 }, -- instant warp
+    { xi.item.POT_OF_SILENT_OIL,     12 }, -- sneak
+    { xi.item.PINCH_OF_PRISM_POWDER, 12 }, -- invisible
+}
+
 -----------------------------------
 -- public functions
 -----------------------------------
@@ -175,10 +196,20 @@ xi.player.charCreate = function(player)
         player:setLevelCap(xi.settings.main.INITIAL_LEVEL_CAP)
     end
 
-    -- increase starting inventory
-    if xi.settings.main.START_INVENTORY > 30 then
-        player:changeContainerSize(xi.inv.INVENTORY, xi.settings.main.START_INVENTORY - 30)
-        player:changeContainerSize(xi.inv.MOGSATCHEL, xi.settings.main.START_INVENTORY) -- Default satchel size is zero, so just set it to the setting size.
+    -- GPK custom: unlock ALL containers to max at character creation (no inventory-expansion quests needed).
+    -- 80 is the client-safe maximum (engine MAX_CONTAINER_SIZE is 120, but the FFXI client caps containers at 80).
+    -- Idempotent: only adds the difference, so it is safe even if charCreate re-runs.
+    local maxBag = 80
+    for _, loc in ipairs({
+        xi.inv.INVENTORY, xi.inv.MOGSAFE, xi.inv.MOGSAFE2, xi.inv.STORAGE, xi.inv.MOGLOCKER,
+        xi.inv.MOGSATCHEL, xi.inv.MOGSACK, xi.inv.MOGCASE,
+        xi.inv.WARDROBE, xi.inv.WARDROBE2, xi.inv.WARDROBE3, xi.inv.WARDROBE4,
+        xi.inv.WARDROBE5, xi.inv.WARDROBE6, xi.inv.WARDROBE7, xi.inv.WARDROBE8,
+    }) do
+        local cur = player:getContainerSize(loc)
+        if cur < maxBag then
+            player:changeContainerSize(loc, maxBag - cur)
+        end
     end
 
     --[[
@@ -202,6 +233,14 @@ xi.player.charCreate = function(player)
     for _, id in ipairs(STARTER_ITEMS) do
         if not player:hasItem(id) then
             player:addItem(id, 1)
+        end
+    end
+
+    -- GPK custom: grant the QoL welcome package
+    for _, entry in ipairs(GPK_WELCOME_PACKAGE) do
+        local id, qty = entry[1], entry[2]
+        if not player:hasItem(id) then
+            player:addItem(id, qty)
         end
     end
 
