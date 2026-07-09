@@ -10,6 +10,7 @@ xi.aftermath.type =
     RELIC    = 1,
     MYTHIC   = 2,
     EMPYREAN = 3,
+    PRIME    = 4,
 } -- TODO: Add Aeonic
 
 -----------------------------------
@@ -548,6 +549,16 @@ xi.aftermath.effects =
         mod = xi.mod.REM_OCC_DO_TRIPLE_DMG,
         power = { 300, 400, 500 }, -- 30%, 40%, 50% in core, fetched with rate = (x / 10)
         duration = { 60, 120, 180 },
+    },
+
+    -----------------------------------
+    -- Prime (Physical Damage Limit+); ids 100+ reserved for Prime
+    -----------------------------------
+    [100] =
+    {
+        mod = xi.mod.DAMAGE_LIMITP,
+        power = { 400, 800, 1200 }, -- +4% / +8% / +12% physical damage limit by TP tier (DAMAGE_LIMITP is %x100)
+        duration = { 60, 120, 180 },
     }
 }
 
@@ -577,7 +588,11 @@ xi.aftermath.addStatusEffect = function(player, tp, weaponSlot, aftermathType)
         end,
 
         [xi.aftermath.type.EMPYREAN] = function(x)
-            invalid = id < 44
+            invalid = id < 44 or id >= 100
+        end,
+
+        [xi.aftermath.type.PRIME] = function(x)
+            invalid = id < 100
         end
     }
 
@@ -613,6 +628,12 @@ xi.aftermath.addStatusEffect = function(player, tp, weaponSlot, aftermathType)
         end,
 
         [xi.aftermath.type.EMPYREAN] = function(x)
+            local tier = math.floor(tp / 1000)
+            local icon = xi.effect['AFTERMATH_LV'..tier]
+            player:addStatusEffect(xi.effect.AFTERMATH, { power = id, duration = aftermath.duration[tier], origin = player, icon = icon, subPower = tp, tier = aftermathType })
+        end,
+
+        [xi.aftermath.type.PRIME] = function(x)
             local tier = math.floor(tp / 1000)
             local icon = xi.effect['AFTERMATH_LV'..tier]
             player:addStatusEffect(xi.effect.AFTERMATH, { power = id, duration = aftermath.duration[tier], origin = player, icon = icon, subPower = tp, tier = aftermathType })
@@ -664,6 +685,10 @@ xi.aftermath.onEffectGain = function(target, effect)
 
         [xi.aftermath.type.EMPYREAN] = function(x)
             effect:addMod(aftermath.mod, aftermath.power[math.floor(effect:getSubPower() / 1000)])
+        end,
+
+        [xi.aftermath.type.PRIME] = function(x)
+            effect:addMod(aftermath.mod, aftermath.power[math.floor(effect:getSubPower() / 1000)])
         end
     }
 end
@@ -696,6 +721,12 @@ xi.aftermath.canOverwrite = function(player, tp, aftermathId, aftermathType)
         end,
 
         [xi.aftermath.type.EMPYREAN] = function(x)
+            local currentLevel = math.floor(effect:getSubPower() / 1000)
+            local newLevel = math.floor(tp / 1000)
+            canOverwrite = currentLevel == 1 or currentLevel < newLevel
+        end,
+
+        [xi.aftermath.type.PRIME] = function(x)
             local currentLevel = math.floor(effect:getSubPower() / 1000)
             local newLevel = math.floor(tp / 1000)
             canOverwrite = currentLevel == 1 or currentLevel < newLevel

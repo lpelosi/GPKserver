@@ -171,6 +171,7 @@ xi.magic.spellFamily =
     MAMBO              = 111,
     OPERETTA           = 112,
     MARCH              = 113,
+    ARIA_OF_PASSION    = 157, -- GPK: Prime harp song (own family so it doesn't clash with Marches)
     ELEGY              = 114,
     STR_ETUDE          = 115,
     DEX_ETUDE          = 116,
@@ -1217,4 +1218,5 @@ xi.magic.spell =
     ARCIELA_II            = 1017,
     IROHA_II              = 1018,
     SHANTOTTO_II          = 1019,
+    ARIA_OF_PASSION       = 1020, -- GPK: Prime harp (Loughnashade) song
 }

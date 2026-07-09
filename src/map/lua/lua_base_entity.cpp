@@ -8826,13 +8826,9 @@ void CLuaBaseEntity::setUnityLeader(uint8 leaderID)
 
     auto* PChar = static_cast<CCharEntity*>(m_PBaseEntity);
 
-    // Update Unity Trust, assumes that values have been cleared
-    if (PChar->profile.unity_leader > 0)
-    {
-        uint8 oldUnity = PChar->profile.unity_leader - 1;
-        charutils::delSpell(PChar, ROE_TRUST_ID[oldUnity]);
-        charutils::DeleteSpell(PChar, ROE_TRUST_ID[oldUnity]);
-    }
+    // GPK: do NOT strip the previous leader's trust when switching Unities -- all trusts stay
+    // unlocked. (Retail removed ROE_TRUST_ID[oldUnity] here.) UpdateUnityTrust() below always
+    // (re-)grants the current leader's trust.
 
     charutils::SetUnityLeader(PChar, leaderID);
     roeutils::UpdateUnityTrust(PChar);
@@ -14949,8 +14945,15 @@ auto CLuaBaseEntity::addBardSong(CLuaBaseEntity* PEntity, xi::StatusEffect effec
         {
             maxSongs = 1;
         }
+    }
 
-        maxSongs += PCaster->getMod(Mod::MAXIMUM_SONGS_BONUS);
+    // GPK: honor MAXIMUM_SONGS_BONUS for ALL casters (players and trusts/mobs), not just players
+    if (PEntity && PEntity->m_PBaseEntity)
+    {
+        if (auto* PCasterBattle = dynamic_cast<CBattleEntity*>(PEntity->m_PBaseEntity))
+        {
+            maxSongs += PCasterBattle->getMod(Mod::MAXIMUM_SONGS_BONUS);
+        }
     }
 
     return PBattle->StatusEffectContainer->ApplyBardEffect(PEffect, maxSongs);

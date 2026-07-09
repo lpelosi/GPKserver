@@ -31,6 +31,15 @@ spellObject.onMobSpawn = function(mob)
     -- TODO: BRD trusts need better logic and major overhaul, for now they compliment each other
     mob:addGambit(ai.t.SELF, { ai.c.NOT_STATUS, xi.effect.MARCH }, { ai.r.MA, ai.s.HIGHEST, xi.magic.spellFamily.MARCH })
     mob:addGambit(ai.t.SELF, { ai.c.NOT_STATUS, xi.effect.BALLAD }, { ai.r.MA, ai.s.HIGHEST, xi.magic.spellFamily.MAGES_BALLAD })
+    mob:addGambit(ai.t.SELF, { ai.c.NOT_STATUS, xi.effect.MINUET }, { ai.r.MA, ai.s.HIGHEST, xi.magic.spellFamily.VALOR_MINUET })
+    -- GPK: maintain up to 4 songs (relies on the C++ MAXIMUM_SONGS_BONUS-for-all-casters fix)
+    mob:addMod(xi.mod.MAXIMUM_SONGS_BONUS, 2)
+    -- 4th song: Aria of Passion at BRD 99+ (its level requirement), else Madrigal (accuracy) as a beneficial fallback
+    if mob:getMainLvl() >= 99 then
+        mob:addGambit(ai.t.SELF, { ai.c.NOT_STATUS, xi.effect.ARIA }, { ai.r.MA, ai.s.SPECIFIC, xi.magic.spell.ARIA_OF_PASSION })
+    else
+        mob:addGambit(ai.t.SELF, { ai.c.NOT_STATUS, xi.effect.MADRIGAL }, { ai.r.MA, ai.s.HIGHEST, xi.magic.spellFamily.MADRIGAL })
+    end
 
     mob:addGambit(ai.t.PARTY, { ai.c.HPP_LT, 75 }, { ai.r.MA, ai.s.HIGHEST, xi.magic.spellFamily.CURE })
 

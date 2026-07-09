@@ -198,6 +198,14 @@ namespace charutils
 
 void CalculateStats(CCharEntity* PChar)
 {
+    // GPK custom: server-wide player power multipliers, to make the game fully soloable.
+    // Wires up the (stock-LSB unused) PLAYER_HP_MULTIPLIER / PLAYER_STAT_MULTIPLIER settings,
+    // mirroring how trustutils applies ALTER_EGO_*_MULTIPLIER. Tune the values in settings/map.lua.
+    float gpkHpMult   = settings::get<float>("map.PLAYER_HP_MULTIPLIER");
+    float gpkStatMult = settings::get<float>("map.PLAYER_STAT_MULTIPLIER");
+    gpkHpMult   = (gpkHpMult   >= 0.1f && gpkHpMult   <= 20.0f) ? gpkHpMult   : 1.0f;
+    gpkStatMult = (gpkStatMult >= 0.1f && gpkStatMult <= 20.0f) ? gpkStatMult : 1.0f;
+
     float raceStat  = 0; // The final HP number for a race-based level.
     float jobStat   = 0; // Estimate HP level for the level based on the primary profession.
     float sJobStat  = 0; // HP final number for a level based on a secondary profession.
@@ -311,7 +319,7 @@ void CalculateStats(CCharEntity* PChar)
     }
 
     uint16 MeritBonus   = PChar->PMeritPoints->GetMeritValue(MERIT_MAX_HP, PChar);
-    PChar->health.maxhp = (int16)(raceStat + jobStat + bonusStat + sJobStat + MeritBonus);
+    PChar->health.maxhp = (int16)std::min(32767.0f, (raceStat + jobStat + bonusStat + sJobStat + MeritBonus) * gpkHpMult);
 
     // The beginning of the MP
 
@@ -405,7 +413,7 @@ void CalculateStats(CCharEntity* PChar)
         MeritBonus = PChar->PMeritPoints->GetMeritValue(statMerit[StatIndex - 2], PChar);
 
         // Value output
-        ref<uint16>(&PChar->stats, counter) = (uint16)(raceStat + jobStat + sJobStat + MeritBonus);
+        ref<uint16>(&PChar->stats, counter) = (uint16)((raceStat + jobStat + sJobStat + MeritBonus) * gpkStatMult);
         counter += 2;
     }
 }

@@ -38,3 +38,9 @@
 
 custom/commands/
 custom/lua/test_npcs_in_gm_home.lua
+custom/lua/crafting_dealers.lua
+custom/lua/gear_vendors.lua
+custom/lua/unlock_all.lua
+custom/lua/nm_spawner.lua
+custom/lua/roe_quest_fix.lua
+custom/lua/af_vendors.lua

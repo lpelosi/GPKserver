@@ -422,22 +422,15 @@ void UpdateUnityTrust(CCharEntity* PChar, const bool sendUpdate)
 {
     TracyZoneScoped;
 
-    int32  curPoints        = charutils::GetPoints(PChar, "prev_accolades") / 1000;
-    int32  prevPoints       = charutils::GetPoints(PChar, "current_accolades") / 1000;
     uint16 unityLeaderTrust = (PChar->profile.unity_leader > 0) ? ROE_TRUST_ID[PChar->profile.unity_leader - 1] : 0;
 
     if (unityLeaderTrust > 0)
     {
-        if (curPoints >= 5 || prevPoints >= 5)
-        {
-            charutils::addSpell(PChar, unityLeaderTrust);
-            charutils::SaveSpell(PChar, unityLeaderTrust);
-        }
-        else
-        {
-            charutils::delSpell(PChar, unityLeaderTrust);
-            charutils::DeleteSpell(PChar, unityLeaderTrust);
-        }
+        // GPK: keep every Unity-leader trust unlocked. Retail strips the trust when the player
+        // has < 5000 unity accolades -- which happens right after joining a Unity (accolades
+        // reset to 0) and on the weekly reset -- so we always grant it and never delete it.
+        charutils::addSpell(PChar, unityLeaderTrust);
+        charutils::SaveSpell(PChar, unityLeaderTrust);
     }
 
     if (sendUpdate)
